@@ -15,7 +15,9 @@ const Stylists = () => {
       lastName: "Doe",
       email: "johndoe@example.com",
       contactNumber: "+1234567890",
-      address: "123 Street, City",
+      houseNumber: "123",
+      street: "Street",
+      city: "City",
       role: "Admin",
       username: "johndoe",
       password: "password123",
@@ -28,7 +30,9 @@ const Stylists = () => {
       lastName: "Smith",
       email: "janesmith@example.com",
       contactNumber: "+9876543210",
-      address: "456 Avenue, Town",
+      houseNumber: "456",
+      street: "Avenue",
+      city: "Town",
       role: "Beautician",
       username: "janesmith",
       password: "mypassword",
@@ -75,6 +79,16 @@ const Stylists = () => {
     setEditDialogOpen(false);
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Handle image upload and set the URL
+      // For now, we set it to the file's URL as an example
+      const imageUrl = URL.createObjectURL(file);
+      setCurrentStylist((prev) => ({ ...prev, profilePicture: imageUrl }));
+    }
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <Button
@@ -97,7 +111,7 @@ const Stylists = () => {
                 <Typography><strong>Name:</strong> {stylist.firstName} {stylist.lastName}</Typography>
                 <Typography><strong>Email:</strong> {stylist.email}</Typography>
                 <Typography><strong>Phone:</strong> {stylist.contactNumber}</Typography>
-                <Typography><strong>Address:</strong> {stylist.address}</Typography>
+                <Typography><strong>Address:</strong> {stylist.houseNumber} {stylist.street}, {stylist.city}</Typography>
                 <Typography><strong>Role:</strong> {stylist.role}</Typography>
                 <Typography><strong>Username:</strong> {stylist.username}</Typography>
                 <TextField
@@ -134,6 +148,15 @@ const Stylists = () => {
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
         <DialogTitle>Edit Stylist</DialogTitle>
         <DialogContent>
+          <Avatar
+            src={currentStylist?.profilePicture}
+            sx={{ width: 80, height: 80, margin: "auto" }}
+          />
+          <input
+            type="file"
+            onChange={handleImageChange}
+            style={{ marginTop: "10px", display: "block", marginLeft: "auto", marginRight: "auto" }}
+          />
           <TextField
             label="First Name"
             name="firstName"
@@ -167,9 +190,25 @@ const Stylists = () => {
             margin="normal"
           />
           <TextField
-            label="Address"
-            name="address"
-            value={currentStylist?.address || ""}
+            label="House No."
+            name="houseNumber"
+            value={currentStylist?.houseNumber || ""}
+            onChange={handleEditChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Street"
+            name="street"
+            value={currentStylist?.street || ""}
+            onChange={handleEditChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="City"
+            name="city"
+            value={currentStylist?.city || ""}
             onChange={handleEditChange}
             fullWidth
             margin="normal"
@@ -210,9 +249,7 @@ const Stylists = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} 
-          style={{ backgroundColor: "#FE8DA1", color: "white" }}
-          >
+          <Button onClick={() => setEditDialogOpen(false)} style={{ backgroundColor: "#FE8DA1", color: "white" }}>
             Cancel
           </Button>
           <Button onClick={handleEditSave} style={{ backgroundColor: "#FE8DA1", color: "white" }}>
@@ -222,30 +259,22 @@ const Stylists = () => {
       </Dialog>
 
       {/* Delete Dialog */}
-<Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-  <DialogTitle>Confirm Delete</DialogTitle>
-  <DialogContent>
-    <Typography>
-      Are you sure you want to delete {currentStylist?.firstName} {currentStylist?.lastName}?
-    </Typography>
-  </DialogContent>
-  <DialogActions>
-    <Button
-      onClick={() => setDeleteDialogOpen(false)}
-      style={{ color: "blue" }} // No button background, just blue text
-    >
-      No
-    </Button>
-    <Button
-      onClick={handleDeleteConfirm}
-      style={{ color: "red" }} // Delete button in red
-    >
-      Delete
-    </Button>
-  </DialogActions>
-</Dialog>
-
-
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete {currentStylist?.firstName} {currentStylist?.lastName}?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} style={{ color: "blue" }}>
+            No
+          </Button>
+          <Button onClick={handleDeleteConfirm} style={{ color: "red" }}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
