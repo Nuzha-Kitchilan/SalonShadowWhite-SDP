@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
-  Paper, IconButton, TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText
+  Paper, IconButton, TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText, Select, MenuItem
 } from "@mui/material";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
@@ -9,6 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const Inventory = () => {
   const [inventory, setInventory] = useState([]);
+  const [filteredInventory, setFilteredInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [editItem, setEditItem] = useState({
@@ -18,7 +19,7 @@ const Inventory = () => {
     price: "",
     manufacture_date: "",
     expire_date: "",
-    brand: "" // Added brand
+    brand: "" 
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -30,12 +31,23 @@ const Inventory = () => {
     price: "",
     manufacture_date: "",
     expire_date: "",
-    brand: "" // Added brand
+    brand: "" 
   });
-
+  
+  const [brandFilter, setBrandFilter] = useState("");  // Brand filter state
+  
   useEffect(() => {
     fetchInventory();
   }, []);
+  
+  useEffect(() => {
+    // Apply brand filter whenever inventory or brandFilter changes
+    if (brandFilter) {
+      setFilteredInventory(inventory.filter(item => item.brand === brandFilter));
+    } else {
+      setFilteredInventory(inventory);
+    }
+  }, [inventory, brandFilter]);
 
   const fetchInventory = async () => {
     try {
@@ -65,7 +77,7 @@ const Inventory = () => {
   const formatDateToInput = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0];  // Converts to yyyy-mm-dd format
+    return date.toISOString().split('T')[0];  
   };
 
   const handleEditSubmit = async () => {
@@ -117,6 +129,7 @@ const Inventory = () => {
 
   return (
     <div style={{ marginTop: "20px" }}>
+      
       <Button
         variant="contained"
         sx={{ backgroundColor: "#FE8DA1", marginBottom: "20px", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}
@@ -125,13 +138,29 @@ const Inventory = () => {
         + Add Inventory
       </Button>
 
+      {/* Brand filter */}
+      <TextField
+        select
+        label="Filter by Brand"
+        value={brandFilter}
+        onChange={(e) => setBrandFilter(e.target.value)}
+        fullWidth
+        margin="normal"
+        sx={{ marginBottom: "20px" }}
+      >
+        <MenuItem value="">All Brands</MenuItem>
+        {Array.from(new Set(inventory.map(item => item.brand))).map((brand) => (
+          <MenuItem key={brand} value={brand}>{brand}</MenuItem>
+        ))}
+      </TextField>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Product Name</TableCell>
-              <TableCell>Brand</TableCell> {/* Added Brand column */}
+              <TableCell>Brand</TableCell> 
               <TableCell>Quantity</TableCell>
               <TableCell>Price</TableCell>
               <TableCell>Manufacture Date</TableCell>
@@ -140,11 +169,11 @@ const Inventory = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {inventory.map((item) => (
+            {filteredInventory.map((item) => (
               <TableRow key={item.inventory_id}>
                 <TableCell>{item.inventory_id}</TableCell>
                 <TableCell>{item.product_name}</TableCell>
-                <TableCell>{item.brand}</TableCell> 
+                <TableCell>{item.brand}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
                 <TableCell>{item.price}</TableCell>
                 <TableCell>{formatDate(item.manufacture_date)}</TableCell>
@@ -237,7 +266,7 @@ const Inventory = () => {
           />
           <TextField
             label="Brand"
-            value={newItem.brand} /* Added Brand field */
+            value={newItem.brand} 
             onChange={(e) => setNewItem({ ...newItem, brand: e.target.value })}
             fullWidth
             margin="normal"
