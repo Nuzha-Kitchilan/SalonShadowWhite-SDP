@@ -17,7 +17,8 @@ const Inventory = () => {
     quantity: "",
     price: "",
     manufacture_date: "",
-    expire_date: ""
+    expire_date: "",
+    brand: "" // Added brand
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -28,7 +29,8 @@ const Inventory = () => {
     quantity: "",
     price: "",
     manufacture_date: "",
-    expire_date: ""
+    expire_date: "",
+    brand: "" // Added brand
   });
 
   useEffect(() => {
@@ -67,6 +69,11 @@ const Inventory = () => {
   };
 
   const handleEditSubmit = async () => {
+    if (!editItem.product_name || !editItem.quantity || !editItem.price || !editItem.manufacture_date || !editItem.expire_date || !editItem.brand) {
+      alert("All fields are required.");
+      return;
+    }
+
     try {
       const response = await axios.put(`http://localhost:5001/api/inventory/${editItem.inventory_id}`, editItem);
       fetchInventory();
@@ -93,7 +100,7 @@ const Inventory = () => {
   };
 
   const handleAddItemSubmit = async () => {
-    if (!newItem.product_name || !newItem.quantity || !newItem.price || !newItem.manufacture_date || !newItem.expire_date) {
+    if (!newItem.product_name || !newItem.quantity || !newItem.price || !newItem.manufacture_date || !newItem.expire_date || !newItem.brand) {
       alert("All fields are required.");
       return;
     }
@@ -124,6 +131,7 @@ const Inventory = () => {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Product Name</TableCell>
+              <TableCell>Brand</TableCell> {/* Added Brand column */}
               <TableCell>Quantity</TableCell>
               <TableCell>Price</TableCell>
               <TableCell>Manufacture Date</TableCell>
@@ -136,6 +144,7 @@ const Inventory = () => {
               <TableRow key={item.inventory_id}>
                 <TableCell>{item.inventory_id}</TableCell>
                 <TableCell>{item.product_name}</TableCell>
+                <TableCell>{item.brand}</TableCell> 
                 <TableCell>{item.quantity}</TableCell>
                 <TableCell>{item.price}</TableCell>
                 <TableCell>{formatDate(item.manufacture_date)}</TableCell>
@@ -161,6 +170,13 @@ const Inventory = () => {
             label="Product Name"
             value={editItem.product_name}
             onChange={(e) => setEditItem({ ...editItem, product_name: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Brand"
+            value={editItem.brand} 
+            onChange={(e) => setEditItem({ ...editItem, brand: e.target.value })}
             fullWidth
             margin="normal"
           />
@@ -216,6 +232,13 @@ const Inventory = () => {
             label="Product Name"
             value={newItem.product_name}
             onChange={(e) => setNewItem({ ...newItem, product_name: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Brand"
+            value={newItem.brand} /* Added Brand field */
+            onChange={(e) => setNewItem({ ...newItem, brand: e.target.value })}
             fullWidth
             margin="normal"
           />
