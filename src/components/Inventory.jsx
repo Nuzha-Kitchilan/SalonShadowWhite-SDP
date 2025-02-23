@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
-  Paper, IconButton, TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText, Select, MenuItem
+  Paper, IconButton, TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText, Select, MenuItem, Box
 } from "@mui/material";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
@@ -35,19 +35,37 @@ const Inventory = () => {
   });
   
   const [brandFilter, setBrandFilter] = useState("");  // Brand filter state
+  const [productSearch, setProductSearch] = useState("");  // Product name search
+  const [minQuantity, setMinQuantity] = useState(""); // Min quantity search
+  const [maxQuantity, setMaxQuantity] = useState(""); // Max quantity search
   
   useEffect(() => {
     fetchInventory();
   }, []);
   
   useEffect(() => {
-    // Apply brand filter whenever inventory or brandFilter changes
+    // Apply filters whenever inventory, brandFilter, productSearch or quantity changes
+    let filtered = inventory;
+
     if (brandFilter) {
-      setFilteredInventory(inventory.filter(item => item.brand === brandFilter));
-    } else {
-      setFilteredInventory(inventory);
+      filtered = filtered.filter(item => item.brand === brandFilter);
     }
-  }, [inventory, brandFilter]);
+
+    if (productSearch) {
+      filtered = filtered.filter(item => item.product_name.toLowerCase().includes(productSearch.toLowerCase()));
+    }
+
+    if (minQuantity) {
+      filtered = filtered.filter(item => item.quantity >= minQuantity);
+    }
+
+    if (maxQuantity) {
+      filtered = filtered.filter(item => item.quantity <= maxQuantity);
+    }
+
+    setFilteredInventory(filtered);
+
+  }, [inventory, brandFilter, productSearch, minQuantity, maxQuantity]);
 
   const fetchInventory = async () => {
     try {
@@ -129,14 +147,42 @@ const Inventory = () => {
 
   return (
     <div style={{ marginTop: "20px" }}>
-      
-      <Button
-        variant="contained"
-        sx={{ backgroundColor: "#FE8DA1", marginBottom: "20px", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}
-        onClick={() => setAddItemModalOpen(true)}
-      >
-        + Add Inventory
-      </Button>
+      {/* Container for the Add Inventory button and search fields */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: "20px" }}>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}
+          onClick={() => setAddItemModalOpen(true)}
+        >
+          + Add Inventory
+        </Button>
+
+        {/* Product name search */}
+        <TextField
+          label="Search by Product Name"
+          value={productSearch}
+          onChange={(e) => setProductSearch(e.target.value)}
+          sx={{ width: 220 }}
+        />
+
+        {/* Quantity range */}
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <TextField
+            label="Min Quantity"
+            type="number"
+            value={minQuantity}
+            onChange={(e) => setMinQuantity(e.target.value)}
+            sx={{ width: 150 }}
+          />
+          <TextField
+            label="Max Quantity"
+            type="number"
+            value={maxQuantity}
+            onChange={(e) => setMaxQuantity(e.target.value)}
+            sx={{ width: 150 }}
+          />
+        </Box>
+      </Box>
 
       {/* Brand filter */}
       <TextField
@@ -146,7 +192,7 @@ const Inventory = () => {
         onChange={(e) => setBrandFilter(e.target.value)}
         fullWidth
         margin="normal"
-        sx={{ marginBottom: "20px" }}
+        sx={{ marginBottom: "20px", marginLeft: "10px" }}
       >
         <MenuItem value="">All Brands</MenuItem>
         {Array.from(new Set(inventory.map(item => item.brand))).map((brand) => (
@@ -312,18 +358,20 @@ const Inventory = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddItemModalOpen(false)} color="primary">Cancel</Button>
-          <Button onClick={handleAddItemSubmit} color="primary">Add</Button>
+          <Button onClick={handleAddItemSubmit} color="primary">Save</Button>
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} disableEnforceFocus>
+      {/* Delete Item Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogContent>
-          <DialogContentText>Are you sure you want to permanently delete this item?</DialogContentText>
+          <DialogContentText>
+            Are you sure you want to delete this item?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">No</Button>
-          <Button onClick={handleDeleteConfirm} color="error">Yes</Button>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="secondary">Delete</Button>
         </DialogActions>
       </Dialog>
     </div>
