@@ -1,282 +1,352 @@
-import React, { useState } from "react";
-import {
-  Card, CardContent, CardActions, Typography, Avatar, IconButton,
-  Button, Grid, TextField, InputAdornment, Dialog, DialogTitle,
-  DialogContent, DialogActions
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { 
+    Card, CardContent, Typography, Grid, IconButton, Avatar, 
+    Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button 
 } from "@mui/material";
-import { Visibility, VisibilityOff, Edit, Delete, Add } from "@mui/icons-material";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Stylists = () => {
-  const [stylists, setStylists] = useState([
-    {
-      id: 1,
-      profilePicture: "https://via.placeholder.com/100",
-      firstName: "John",
-      lastName: "Doe",
-      email: "johndoe@example.com",
-      contactNumber: "+1234567890",
-      houseNumber: "123",
-      street: "Street",
-      city: "City",
-      role: "Admin",
-      username: "johndoe",
-      password: "password123",
-      showPassword: false,
-    },
-    {
-      id: 2,
-      profilePicture: "https://via.placeholder.com/100",
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "janesmith@example.com",
-      contactNumber: "+9876543210",
-      houseNumber: "456",
-      street: "Avenue",
-      city: "Town",
-      role: "Beautician",
-      username: "janesmith",
-      password: "mypassword",
-      showPassword: false,
-    },
-  ]);
+    const [stylists, setStylists] = useState([]);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [openAdd, setOpenAdd] = useState(false);
+    const [selectedStylist, setSelectedStylist] = useState(null);
+    const [formData, setFormData] = useState({
+        firstname: "",
+        lastname: "",
+        email: "",
+        username: "",
+        role: "",
+        house_no: "",
+        street: "",
+        city: "",
+        phone_numbers: [""], // Store phone numbers as an array
+        profile_url: ""
+    });
 
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [currentStylist, setCurrentStylist] = useState(null);
+    useEffect(() => {
+        axios.get("http://localhost:5001/api/stylists")
+            .then(response => setStylists(response.data))
+            .catch(error => console.error("Error fetching stylists:", error));
+    }, []);
 
-  const handleTogglePassword = (id) => {
-    setStylists((prev) =>
-      prev.map((stylist) =>
-        stylist.id === id ? { ...stylist, showPassword: !stylist.showPassword } : stylist
-      )
+    const handleEdit = (stylist) => {
+        setSelectedStylist(stylist);
+        setFormData({
+            ...stylist,
+            phone_numbers: stylist.phone_numbers ? stylist.phone_numbers.split(",") : [""] // Split phone numbers to an array
+        });
+        setOpenEdit(true);
+    };
+
+    const handleDelete = (stylist) => {
+        setSelectedStylist(stylist);
+        setOpenDelete(true);
+    };
+
+    const handleChange = (e) => {
+        const { name, value, dataset } = e.target;
+        if (name === "phone_numbers") {
+            const updatedPhones = [...formData.phone_numbers];
+            updatedPhones[dataset.index] = value; // Update the specific phone number
+            setFormData({ ...formData, phone_numbers: updatedPhones });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
+
+    const handleAddPhoneNumber = () => {
+        setFormData({ ...formData, phone_numbers: [...formData.phone_numbers, ""] });
+    };
+
+    const handleRemovePhoneNumber = (index) => {
+        const updatedPhones = formData.phone_numbers.filter((_, i) => i !== index);
+        setFormData({ ...formData, phone_numbers: updatedPhones });
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prevState => ({ ...prevState, profile_url: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSaveEdit = () => {
+        axios.put(`http://localhost:5001/api/stylists/${selectedStylist.stylist_ID}`, formData)
+            .then(() => {
+                setStylists(stylists.map(stylist => 
+                    stylist.stylist_ID === selectedStylist.stylist_ID ? formData : stylist
+                ));
+                setOpenEdit(false);
+            })
+            .catch(error => console.error("Error updating stylist:", error));
+    };
+
+    const handleConfirmDelete = () => {
+        axios.delete(`http://localhost:5001/api/stylists/${selectedStylist.stylist_ID}`)
+            .then(() => {
+                setStylists(stylists.filter(stylist => stylist.stylist_ID !== selectedStylist.stylist_ID));
+                setOpenDelete(false);
+            })
+            .catch(error => console.error("Error deleting stylist:", error));
+    };
+
+    const handleAddStylist = () => {
+        axios.post("http://localhost:5001/api/stylists", formData)
+            .then(response => {
+                setStylists([...stylists, response.data]);
+                setOpenAdd(false);
+                setFormData({
+                    firstname: "",
+                    lastname: "",
+                    email: "",
+                    username: "",
+                    role: "",
+                    house_no: "",
+                    street: "",
+                    city: "",
+                    phone_numbers: [""], // Reset phone numbers to an empty field
+                    profile_url: ""
+                });
+            })
+            .catch(error => console.error("Error adding stylist:", error));
+    };
+
+    return (
+        <Grid container spacing={3} justifyContent="center">
+            <Grid item xs={12}>
+                <Button 
+                    onClick={() => setOpenAdd(true)} 
+                    sx={{
+                        backgroundColor: '#FE8DA1', 
+                        color: 'white', 
+                        '&:hover': { backgroundColor: '#ff6f91' },
+                        marginBottom: '15px'
+                    }}
+                >
+                    Add Stylist
+                </Button>
+            </Grid>
+
+            {stylists.map(stylist => (
+                <Grid item key={stylist.stylist_ID} xs={12} sm={6} md={4}>
+                    <Card
+                        sx={{
+                            textAlign: 'center',
+                            height: 400,
+                            boxShadow: `0 6px 12px rgba(254, 141, 161, 0.8)`,
+                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                            '&:hover': {
+                                transform: 'scale(1.05)',
+                                boxShadow: `0 12px 24px rgba(254, 141, 161, 1)`,
+                            },
+                        }}
+                    >
+                        <Avatar
+                            sx={{
+                                width: 120,
+                                height: 120,
+                                margin: '20px auto 10px',
+                                fontSize: '3rem',
+                                backgroundColor: 'lightgray',
+                            }}
+                            src={stylist.profile_url || ""}
+                        >
+                            {stylist.firstname ? stylist.firstname[0] : "S"}
+                        </Avatar>
+                        <CardContent>
+                            <Typography variant="h6">{stylist.firstname} {stylist.lastname}</Typography>
+                            <Typography variant="body2" color="textSecondary">Role: {stylist.role}</Typography>
+                            <Typography variant="body2">Email: {stylist.email}</Typography>
+                            <Typography variant="body2">Username: {stylist.username}</Typography>
+                            <Typography variant="body2">Address: {stylist.house_no}, {stylist.street}, {stylist.city}</Typography>
+                            <Typography variant="body2">Phone: {stylist.phone_numbers ? stylist.phone_numbers.split(",").join(" | ") : "N/A"}</Typography>
+                            
+                            <div style={{ marginTop: '10px' }}>
+                                <IconButton color="success" onClick={() => handleEdit(stylist)}>
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton color="error" onClick={() => handleDelete(stylist)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            ))}
+
+            {/* Add Stylist Dialog */}
+            <Dialog open={openAdd} onClose={() => setOpenAdd(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Add Stylist</DialogTitle>
+                <DialogContent>
+                    <Avatar
+                        sx={{
+                            width: 120,
+                            height: 120,
+                            margin: '10px auto',
+                            fontSize: '3rem',
+                            backgroundColor: 'lightgray',
+                        }}
+                        src={formData.profile_url || ""}
+                    >
+                        {formData.firstname ? formData.firstname[0] : "S"}
+                    </Avatar>
+                    <Button
+                        variant="contained"
+                        component="label"
+                        sx={{
+                            backgroundColor: '#FE8DA1',
+                            color: 'white',
+                            '&:hover': { backgroundColor: '#ff6f91' },
+                            marginBottom: '10px',
+                            display: 'block',
+                            width: '100%',
+                            textAlign: 'center',
+                        }}
+                    >
+                        Choose Picture
+                        <input
+                            type="file"
+                            onChange={handleImageChange}
+                            hidden
+                        />
+                    </Button>
+                    <TextField fullWidth label="First Name" name="firstname" value={formData.firstname} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Last Name" name="lastname" value={formData.lastname} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Email" name="email" value={formData.email} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Username" name="username" value={formData.username} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Role" name="role" value={formData.role} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="House No" name="house_no" value={formData.house_no} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Street" name="street" value={formData.street} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="City" name="city" value={formData.city} onChange={handleChange} margin="dense" />
+
+                    {/* Render phone number fields */}
+                    {formData.phone_numbers.map((phone, index) => (
+                        <div key={index} style={{ display: 'flex', marginBottom: '10px' }}>
+                            <TextField
+                                fullWidth
+                                label={`Phone Number ${index + 1}`}
+                                name="phone_numbers"
+                                value={phone}
+                                onChange={handleChange}
+                                data-index={index}
+                                margin="dense"
+                            />
+                            <Button onClick={() => handleRemovePhoneNumber(index)} sx={{ marginLeft: 2, color: 'red' }}>
+                                Remove
+                            </Button>
+                        </div>
+                    ))}
+                    <Button onClick={handleAddPhoneNumber} sx={{ color: '#FE8DA1' }}>
+                        Add Another Phone Number
+                    </Button>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenAdd(false)} sx={{ backgroundColor: '#FE8DA1', color: 'white', '&:hover': { backgroundColor: '#ff6f91' } }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleAddStylist} sx={{ backgroundColor: '#FE8DA1', color: 'white', '&:hover': { backgroundColor: '#ff6f91' } }}>
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Edit Stylist Dialog */}
+            <Dialog open={openEdit} onClose={() => setOpenEdit(false)} fullWidth maxWidth="sm">
+                <DialogTitle>Edit Stylist</DialogTitle>
+                <DialogContent>
+                    <Avatar
+                        sx={{
+                            width: 120,
+                            height: 120,
+                            margin: '10px auto',
+                            fontSize: '3rem',
+                            backgroundColor: 'lightgray',
+                        }}
+                        src={formData.profile_url || ""}
+                    >
+                        {formData.firstname ? formData.firstname[0] : "S"}
+                    </Avatar>
+                    <Button
+                        variant="contained"
+                        component="label"
+                        sx={{
+                            backgroundColor: '#FE8DA1',
+                            color: 'white',
+                            '&:hover': { backgroundColor: '#ff6f91' },
+                            marginBottom: '10px',
+                            display: 'block',
+                            width: '100%',
+                            textAlign: 'center',
+                        }}
+                    >
+                        Choose Picture
+                        <input
+                            type="file"
+                            onChange={handleImageChange}
+                            hidden
+                        />
+                    </Button>
+                    <TextField fullWidth label="First Name" name="firstname" value={formData.firstname} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Last Name" name="lastname" value={formData.lastname} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Email" name="email" value={formData.email} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Username" name="username" value={formData.username} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Role" name="role" value={formData.role} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="House No" name="house_no" value={formData.house_no} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="Street" name="street" value={formData.street} onChange={handleChange} margin="dense" />
+                    <TextField fullWidth label="City" name="city" value={formData.city} onChange={handleChange} margin="dense" />
+
+                    {/* Render phone number fields */}
+                    {formData.phone_numbers.map((phone, index) => (
+                        <div key={index} style={{ display: 'flex', marginBottom: '10px' }}>
+                            <TextField
+                                fullWidth
+                                label={`Phone Number ${index + 1}`}
+                                name="phone_numbers"
+                                value={phone}
+                                onChange={handleChange}
+                                data-index={index}
+                                margin="dense"
+                            />
+                            <Button onClick={() => handleRemovePhoneNumber(index)} sx={{ marginLeft: 2, color: 'red' }}>
+                                Remove
+                            </Button>
+                        </div>
+                    ))}
+                    <Button onClick={handleAddPhoneNumber} sx={{ color: '#FE8DA1' }}>
+                        Add Another Phone Number
+                    </Button>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenEdit(false)} sx={{ backgroundColor: '#FE8DA1', color: 'white', '&:hover': { backgroundColor: '#ff6f91' } }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSaveEdit} sx={{ backgroundColor: '#FE8DA1', color: 'white', '&:hover': { backgroundColor: '#ff6f91' } }}>
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Stylist Confirmation */}
+            <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+                <DialogTitle>Are you sure you want to delete this stylist?</DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => setOpenDelete(false)} sx={{ color: 'Blue' }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmDelete} sx={{ color: 'Red' }}>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Grid>
     );
-  };
-
-  const handleEditClick = (stylist) => {
-    setCurrentStylist(stylist);
-    setEditDialogOpen(true);
-  };
-
-  const handleDeleteClick = (stylist) => {
-    setCurrentStylist(stylist);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    setStylists((prev) => prev.filter((stylist) => stylist.id !== currentStylist.id));
-    setDeleteDialogOpen(false);
-  };
-
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentStylist((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleEditSave = () => {
-    setStylists((prev) =>
-      prev.map((stylist) => (stylist.id === currentStylist.id ? currentStylist : stylist))
-    );
-    setEditDialogOpen(false);
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Handle image upload and set the URL
-      // For now, we set it to the file's URL as an example
-      const imageUrl = URL.createObjectURL(file);
-      setCurrentStylist((prev) => ({ ...prev, profilePicture: imageUrl }));
-    }
-  };
-
-  return (
-    <div style={{ padding: "20px" }}>
-      <Button
-        variant="contained"
-        style={{ backgroundColor: "#FE8DA1", color: "white", marginBottom: "20px" }}
-        startIcon={<Add />}
-      >
-        Add Stylist
-      </Button>
-
-      <Grid container spacing={3}>
-        {stylists.map((stylist) => (
-          <Grid item xs={12} sm={6} md={4} key={stylist.id}>
-            <Card sx={{ padding: 3, textAlign: "center", boxShadow: "0px 4px 10px #FE8DA1" }}>
-              <Avatar
-                src={stylist.profilePicture}
-                sx={{ width: 80, height: 80, margin: "auto" }}
-              />
-              <CardContent>
-                <Typography><strong>Name:</strong> {stylist.firstName} {stylist.lastName}</Typography>
-                <Typography><strong>Email:</strong> {stylist.email}</Typography>
-                <Typography><strong>Phone:</strong> {stylist.contactNumber}</Typography>
-                <Typography><strong>Address:</strong> {stylist.houseNumber} {stylist.street}, {stylist.city}</Typography>
-                <Typography><strong>Role:</strong> {stylist.role}</Typography>
-                <Typography><strong>Username:</strong> {stylist.username}</Typography>
-                <TextField
-                  type={stylist.showPassword ? "text" : "password"}
-                  value={stylist.password}
-                  variant="standard"
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => handleTogglePassword(stylist.id)}>
-                          {stylist.showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ marginTop: 1 }}
-                />
-              </CardContent>
-              <CardActions sx={{ justifyContent: "center" }}>
-                <IconButton style={{ color: "green" }} onClick={() => handleEditClick(stylist)}>
-                  <Edit />
-                </IconButton>
-                <IconButton color="error" onClick={() => handleDeleteClick(stylist)}>
-                  <Delete />
-                </IconButton>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit Stylist</DialogTitle>
-        <DialogContent>
-          <Avatar
-            src={currentStylist?.profilePicture}
-            sx={{ width: 80, height: 80, margin: "auto" }}
-          />
-          <input
-            type="file"
-            onChange={handleImageChange}
-            style={{ marginTop: "10px", display: "block", marginLeft: "auto", marginRight: "auto" }}
-          />
-          <TextField
-            label="First Name"
-            name="firstName"
-            value={currentStylist?.firstName || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Last Name"
-            name="lastName"
-            value={currentStylist?.lastName || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={currentStylist?.email || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Phone"
-            name="contactNumber"
-            value={currentStylist?.contactNumber || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="House No."
-            name="houseNumber"
-            value={currentStylist?.houseNumber || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Street"
-            name="street"
-            value={currentStylist?.street || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="City"
-            name="city"
-            value={currentStylist?.city || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Role"
-            name="role"
-            value={currentStylist?.role || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Username"
-            name="username"
-            value={currentStylist?.username || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type={currentStylist?.showPassword ? "text" : "password"}
-            value={currentStylist?.password || ""}
-            onChange={handleEditChange}
-            fullWidth
-            margin="normal"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => handleTogglePassword(currentStylist.id)}>
-                    {currentStylist?.showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} style={{ backgroundColor: "#FE8DA1", color: "white" }}>
-            Cancel
-          </Button>
-          <Button onClick={handleEditSave} style={{ backgroundColor: "#FE8DA1", color: "white" }}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete {currentStylist?.firstName} {currentStylist?.lastName}?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} style={{ color: "blue" }}>
-            No
-          </Button>
-          <Button onClick={handleDeleteConfirm} style={{ color: "red" }}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
 };
 
 export default Stylists;
