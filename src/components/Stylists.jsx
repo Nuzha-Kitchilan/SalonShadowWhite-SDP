@@ -14,9 +14,12 @@ import {
   TextField,
   Button,
   Portal,
+  InputAdornment,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Stylists = () => {
   const [stylists, setStylists] = useState([]);
@@ -24,6 +27,9 @@ const Stylists = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedStylist, setSelectedStylist] = useState(null);
+  const [passwordVisibility, setPasswordVisibility] = useState({});
+  const [showPasswordInForm, setShowPasswordInForm] = useState(false);
+  const [showPasswordInEditForm, setShowPasswordInEditForm] = useState(false);
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -80,9 +86,23 @@ const Stylists = () => {
             : [], // Handle phone numbers correctly
         }));
         setStylists(stylistsWithPhoneNumbers);
+        
+        // Initialize password visibility state for all stylists
+        const initialVisibilityState = {};
+        stylistsWithPhoneNumbers.forEach(stylist => {
+          initialVisibilityState[stylist.stylist_ID] = false;
+        });
+        setPasswordVisibility(initialVisibilityState);
       })
       .catch((error) => console.error("Error fetching stylists:", error));
   }, []);
+
+  const togglePasswordVisibility = (stylistId) => {
+    setPasswordVisibility(prev => ({
+      ...prev,
+      [stylistId]: !prev[stylistId]
+    }));
+  };
 
   const handleEdit = (stylist) => {
     setSelectedStylist(stylist);
@@ -95,6 +115,7 @@ const Stylists = () => {
         : [], // Handle string case
     });
     setOpenEdit(true);
+    setShowPasswordInEditForm(false); // Reset password visibility when opening edit form
   };
 
   const handleDelete = (stylist) => {
@@ -183,8 +204,6 @@ const Stylists = () => {
       .catch((error) => console.error("Error deleting stylist:", error));
   };
 
-// Add validation before submi
-  
   // Add validation before submission
   const handleAddStylist = () => {
     // Check required fields
@@ -242,7 +261,24 @@ const Stylists = () => {
         console.log("Stylist added successfully:", response.data);
         // After successful addition, fetch the updated list
         axios.get("http://localhost:5001/api/stylists").then((response) => {
-          setStylists(response.data);
+          const stylistsWithPhoneNumbers = response.data.map((stylist) => ({
+            ...stylist,
+            phone_numbers: Array.isArray(stylist.phone_numbers)
+              ? stylist.phone_numbers
+              : stylist.phone_numbers
+              ? stylist.phone_numbers.split(",")
+              : [],
+          }));
+          setStylists(stylistsWithPhoneNumbers);
+          
+          // Update password visibility state for new stylists
+          const updatedVisibilityState = {...passwordVisibility};
+          stylistsWithPhoneNumbers.forEach(stylist => {
+            if (!(stylist.stylist_ID in updatedVisibilityState)) {
+              updatedVisibilityState[stylist.stylist_ID] = false;
+            }
+          });
+          setPasswordVisibility(updatedVisibilityState);
         });
         setOpenAdd(false);
         setFormData({
@@ -258,6 +294,7 @@ const Stylists = () => {
           profile_url: "",
           password: ""  // Reset password field
         });
+        setShowPasswordInForm(false); // Reset password visibility
       })
       .catch((error) => {
         console.error("Error adding stylist:", error);
@@ -276,6 +313,7 @@ const Stylists = () => {
         alert(errorMessage);
       });
   };
+  
   // Clean up dialog closing
   const handleCloseDialog = (setter) => {
     const rootElement = document.getElementById("root");
@@ -319,7 +357,10 @@ const Stylists = () => {
     <Grid container spacing={3} justifyContent="center">
       <Grid item xs={12}>
         <Button
-          onClick={() => setOpenAdd(true)}
+          onClick={() => {
+            setOpenAdd(true);
+            setShowPasswordInForm(false); // Reset password visibility when opening add form
+          }}
           sx={{
             backgroundColor: "#FE8DA1",
             color: "white",
@@ -335,7 +376,7 @@ const Stylists = () => {
           <Card
             sx={{
               textAlign: "center",
-              height: 400,
+              height: 420,
               boxShadow: `0 6px 12px rgba(254, 141, 161, 0.8)`,
               transition: "transform 0.3s ease, box-shadow 0.3s ease",
               "&:hover": {
@@ -366,6 +407,19 @@ const Stylists = () => {
               <Typography variant="body2">Email: {stylist.email}</Typography>
               <Typography variant="body2">
                 Username: {stylist.username}
+              </Typography>
+              <Typography variant="body2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                Password: {passwordVisibility[stylist.stylist_ID] ? stylist.password : '••••••••'} 
+                <IconButton 
+                  onClick={() => togglePasswordVisibility(stylist.stylist_ID)} 
+                  size="small" 
+                  style={{ marginLeft: '5px' }}
+                >
+                  {passwordVisibility[stylist.stylist_ID] ? 
+                    <VisibilityOffIcon fontSize="small" /> : 
+                    <VisibilityIcon fontSize="small" />
+                  }
+                </IconButton>
               </Typography>
               <Typography variant="body2">
                 Address: {stylist.house_no}, {stylist.street}, {stylist.city}
@@ -465,6 +519,28 @@ const Stylists = () => {
             />
             <TextField
               fullWidth
+              label="Password"
+              name="password"
+              type={showPasswordInForm ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              margin="dense"
+              placeholder="Leave empty for default (username + 123)"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPasswordInForm(!showPasswordInForm)}
+                      edge="end"
+                    >
+                      {showPasswordInForm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
               label="Role"
               name="role"
               value={formData.role}
@@ -503,10 +579,12 @@ const Stylists = () => {
             </Button>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => handleCloseDialog(setOpenAdd)}>
+            <Button onClick={() => handleCloseDialog(setOpenAdd)}
+              sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}>
               Cancel
             </Button>
-            <Button onClick={handleAddStylist} color="primary">
+            <Button onClick={handleAddStylist}
+            sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}>
               Save
             </Button>
           </DialogActions>
@@ -585,6 +663,27 @@ const Stylists = () => {
             />
             <TextField
               fullWidth
+              label="Password"
+              name="password"
+              type={showPasswordInEditForm ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              margin="dense"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPasswordInEditForm(!showPasswordInEditForm)}
+                      edge="end"
+                    >
+                      {showPasswordInEditForm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
               label="Role"
               name="role"
               value={formData.role}
@@ -623,10 +722,12 @@ const Stylists = () => {
             </Button>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => handleCloseDialog(setOpenEdit)}>
+            <Button onClick={() => handleCloseDialog(setOpenEdit)}
+              sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}>
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit} color="primary">
+            <Button onClick={handleSaveEdit} 
+            sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}>
               Save
             </Button>
           </DialogActions>
