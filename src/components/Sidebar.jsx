@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
+import { Link } from "react-router-dom";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+} from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ScheduleIcon from "@mui/icons-material/EventNote";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -20,60 +29,58 @@ const Sidebar = () => {
   };
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon /> },
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     {
       text: "Appointments",
       icon: <ScheduleIcon />,
       expandable: true,
       open: openAppointments,
       subItems: [
-        { text: "Today's Appointments" },
-        { text: "All Appointments" },
-        { text: "Cancel Requests" },
+        { text: "Today's Appointments", path: "/today-appointments" },
+        { text: "All Appointments", path: "/appointments" },
+        { text: "Cancel Requests", path: "/cancel-requests" },
       ],
     },
-    { text: "Services", icon: <ContentCutIcon /> },
-    { text: "Stylists", icon: <PeopleIcon /> },
-    { text: "Reviews", icon: <ReviewsIcon /> },
-    { text: "Gallery", icon: <PhotoLibraryIcon /> },
-    { text: "Inventory", icon: <InventoryIcon /> },
-    { text: "Applications", icon: <WorkIcon /> },
-    { text: "Report", icon: <AssessmentIcon /> },
+    { text: "Services", icon: <ContentCutIcon />, path: "/services" },
+    { text: "Stylists", icon: <PeopleIcon />, path: "/stylists" },
+    { text: "Reviews", icon: <ReviewsIcon />, path: "/reviews" },
+    { text: "Gallery", icon: <PhotoLibraryIcon />, path: "/gallery" },
+    { text: "Inventory", icon: <InventoryIcon />, path: "/inventory" },
+    { text: "Applications", icon: <WorkIcon />, path: "/applications" },
+    { text: "Report", icon: <AssessmentIcon />, path: "/report" },
   ];
 
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: 150, // Reduced sidebar width
+        width: 220,
         flexShrink: 0,
-        marginLeft: 0,
-        padding: 0,
         "& .MuiDrawer-paper": {
-          width: 220, // Reduced sidebar width
+          width: 220,
           boxSizing: "border-box",
-          backgroundColor: "#000", // Black background
-          color: "#fff", // White text
-          marginTop: "64px", // Push it below the header
-          height: "calc(100vh - 64px)", // Make it fit below header
+          backgroundColor: "#000",
+          color: "#fff",
+          marginTop: "64px",
+          height: "calc(100vh - 64px)",
           position: "relative",
-          padding: 0,
-          marginLeft: 0,
         },
       }}
     >
-      <List sx={{ padding: 0 }}>
+      <List>
         {menuItems.map((item, index) => (
           <React.Fragment key={index}>
-            <ListItem disablePadding sx={{ marginBottom: "10px", padding: 0 }}>
+            <ListItem disablePadding>
               <ListItemButton
                 onClick={item.expandable ? handleAppointmentsClick : null}
+                component={item.path ? Link : "div"} // Use Link only if path exists
+                to={item.path || "#"}
                 sx={{
                   padding: "10px",
                   borderRadius: "8px",
                   "&:hover": {
-                    backgroundColor: "#FE8DA1", // Light gold on hover
-                    color: "#000", // Change text color to black on hover
+                    backgroundColor: "#FE8DA1",
+                    color: "#000",
                   },
                 }}
               >
@@ -89,9 +96,11 @@ const Sidebar = () => {
                   {item.subItems.map((subItem, subIndex) => (
                     <ListItemButton
                       key={subIndex}
+                      component={Link}
+                      to={subItem.path}
                       sx={{
                         paddingLeft: 4,
-                        marginBottom: "8px", // Margin between subitems
+                        marginBottom: "8px",
                         "&:hover": {
                           backgroundColor: "#FE8DA1",
                           color: "#000",
@@ -112,29 +121,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-// Compare this snippet from src/components/Sidebar.jsx:
-// import React, { useState } from "react";
-// import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
-// import DashboardIcon from "@mui/icons-material/Dashboard";
-// import ScheduleIcon from "@mui/icons-material/EventNote";        
-// import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-// import ContentCutIcon from "@mui/icons-material/ContentCut";
-// import PeopleIcon from "@mui/icons-material/People";
-// import ReviewsIcon from "@mui/icons-material/RateReview";
-// import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-// import InventoryIcon from "@mui/icons-material/Inventory";
-// import WorkIcon from "@mui/icons-material/Work";
-// import AssessmentIcon from "@mui/icons-material/Assessment";
-//
-// const Sidebar = () => {
-//   const [openAppointments, setOpenAppointments] = useState(false);
-//
-//   const handleAppointmentsClick = () => {
-//     setOpenAppointments(!openAppointments);
-//   };
-//
-//   const menuItems = [
-//     { text: "Dashboard", icon: <DashboardIcon /> },
-//     {
-
