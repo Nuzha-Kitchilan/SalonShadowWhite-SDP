@@ -28,7 +28,7 @@ const App = () => {
 export default App; */}
 
 
-import React from "react";
+//import React from "react";
 //import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //import Layout from "./components/Layout";
 //import {AllApt, Applications,CancelReq, Dashboard, Reviews, Services, Stylists, Gallery, Reports, Inventory}  from './pages/Container';
@@ -53,14 +53,26 @@ import React from "react";
 
 
 
-import AppRoutes from "./pages/Routes";
+//import AppRoutes from "./pages/Routes";
+
+//function App() {
+  //return <AppRoutes />;
+//}
+
+//export default App;
+
+
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./pages/Routes" // Adjust the path if needed
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }
 
 export default App;
-
-
 
 
