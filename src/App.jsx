@@ -1,3 +1,33 @@
+{/*import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AppRoutes from "./pages/Routes";
+import Login from "./auth/Login";
+import ProtectedRoute from "./auth/ProtectedRoute"; // Add this import
+
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        
+        <Route path="/login" element={<Login />} />
+        
+        
+        <Route 
+          path="/*" 
+          element={
+            <ProtectedRoute>
+              <AppRoutes />
+            </ProtectedRoute>
+          } 
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App; */}
+
+
 import React from "react";
 //import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //import Layout from "./components/Layout";

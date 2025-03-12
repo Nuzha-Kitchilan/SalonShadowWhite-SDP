@@ -27,17 +27,17 @@ const Services = () => {
   const [addServiceModalOpen, setAddServiceModalOpen] = useState(false);
   const [newService, setNewService] = useState({
     service_name: "",
-    category_id: categories.length > 0 ? categories[0].category_id : "",
+    category_id: "",
     time_duration: "",
     price: ""
   });
 
-  const [categoryFilter, setCategoryFilter] = useState(""); // New state for category filter
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
-    fetchServices(categoryFilter); // Fetch services with the filter applied
+    fetchServices(categoryFilter);
     fetchCategories();
-  }, [categoryFilter]); // Fetch again whenever the category filter changes
+  }, [categoryFilter]);
 
   const fetchServices = async (category = "") => {
     try {
@@ -57,6 +57,14 @@ const Services = () => {
     try {
       const response = await axios.get("http://localhost:5001/api/categories");
       setCategories(response.data);
+      
+      // Set default category if categories exist
+      if (response.data.length > 0 && !newService.category_id) {
+        setNewService(prev => ({
+          ...prev,
+          category_id: response.data[0].category_id
+        }));
+      }
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -77,11 +85,16 @@ const Services = () => {
   // Handle edit form submission
   const handleEditSubmit = async () => {
     try {
-      await axios.put(`http://localhost:5001/api/services/${editService.service_id}`, editService);
+      await axios.put(`http://localhost:5001/api/services/${editService.service_id}`, {
+        ...editService,
+        time_duration: parseInt(editService.time_duration, 10),
+        price: parseFloat(editService.price)
+      });
       fetchServices(categoryFilter);
       setOpenModal(false);
     } catch (error) {
       console.error("Error updating service:", error);
+      alert(`Failed to update service: ${error.response ? error.response.data.message : error.message}`);
     }
   };
 
@@ -99,6 +112,7 @@ const Services = () => {
       setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Error deleting service:", error);
+      alert(`Failed to delete service: ${error.response ? error.response.data.message : error.message}`);
     }
   };
 
@@ -110,13 +124,46 @@ const Services = () => {
     }
 
     try {
-      await axios.post("http://localhost:5001/api/services", newService);
+      const serviceToAdd = {
+        ...newService,
+        time_duration: parseInt(newService.time_duration, 10),
+        price: parseFloat(newService.price),
+        admin_id: 1 // Replace with actual admin ID from authentication
+      };
+
+      await axios.post("http://localhost:5001/api/services", serviceToAdd);
       fetchServices(categoryFilter);
       setAddServiceModalOpen(false);
+      
+      // Reset the new service state
+      setNewService({
+        service_name: "",
+        category_id: categories.length > 0 ? categories[0].category_id : "",
+        time_duration: "",
+        price: ""
+      });
     } catch (error) {
       console.error("Error adding service:", error);
+      alert(`Failed to add service: ${error.response ? error.response.data.message : error.message}`);
     }
   };
+
+  // Reset new service modal when closed
+  const handleAddServiceModalClose = () => {
+    setAddServiceModalOpen(false);
+    setNewService({
+      service_name: "",
+      category_id: categories.length > 0 ? categories[0].category_id : "",
+      time_duration: "",
+      price: ""
+    });
+  };
+
+  // Filter services based on search term and category
+  const filteredServices = services.filter((service) => 
+    service.service_name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+    (categoryFilter === "" || service.category_name === categoryFilter)
+  );
 
   return (
     <Box sx={{ marginTop: "20px" }}>
@@ -128,21 +175,34 @@ const Services = () => {
         + Add Service
       </Button>
 
-      {/* Filter Category */}
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Filter by Category</InputLabel>
-        <Select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-        >
-          <MenuItem value="">All Categories</MenuItem>
-          {categories.map((category) => (
-            <MenuItem key={category.category_id} value={category.category_name}>
-              {category.category_name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {/* Search and Filter Container */}
+      <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
+        {/* Search Input */}
+        <TextField
+          fullWidth
+          label="Search Services"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search by service name"
+        />
+
+        {/* Category Filter */}
+        <FormControl fullWidth>
+          <InputLabel>Filter by Category</InputLabel>
+          <Select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.map((category) => (
+              <MenuItem key={category.category_id} value={category.category_name}>
+                {category.category_name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table>
@@ -157,7 +217,7 @@ const Services = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {services.map((service) => (
+            {filteredServices.map((service) => (
               <TableRow key={service.service_id}>
                 <TableCell>{service.service_id}</TableCell>
                 <TableCell>{service.service_name}</TableCell>
@@ -177,16 +237,9 @@ const Services = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
       {/* Add Service Modal */}
-      <Modal open={addServiceModalOpen} onClose={() => {
-        setAddServiceModalOpen(false);
-        setNewService({
-          service_name: "",
-          category_id: "",
-          time_duration: "",
-          price: ""
-        });
-      }}>
+      <Modal open={addServiceModalOpen} onClose={handleAddServiceModalClose}>
         <Box sx={{
           position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
           width: 400, bgcolor: "background.paper", boxShadow: 24, p: 4, borderRadius: "10px"
@@ -214,53 +267,17 @@ const Services = () => {
           <TextField
             required
             fullWidth margin="normal" label="Duration (mins)" name="time_duration"
-            value={newService.time_duration} onChange={(e) => setNewService({ ...newService, time_duration: e.target.value })}
+            type="number"
+            value={newService.time_duration} 
+            onChange={(e) => setNewService({ ...newService, time_duration: e.target.value })}
           />
           <TextField
             required
             fullWidth margin="normal" label="Price" name="price"
-            value={newService.price} onChange={(e) => setNewService({ ...newService, price: e.target.value })}
-          />
-          <Button
-            onClick={handleAddServiceSubmit}
-            variant="contained" sx={{ mt: 2, backgroundColor: "#FE8DA1", color: "#fff" }}
-          >
-            Add Service
-          </Button>
-        </Box>
-      </Modal>
-      {/* Add Service Modal */}
-      <Modal open={addServiceModalOpen} onClose={() => setAddServiceModalOpen(false)}>
-        <Box sx={{
-          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-          width: 400, bgcolor: "background.paper", boxShadow: 24, p: 4, borderRadius: "10px"
-        }}>
-          <h2>Add Service</h2>
-          <TextField
-            fullWidth margin="normal" label="Service Name" name="service_name"
-            value={newService.service_name} onChange={(e) => setNewService({ ...newService, service_name: e.target.value })}
-          />
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Category</InputLabel>
-            <Select
-              name="category_id"
-              value={newService.category_id}
-              onChange={(e) => setNewService({ ...newService, category_id: e.target.value })}
-            >
-              {categories.map((category) => (
-                <MenuItem key={category.category_id} value={category.category_id}>
-                  {category.category_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            fullWidth margin="normal" label="Duration (mins)" name="time_duration"
-            value={newService.time_duration} onChange={(e) => setNewService({ ...newService, time_duration: e.target.value })}
-          />
-          <TextField
-            fullWidth margin="normal" label="Price" name="price"
-            value={newService.price} onChange={(e) => setNewService({ ...newService, price: e.target.value })}
+            type="number"
+            inputProps={{ step: "0.01" }}
+            value={newService.price} 
+            onChange={(e) => setNewService({ ...newService, price: e.target.value })}
           />
           <Button
             onClick={handleAddServiceSubmit}
@@ -298,11 +315,16 @@ const Services = () => {
           </FormControl>
           <TextField
             fullWidth margin="normal" label="Duration (mins)" name="time_duration"
-            value={editService.time_duration} onChange={(e) => setEditService({ ...editService, time_duration: e.target.value })}
+            type="number"
+            value={editService.time_duration} 
+            onChange={(e) => setEditService({ ...editService, time_duration: e.target.value })}
           />
           <TextField
             fullWidth margin="normal" label="Price" name="price"
-            value={editService.price} onChange={(e) => setEditService({ ...editService, price: e.target.value })}
+            type="number"
+            inputProps={{ step: "0.01" }}
+            value={editService.price} 
+            onChange={(e) => setEditService({ ...editService, price: e.target.value })}
           />
           <Button
             onClick={handleEditSubmit}
