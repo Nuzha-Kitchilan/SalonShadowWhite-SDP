@@ -537,7 +537,7 @@ export default JoinOurTeam; */}
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   Container, 
   Grid, 
@@ -551,22 +551,21 @@ import {
   CircularProgress
 } from "@mui/material";
 import { School, Spa, MonetizationOn, AccessTime } from "@mui/icons-material";
-import { CloudUpload } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import heroImage from "../assets/join2.jpg"; // Import your hero image
-import thriveImage from "../assets/thrive.jpg"; // Import the thrive together image
-import backgroundImage from "../assets/download.jpeg"; // Import the background image
-import aestheticImage from "../assets/aesthetic.jpeg"; // Import the aesthetic image
-import axios from "axios"; // Import axios for API calls
+import heroImage from "../assets/join2.jpg";
+import thriveImage from "../assets/thrive.jpg";
+import backgroundImage from "../assets/download.jpeg";
+import aestheticImage from "../assets/aesthetic.jpeg";
+import axios from "axios";
 
 const JoinOurTeam = () => {
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    phone_numbers: "",  // This will be treated as a single string for now
-    resume: null,       // Keep this as null if you want to revert to file upload
-    reason: ""          // This corresponds to your "whyJoin" field
+    phone: "",
+    resumeUrl: "",
+    whyJoin: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -576,12 +575,12 @@ const JoinOurTeam = () => {
     severity: "success"
   });
   const [errors, setErrors] = useState({
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    phone_numbers: "",
-    resume: "",
-    reason: ""
+    phone: "",
+    resumeUrl: "",
+    whyJoin: ""
   });
 
   const handleChange = (e) => {
@@ -593,15 +592,19 @@ const JoinOurTeam = () => {
     }
   };
 
-  
-
   const validateForm = () => {
     let valid = true;
     const newErrors = { ...errors };
 
-    // Validate name
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+    // Validate firstName
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+      valid = false;
+    }
+    
+    // Validate lastName
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
       valid = false;
     }
 
@@ -638,80 +641,6 @@ const JoinOurTeam = () => {
     return valid;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-    
-  //   if (!validateForm()) {
-  //     setSnackbar({
-  //       open: true,
-  //       message: "Please fix the errors in the form",
-  //       severity: "error"
-  //     });
-  //     return;
-  //   }
-  
-  //   setLoading(true);
-  
-  //   try {
-  //     // Create form data for submission
-  //     const formDataToSubmit = new FormData();
-      
-  //     // Split name into first_name and last_name (assuming space separation)
-  //     const nameParts = formData.name.split(' ');
-  //     formDataToSubmit.append("first_name", nameParts[0] || '');
-  //     formDataToSubmit.append("last_name", nameParts.slice(1).join(' ') || '');
-      
-  //     formDataToSubmit.append("email", formData.email);
-  //     formDataToSubmit.append("phone_numbers", formData.phone);
-  //     formDataToSubmit.append("reason", formData.whyJoin);
-      
-  //     // If using resume URL approach (temporary)
-  //     if (formData.resumeUrl) {
-  //       // Create a File object from the URL string or a placeholder
-  //       const dummyFile = new File(['dummy content'], 'resume.pdf', { type: 'application/pdf' });
-  //       formDataToSubmit.append("resume", dummyFile);
-        
-  //       // Also send the URL as a separate field
-  //       formDataToSubmit.append("resume_url", formData.resumeUrl);
-  //     }
-      
-  //     // If using file upload
-  //     if (formData.resume) {
-  //       formDataToSubmit.append("resume", formData.resume);
-  //     }
-  
-  //     // Make sure to use the correct endpoint!
-  //     const response = await axios.post("http://localhost:5001/candidates/create", formDataToSubmit, {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data"
-  //       }
-  //     });
-  
-  //     // Handle success...
-      
-  //   } catch (error) {
-  //     console.error("Error submitting application:", error);
-      
-  //     // Get detailed error information
-  //     if (error.response) {
-  //       console.error("Server responded with:", {
-  //         status: error.response.status,
-  //         data: error.response.data
-  //       });
-  //     }
-      
-  //     // Handle error cases
-  //     setSnackbar({
-  //       open: true,
-  //       message: error.response?.data?.message || "Failed to submit application. Please try again later.",
-  //       severity: "error"
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -727,13 +656,10 @@ const JoinOurTeam = () => {
     setLoading(true);
   
     try {
-      // Create regular JSON payload
-      const nameParts = formData.name.split(' ');
-  
-      // Handle case where there is no last name
+      // Create payload using firstName and lastName directly
       const payload = {
-        first_name: nameParts[0] || '',
-        last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ') : ' ', // Only take remaining parts as last name
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         email: formData.email,
         phone_numbers: Array.isArray(formData.phone) ? formData.phone : [formData.phone],
         reason: formData.whyJoin,
@@ -787,8 +713,6 @@ const JoinOurTeam = () => {
     }
   };
   
-  
-  
   const handleCloseSnackbar = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -796,7 +720,7 @@ const JoinOurTeam = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
 
-  // Improved line drawing animation variants
+  // Line drawing animation variants
   const lineVariants = {
     hidden: { 
       width: 0,
@@ -814,7 +738,16 @@ const JoinOurTeam = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', margin: 0, padding: 0 }}>
+    <Box 
+      sx={{ 
+        width: '100vw', 
+        minHeight: '100vh',
+        maxWidth: '100%', // Prevent horizontal overflow
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       {/* Hero Section */}
       <Box
         sx={{
@@ -823,16 +756,16 @@ const JoinOurTeam = () => {
           backgroundImage: `url(${heroImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          color: "#8B4513", // Set color to SaddleBrown
-          width: "100vw",
-          marginLeft: 'calc(-50vw + 50%)', // Center the box
-          marginRight: 'calc(-50vw + 50%)',
+          color: "#8B4513",
+          width: "100%",
+          position: "relative",
           boxSizing: 'border-box',
+          flexShrink: 0, // Prevent shrinking
         }}
       >
         <Container>
           <motion.div
-            initial={{ opacity: 0, y: 40 }} // Start lower for smoother upward motion
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 2,
@@ -845,11 +778,11 @@ const JoinOurTeam = () => {
               variant="h3"
               gutterBottom
               sx={{
-                fontFamily: "'Playfair Display', serif", // Using Playfair Display font
-                fontSize: "3rem",
+                fontFamily: "'Playfair Display', serif",
+                fontSize: { xs: "2rem", sm: "3rem" }, // Responsive font size
                 fontWeight: "bold",
                 fontStyle: "italic",
-                color: "#8B4513", // SaddleBrown color for the text
+                color: "#8B4513",
                 textShadow: "2px 2px 4px rgba(255, 255, 255, 0.9)"
               }}
             >
@@ -872,28 +805,29 @@ const JoinOurTeam = () => {
         </Container>
       </Box>
 
-      {/* Combined Gradient Section for "What You Will Get" and "Thrive Together" */}
+      {/* Combined Gradient Section */}
       <Box
         sx={{
           background: "linear-gradient(to bottom, rgba(255, 243, 224, 0.3), rgba(159, 137, 130, 0.4), rgba(249, 249, 249, 0.2))",
-          position: "relative", // Added for absolute positioning of aesthetic image
+          position: "relative",
+          width: "100%",
+          overflow: "hidden", // Prevent child elements from causing overflow
+          flexGrow: 1, // Allow this section to grow and fill space
         }}
       >
-        {/* Aesthetic Image - positioned to the left side between the two sections */}
+        {/* Aesthetic Image */}
         <Box
           sx={{
             position: "absolute",
             left: 0,
             top: 0,
             bottom: 0,
-            width: "45%", // Width relative to container
-            height: "100%", // Full height of the gradient container
+            width: "45%",
+            height: "100%",
             zIndex: 0,
-            opacity: 0.2, // Low opacity as requested
-            pointerEvents: "none", // Ensures the image doesn't interfere with clicks
-            "@media (max-width: 900px)": {
-              display: "none", // Hide on smaller screens
-            },
+            opacity: 0.2,
+            pointerEvents: "none",
+            display: { xs: "none", md: "block" } // Responsive display
           }}
         >
           <img
@@ -902,7 +836,7 @@ const JoinOurTeam = () => {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover", // Ensures the image covers the entire box
+              objectFit: "cover",
             }}
           />
         </Box>
@@ -911,8 +845,8 @@ const JoinOurTeam = () => {
         <Box
           sx={{
             padding: "3rem 0",
-            position: "relative", // For z-index
-            zIndex: 1, // Ensures content stays above the aesthetic image
+            position: "relative",
+            zIndex: 1,
           }}
         >
           <Container>
@@ -921,17 +855,17 @@ const JoinOurTeam = () => {
             </Typography>
             <Grid container spacing={3}>
               {/* Competitive Salary */}
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Paper
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
                     backgroundColor: "#fff3e0",
                     borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
                     }
                   }}
                 >
@@ -944,17 +878,17 @@ const JoinOurTeam = () => {
               </Grid>
 
               {/* Education & Growth */}
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Paper
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
                     backgroundColor: "#fff3e0",
                     borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
                     }
                   }}
                 >
@@ -967,17 +901,17 @@ const JoinOurTeam = () => {
               </Grid>
 
               {/* Beauty with Benefits */}
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Paper
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
                     backgroundColor: "#fff3e0",
                     borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
                     }
                   }}
                 >
@@ -990,17 +924,17 @@ const JoinOurTeam = () => {
               </Grid>
 
               {/* Flexible Hours */}
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Paper
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
                     backgroundColor: "#fff3e0",
                     borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
                     }
                   }}
                 >
@@ -1015,12 +949,13 @@ const JoinOurTeam = () => {
           </Container>
         </Box>
 
-        {/* Thrive Together Section (still within the gradient container) */}
+        {/* Thrive Together Section */}
         <Box
           sx={{
             padding: "3rem 0",
-            position: "relative", // For z-index
-            zIndex: 1, // Ensures content stays above the aesthetic image
+            position: "relative",
+            zIndex: 1,
+            width: "100%",
           }}
         >
           <Container>
@@ -1043,20 +978,18 @@ const JoinOurTeam = () => {
                 </Box>
               </Grid>
               <Grid item xs={12} md={6} sx={{ position: "relative" }}>
+                {/* Modified background box to prevent overflow */}
                 <Box
                   sx={{
                     position: "absolute",
                     top: 0,
-                    left: "-550px", // Moves the box further left beyond the image
-                    width: "calc(100% + 550px)", // Extends it more to the left
+                    left: { xs: 0, md: "-20%" }, // Responsive positioning
+                    width: { xs: "100%", md: "140%" }, // Responsive width
                     height: "120%",
                     backgroundColor: "#9F8982",
                     zIndex: -1,
                     borderRadius: "10px",
-                    paddingLeft: "1rem", // Keeps text well-positioned
-                    boxSizing: "border-box",
-                    textAlign: "left",
-                    opacity: 0.85, // Make slightly more transparent to let gradient show through
+                    opacity: 0.85,
                   }}
                 />
                 <Box
@@ -1064,7 +997,7 @@ const JoinOurTeam = () => {
                     padding: "2rem",
                     borderRadius: "10px",
                     position: "relative",
-                    marginLeft: "-100px", // Keeps text well-positioned
+                    marginLeft: { xs: 0, md: "-10%" }, // Responsive margin
                   }}
                 >
                   <Typography
@@ -1091,13 +1024,15 @@ const JoinOurTeam = () => {
         </Box>
       </Box>
 
-      {/* Application Form Section with Background Image */}
+      {/* Application Form Section */}
       <Box
         id="application-form"
         sx={{
           padding: "3rem 0",
           textAlign: "center",
           position: "relative",
+          width: "100%",
+          flexShrink: 0, // Prevent shrinking
           "&::before": {
             content: '""',
             position: "absolute",
@@ -1108,7 +1043,7 @@ const JoinOurTeam = () => {
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: 0.15, // Low opacity as requested
+            opacity: 0.15,
             zIndex: -1,
           },
         }}
@@ -1123,13 +1058,12 @@ const JoinOurTeam = () => {
                 color: "#8B4513",
                 position: "relative",
                 zIndex: 1,
-                marginBottom: "0.5rem" // Add space below the text for the line
+                marginBottom: "0.5rem"
               }}
             >
               Join Our Team
             </Typography>
             
-            {/* Improved animated underline using motion.div instead of svg */}
             <motion.div
               initial="hidden"
               animate="visible"
@@ -1147,19 +1081,45 @@ const JoinOurTeam = () => {
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
-                  label="Name"
+                  label="First Name"
                   variant="outlined"
-                  name="name"
-                  value={formData.name}
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleChange}
-                  error={!!errors.name}
-                  helperText={errors.name}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
                   disabled={loading}
                   required
                   sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
+                    backgroundColor: "rgba(249, 249, 249, 0.9)",
                     borderRadius: "8px",
-                    padding: "12px",
+                    "& .MuiOutlinedInput-root": {
+                      borderColor: "#8B4513",
+                    },
+                    "& .MuiOutlinedInput-root.Mui-focused": {
+                      borderColor: "#6A3B1F",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#6A3B1F",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  variant="outlined"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
+                  disabled={loading}
+                  required
+                  sx={{
+                    backgroundColor: "rgba(249, 249, 249, 0.9)",
+                    borderRadius: "8px",
                     "& .MuiOutlinedInput-root": {
                       borderColor: "#8B4513",
                     },
@@ -1185,9 +1145,8 @@ const JoinOurTeam = () => {
                   disabled={loading}
                   required
                   sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
+                    backgroundColor: "rgba(249, 249, 249, 0.9)",
                     borderRadius: "8px",
-                    padding: "12px",
                     "& .MuiOutlinedInput-root": {
                       borderColor: "#8B4513",
                     },
@@ -1213,9 +1172,8 @@ const JoinOurTeam = () => {
                   disabled={loading}
                   required
                   sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
+                    backgroundColor: "rgba(249, 249, 249, 0.9)",
                     borderRadius: "8px",
-                    padding: "12px",
                     "& .MuiOutlinedInput-root": {
                       borderColor: "#8B4513",
                     },
@@ -1228,37 +1186,34 @@ const JoinOurTeam = () => {
                   }}
                 />
               </Grid>
-              {/* Replace the file upload button with a URL input field */}
-<Grid item xs={12} md={6}>
-  <TextField
-    fullWidth
-    label="Resume URL (link to your resume)"
-    variant="outlined"
-    name="resumeUrl"
-    value={formData.resumeUrl}
-    onChange={handleChange}
-    error={!!errors.resumeUrl}
-    helperText={errors.resumeUrl}
-    disabled={loading}
-    required
-    placeholder="https://example.com/myresume.pdf"
-    sx={{
-      backgroundColor: "rgba(249, 249, 249, 0.9)",
-      borderRadius: "8px",
-      padding: "12px",
-      "& .MuiOutlinedInput-root": {
-        borderColor: "#8B4513",
-      },
-      "& .MuiOutlinedInput-root.Mui-focused": {
-        borderColor: "#6A3B1F",
-      },
-      "& .MuiInputLabel-root.Mui-focused": {
-        color: "#6A3B1F",
-      },
-    }}
-  />
-</Grid>
-
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="Resume URL (link to your resume)"
+                  variant="outlined"
+                  name="resumeUrl"
+                  value={formData.resumeUrl}
+                  onChange={handleChange}
+                  error={!!errors.resumeUrl}
+                  helperText={errors.resumeUrl}
+                  disabled={loading}
+                  required
+                  placeholder="https://example.com/myresume.pdf"
+                  sx={{
+                    backgroundColor: "rgba(249, 249, 249, 0.9)",
+                    borderRadius: "8px",
+                    "& .MuiOutlinedInput-root": {
+                      borderColor: "#8B4513",
+                    },
+                    "& .MuiOutlinedInput-root.Mui-focused": {
+                      borderColor: "#6A3B1F",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#6A3B1F",
+                    },
+                  }}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -1274,9 +1229,8 @@ const JoinOurTeam = () => {
                   disabled={loading}
                   required
                   sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
+                    backgroundColor: "rgba(249, 249, 249, 0.9)",
                     borderRadius: "8px",
-                    padding: "12px",
                     "& .MuiOutlinedInput-root": {
                       borderColor: "#8B4513",
                     },
