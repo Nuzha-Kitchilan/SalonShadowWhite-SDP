@@ -374,7 +374,8 @@ const Services = () => {
     service_name: "",
     category_id: "",
     time_duration: "",
-    price: ""
+    price: "",
+    description: ""
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -384,7 +385,8 @@ const Services = () => {
     service_name: "",
     category_id: "",
     time_duration: "",
-    price: ""
+    price: "",
+    description: ""
   });
 
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -439,11 +441,13 @@ const Services = () => {
 
   // Handle edit form submission
   const handleEditSubmit = async () => {
+    console.log("Before submitting:", editService); // Debugging log
     try {
       await axios.put(`http://localhost:5001/api/services/${editService.service_id}`, {
         ...editService,
         time_duration: parseInt(editService.time_duration, 10),
-        price: parseFloat(editService.price)
+        price: parseFloat(editService.price),
+        description: editService.description || ""
       });
       fetchServices(categoryFilter);
       setOpenModal(false);
@@ -473,7 +477,7 @@ const Services = () => {
 
   // Handle Add Service Form submission
   const handleAddServiceSubmit = async () => {
-    if (!newService.service_name || !newService.category_id || !newService.time_duration || !newService.price) {
+    if (!newService.service_name || !newService.category_id || !newService.time_duration || !newService.price || !newService.description) {
       alert("All fields are required.");
       return;
     }
@@ -496,7 +500,8 @@ const Services = () => {
           service_name: "",
           category_id: categories.length > 0 ? categories[0].category_id : "",
           time_duration: "",
-          price: ""
+          price: "",
+          description: ""
         });
       } else {
         throw new Error("Failed to add service");
@@ -514,7 +519,8 @@ const Services = () => {
       service_name: "",
       category_id: categories.length > 0 ? categories[0].category_id : "",
       time_duration: "",
-      price: ""
+      price: "",
+      description: ""
     });
   };
 
@@ -586,6 +592,7 @@ const Services = () => {
               <TableCell>Category</TableCell>
               <TableCell>Duration</TableCell>
               <TableCell>Price</TableCell>
+              <TableCell>Description</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -597,6 +604,7 @@ const Services = () => {
                 <TableCell>{service.category_name}</TableCell>
                 <TableCell>{service.time_duration}</TableCell>
                 <TableCell>{service.price}</TableCell>
+                <TableCell>{service.description}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => handleEdit(service)} style={{ color: "green" }}>
                     <EditIcon />
@@ -651,6 +659,13 @@ const Services = () => {
             onChange={(e) => setNewService({ ...newService, price: e.target.value })}
             sx={{ marginBottom: "10px" }}
           />
+          <TextField
+            label="Description"
+            fullWidth
+            value={newService.description}
+            onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+            sx={{ marginBottom: "10px" }}
+          />
           <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
             <Button variant="outlined" onClick={handleAddServiceModalClose}>
               Cancel
@@ -700,6 +715,13 @@ const Services = () => {
             type="number"
             value={editService.price}
             onChange={(e) => setEditService({ ...editService, price: e.target.value })}
+            sx={{ marginBottom: "10px" }}
+          />
+          <TextField
+            label="Description"
+            fullWidth
+            value={editService.description || ""}
+            onChange={(e) => setEditService({ ...editService, description: e.target.value })}
             sx={{ marginBottom: "10px" }}
           />
           <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
