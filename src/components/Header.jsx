@@ -38,5 +38,3 @@ const Header = () => {
 };
 
 export default Header;
-// Compare this snippet from src/components/Header.jsx:
-// import React from "react";
