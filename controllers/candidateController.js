@@ -258,7 +258,7 @@ const uploadResume = async (filePath) => {
   }
 };
 
-// Create a new candidate along with phone numbers and resume upload
+// Create a new candidate 
 const createCandidate = async (req, res) => {
   const { first_name, last_name, email, phone_numbers, reason, resume_url, status } = req.body;
 
