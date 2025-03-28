@@ -272,7 +272,7 @@ const ContactPage = () => {
             </motion.svg>
           </Box>
 
-          {/* Added more margin-top to create space between heading and subtitle */}
+          
           <Typography
             variant="subtitle1"
             sx={{
