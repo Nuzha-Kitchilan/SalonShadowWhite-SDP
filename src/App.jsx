@@ -8,6 +8,9 @@ import Stylists from "./pages/Stylists";
 import Contact from "./pages/Contact";
 import Join from "./pages/Join";
 import Book from "./pages/Book";
+import Login from "./pages/Login"; 
+import Register from "./pages/Register"; 
+
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
           <Route path="join" element={<Join />} />
           <Route path="book" element={<Book />} />
         </Route>
+        <Route path="/login" element={<Login />} /> 
+        <Route path="/register" element={<Register />} />
+
       </Routes>
     </Router>
   );

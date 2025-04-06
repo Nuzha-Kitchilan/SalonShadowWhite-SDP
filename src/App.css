@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Dream Avenue';
+    src: url('./assets/fonts/DreamAvenue.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  body {
+    font-family: 'Dream Avenue', sans-serif;
+  }
+  
