@@ -1,46 +1,14 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-  Card,
-  CardContent,
-  Grid,
-  Box,
-} from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import React from "react";
+import { Box, Typography, Container, List, ListItem, ListItemText, ListItemIcon, Button, Divider } from "@mui/material";
 import { motion } from "framer-motion";
-import heroImage from "../assets/book.png";
-
-const services = ["Haircut", "Facial", "Manicure", "Pedicure", "Hair Color"];
-const stylists = ["Any Available", "Stylist A", "Stylist B", "Stylist C"];
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import CancelIcon from "@mui/icons-material/Cancel";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import stylistImage from "../assets/appointment.png";  // Header image
+import bookingImage from "../assets/booking.jpg";  // Policies image
+import SpecialRequestForm from "../components/SpecialRequest"; // 👈 New form component
 
 const AppointmentBooking = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    service: "",
-    stylist: "",
-    date: null,
-    time: null,
-    notes: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
-
   return (
     <Box 
       sx={{ 
@@ -52,201 +20,178 @@ const AppointmentBooking = () => {
         bgcolor: "#faf5f0"
       }}
     >
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {/* Hero Section - Full width */}
-        <Box 
+      {/* Header Section */}
+      <Box sx={{ width: "100%", position: "relative", overflow: "hidden" }}>
+        <Box
           sx={{
-            width: "100%",
+            backgroundImage: `url(${stylistImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            height: { xs: "300px", md: "400px" },
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             position: "relative",
-            overflow: "hidden"
+            flexDirection: "column"
           }}
         >
-          <Box
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2 }}
+            style={{ marginTop: "250px" }}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                backgroundColor: "#d3d3d3",
+                color: "#333",
+                px: 4,
+                py: 1.5,
+                fontWeight: "bold",
+                fontSize: "1rem",
+                borderRadius: "30px",
+                '&:hover': {
+                  backgroundColor: "#c0c0c0"
+                }
+              }}
+            >
+              Book Now
+            </Button>
+          </motion.div>
+        </Box>
+      </Box>
+
+      {/* Salon Policies Section */}
+      <Box sx={{ width: "100%", bgcolor: "#faf5f0", py: 6 }}>
+        <Container maxWidth="lg">
+          <Box 
             sx={{
-              backgroundImage: `linear-gradient(to right, rgba(139, 69, 19, 0.1), rgba(255, 255, 255, 0)), url(${heroImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              height: { xs: "250px", md: "300px" },
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
+              flexDirection: { xs: "column", md: "row" },
+              borderRadius: 2,
+              overflow: "hidden",
+              boxShadow: 3,
             }}
           >
-            {/* Animated quote and subquote */}
-            <motion.div
-              style={{
-                textAlign: "center",
-                zIndex: 2,
+            {/* Image */}
+            <Box 
+              sx={{
+                flex: { xs: "1 1 100%", md: "1 1 40%" },
+                position: "relative",
+                minHeight: { xs: "300px", md: "auto" },
+                "& img": {
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  display: "block"
+                }
+              }}
+            >
+              <img src={bookingImage} alt="Makeup artist applying eye makeup" />
+            </Box>
+
+            {/* Text Content */}
+            <Box 
+              sx={{
+                flex: { xs: "1 1 100%", md: "1 1 60%" },
+                bgcolor: "#b8a99a",
+                p: { xs: 3, sm: 4, md: 5 },
+                color: "white",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center"
               }}
             >
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.5, type: "spring", stiffness: 100 }}
-                style={{
-                  color: "#8B4513", // SaddleBrown - a rich brown color
-                  fontFamily: "'Playfair Display', serif", // Fancy serif font
-                  fontSize: "32px",
-                  fontWeight: "bold",
-                  fontStyle: "italic",
-                  textShadow: "2px 2px 4px rgba(255, 255, 255, 0.9)",
-                  lineHeight: "1.2",
-                  marginBottom: "15px"
-                }}
+                transition={{ duration: 0.8 }}
               >
-                "Beauty begins the moment you decide to be yourself."
+                <Typography variant="h5" component="h3" sx={{ fontWeight: 500, mb: 2 }}>
+                  Our Booking Policies
+                </Typography>
+
+                <List sx={{ mb: 3 }}>
+                  <ListItem sx={{ pb: 1 }}>
+                    <ListItemIcon sx={{ color: "white", minWidth: "40px" }}>
+                      <EventNoteIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Appointments should be booked at least 24 hours in advance." />
+                  </ListItem>
+                  <ListItem sx={{ pb: 1 }}>
+                    <ListItemIcon sx={{ color: "white", minWidth: "40px" }}>
+                      <CancelIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Cancellation should be done 48 hours prior to the appointment." />
+                  </ListItem>
+                  <ListItem sx={{ pb: 1 }}>
+                    <ListItemIcon sx={{ color: "white", minWidth: "40px" }}>
+                      <AccessTimeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Arrive 10 minutes before your scheduled appointment." />
+                  </ListItem>
+                </List>
+
+                <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", my: 3 }} />
+
+                <Typography variant="h6" component="h4" sx={{ fontWeight: 500, mb: 2 }}>
+                  Need a Special Booking?
+                </Typography>
+
+                <Typography variant="body1" sx={{ mb: 3, fontSize: { xs: "0.95rem", sm: "1rem" } }}>
+                  Need us during non-business hours? We understand that special occasions sometimes require flexibility. If you require:
+                </Typography>
+
+                <List sx={{ mb: 3, pl: 2 }}>
+                  <ListItem sx={{ py: 0.5, display: 'list-item' }}><Typography variant="body1">Early morning appointments</Typography></ListItem>
+                  <ListItem sx={{ py: 0.5, display: 'list-item' }}><Typography variant="body1">After-hours services</Typography></ListItem>
+                  <ListItem sx={{ py: 0.5, display: 'list-item' }}><Typography variant="body1">On-location makeup or styling</Typography></ListItem>
+                  <ListItem sx={{ py: 0.5, display: 'list-item' }}><Typography variant="body1">Bridal party packages</Typography></ListItem>
+                  <ListItem sx={{ py: 0.5, display: 'list-item' }}><Typography variant="body1">Special event group bookings</Typography></ListItem>
+                </List>
+
+                <Typography variant="body1" sx={{ fontSize: { xs: "0.95rem", sm: "1rem" } }}>
+                  Please contact us, and our team will get back to you within 24–48 hours to discuss availability and pricing options.
+                </Typography>
               </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 1.5 }}
-                style={{
-                  fontFamily: "'Montserrat', sans-serif",
-                  fontSize: "18px",
-                  color: "#a67c52",
-                  fontWeight: "500",
-                  textShadow: "1px 1px 2px rgba(255, 255, 255, 0.8)",
-                }}
-              >
-                So what's holding you back?
-              </motion.div>
-            </motion.div>
+            </Box>
           </Box>
-        </Box>
-
-        <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
-          {/* Rules Section */}
-          <Card sx={{ mt: 4, p: 3, backgroundColor: "#f8f8f8" }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Salon Booking Rules
-              </Typography>
-              <ul>
-                <li>Appointments should be booked at least 24 hours in advance.</li>
-                <li>Cancellation should be done 48 hours prior to the appointment.</li>
-                <li>Arrive 10 minutes before your scheduled appointment.</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Booking Form */}
-          <Card sx={{ mt: 4, p: { xs: 2, sm: 3, md: 4 }, mb: 4 }}>
-            <Typography variant="h5" align="center" gutterBottom>
-              Book an Appointment
-            </Typography>
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Full Name"
-                    name="name"
-                    fullWidth
-                    required
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Email"
-                    name="email"
-                    fullWidth
-                    required
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Phone Number"
-                    name="phone"
-                    fullWidth
-                    required
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    select
-                    label="Select Service"
-                    name="service"
-                    fullWidth
-                    required
-                    onChange={handleChange}
-                  >
-                    {services.map((service, index) => (
-                      <MenuItem key={index} value={service}>
-                        {service}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    select
-                    label="Select Stylist"
-                    name="stylist"
-                    fullWidth
-                    onChange={handleChange}
-                  >
-                    {stylists.map((stylist, index) => (
-                      <MenuItem key={index} value={stylist}>
-                        {stylist}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <DatePicker
-                    label="Select Date"
-                    value={formData.date}
-                    onChange={(date) => setFormData({ ...formData, date })}
-                    renderInput={(params) => <TextField {...params} fullWidth />}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TimePicker
-                    label="Select Time"
-                    value={formData.time}
-                    onChange={(time) => setFormData({ ...formData, time })}
-                    renderInput={(params) => <TextField {...params} fullWidth />}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Additional Notes"
-                    name="notes"
-                    fullWidth
-                    multiline
-                    rows={3}
-                    onChange={handleChange}
-                  />
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ mt: 3, display: "block", mx: "auto" }}
-              >
-                Submit
-              </Button>
-            </form>
-          </Card>
         </Container>
-      </LocalizationProvider>
-      
+      </Box>
+
+      {/* 👇 Special Request Form Component (Centering added) */}
+      <Box sx={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        mt: 4
+      }}>
+        <Box sx={{
+          maxWidth: '800px',
+          width: '100%',
+          padding: '20px',
+          backgroundColor: 'white',
+          borderRadius: 2,
+          boxShadow: 3
+        }}>
+          <SpecialRequestForm />
+        </Box>
+      </Box>
+
       {/* Global Styles */}
       <style>
         {`
-        * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-        }
-        body {
-          overflow-x: hidden;
-        }
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          }
+          body {
+            overflow-x: hidden;
+          }
         `}
       </style>
     </Box>
