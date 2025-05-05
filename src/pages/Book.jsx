@@ -1,12 +1,12 @@
 import React from "react";
-import { Box, Typography, Container, List, ListItem, ListItemText, ListItemIcon, Button, Divider } from "@mui/material";
+import { Box, Typography, Container, List, ListItem, ListItemText, ListItemIcon, Divider } from "@mui/material";
 import { motion } from "framer-motion";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import stylistImage from "../assets/appointment.png";  // Header image
-import bookingImage from "../assets/booking.jpg";  // Policies image
-import SpecialRequestForm from "../components/SpecialRequest"; // 👈 New form component
+import stylistImage from "../assets/appointment.png";
+import bookingImage from "../assets/booking.jpg";
+import BookNowModal from "../components/modals/BookNow";
 
 const AppointmentBooking = () => {
   return (
@@ -35,30 +35,13 @@ const AppointmentBooking = () => {
             flexDirection: "column"
           }}
         >
+          {/* Book Now Button with Motion */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2 }}
-            style={{ marginTop: "250px" }}
+            transition={{ duration: 0.8 }}
           >
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                backgroundColor: "#d3d3d3",
-                color: "#333",
-                px: 4,
-                py: 1.5,
-                fontWeight: "bold",
-                fontSize: "1rem",
-                borderRadius: "30px",
-                '&:hover': {
-                  backgroundColor: "#c0c0c0"
-                }
-              }}
-            >
-              Book Now
-            </Button>
+            <BookNowModal />
           </motion.div>
         </Box>
       </Box>
@@ -160,25 +143,6 @@ const AppointmentBooking = () => {
             </Box>
           </Box>
         </Container>
-      </Box>
-
-      {/* 👇 Special Request Form Component (Centering added) */}
-      <Box sx={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        mt: 4
-      }}>
-        <Box sx={{
-          maxWidth: '800px',
-          width: '100%',
-          padding: '20px',
-          backgroundColor: 'white',
-          borderRadius: 2,
-          boxShadow: 3
-        }}>
-          <SpecialRequestForm />
-        </Box>
       </Box>
 
       {/* Global Styles */}

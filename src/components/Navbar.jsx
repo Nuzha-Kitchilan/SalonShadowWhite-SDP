@@ -138,6 +138,10 @@
 
 // export default Navbar;
 
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
@@ -172,19 +176,21 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const handleProfileClick = () => {
+    handleMenuClose();
+    navigate("/profile");
+  };
+
   // Check login status when component mounts
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          // Verify token is valid by making a simple request
-          // You can use a lightweight endpoint or decode the JWT locally
           const tokenData = parseJwt(token);
           setIsLoggedIn(true);
           setUsername(tokenData.username || "User");
         } catch (error) {
-          // Invalid token
           localStorage.removeItem("token");
           setIsLoggedIn(false);
         }
@@ -209,7 +215,7 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#000" }}> {/* Black Header */}
+    <AppBar position="static" sx={{ backgroundColor: "#000" }}>
       <Toolbar>
         {/* Logo as Home Button */}
         <Typography
@@ -222,7 +228,7 @@ const Navbar = () => {
             color: "white",
             fontWeight: "bold",
             transition: "0.3s",
-            "&:hover": { color: "#a36a4f" }, // Logo Hover Effect
+            "&:hover": { color: "#a36a4f" },
           }}
         >
           Salon Logo
@@ -238,7 +244,7 @@ const Navbar = () => {
               to={path}
               sx={{
                 transition: "0.3s",
-                "&:hover": { color: "#a36a4f" }, // Hover Effect for All Links
+                "&:hover": { color: "#a36a4f" },
               }}
             >
               {path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
@@ -246,7 +252,7 @@ const Navbar = () => {
           )
         )}
 
-        {/* Book Now Button - Outlined with Hover Effect */}
+        {/* Book Now Button */}
         <Button
           component={Link}
           to="/book"
@@ -294,6 +300,7 @@ const Navbar = () => {
                 horizontal: 'right',
               }}
             >
+              <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </>

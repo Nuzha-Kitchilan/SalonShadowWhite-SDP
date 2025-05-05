@@ -10,6 +10,8 @@ import Join from "./pages/Join";
 import Book from "./pages/Book";
 import Login from "./pages/Login"; 
 import Register from "./pages/Register"; 
+import Profile from "./pages/Profile";
+
 
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="join" element={<Join />} />
           <Route path="book" element={<Book />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
         <Route path="/login" element={<Login />} /> 
         <Route path="/register" element={<Register />} />
