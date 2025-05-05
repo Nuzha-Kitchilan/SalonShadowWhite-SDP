@@ -114,9 +114,9 @@ router.get('/gallery', galleryController.getAllImages);
 router.post('/gallery', upload.single('image'), galleryController.uploadImage);
 
 // Route for updating image metadata (title & description)
-router.put('/gallery/:image_id', galleryController.updateImage);
+router.put('/gallery/:id', galleryController.updateImage);
 
 // Route for deleting an image
-router.delete('/gallery/:image_id', galleryController.deleteImage);
+router.delete('/gallery/:id', galleryController.deleteImage);
 
 module.exports = router;

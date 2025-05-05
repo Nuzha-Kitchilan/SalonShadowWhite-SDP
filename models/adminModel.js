@@ -102,7 +102,7 @@ const Admin = {
     const sql = 'SELECT * FROM admins WHERE username = ?';
     try {
       const [results] = await db.execute(sql, [username]);
-      return results[0];  // Return the first result if it exists
+      return results[0] || null; // Return the first result if it exists
     } catch (err) {
       console.error('Error in findByUsername:', err);
       throw err;  // Re-throw the error so it can be handled at the controller level
@@ -191,6 +191,26 @@ const Admin = {
       throw new Error('Admin not found');
     }
   },
-};
 
+
+
+
+findUserByEmail: async (email) => {
+  const [admin] = await db.query('SELECT * FROM Admins WHERE email = ?', [email]);
+  const [customer] = await db.query('SELECT * FROM Customer WHERE email = ?', [email]);
+
+  return admin.length > 0 || customer.length > 0;
+},
+
+updateAdminPassword: async (email, newPassword) => {
+  const [result] = await db.query('UPDATE Admins SET password = ? WHERE email = ?', [newPassword, email]);
+  return result.affectedRows > 0;
+},
+
+updateCustomerPassword: async (email, newPassword) => {
+  const [result] = await db.query('UPDATE Customer SET password = ? WHERE email = ?', [newPassword, email]);
+  return result.affectedRows > 0;
+}
+
+};
 module.exports = Admin;

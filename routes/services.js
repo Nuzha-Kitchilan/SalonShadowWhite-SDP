@@ -1,25 +1,3 @@
-{/*const express = require("express");
-const router = express.Router();
-const servicesController = require("../controllers/serviceController"); // Import controller
-
-// Get all services with category names
-router.get("/services", servicesController.getAllServices);
-
-// Get all categories (for dropdown in the edit form)
-router.get("/categories", servicesController.getAllCategories);
-
-// Add a service
-router.post("/services", servicesController.addService);
-
-// Update a service
-router.put("/services/:id", servicesController.updateService);
-
-// Delete a service
-router.delete("/services/:id", servicesController.deleteService);
-
-module.exports = router; */}
-
-
 const express = require('express');
 const router = express.Router();
 const serviceController = require('../controllers/serviceController');
@@ -32,5 +10,16 @@ router.delete('/services/:id', serviceController.deleteService); // Delete a ser
 
 // Routes for categories
 router.get('/categories', serviceController.getAllCategories); // Get all service categories
+
+router.get('/services/category/:category_id', serviceController.getServicesByCategoryId);
+
+// Add this line with your other category routes
+router.post('/categories', serviceController.addCategory); // Add a new category
+
+router.put('/categories/:id', serviceController.updateCategory);
+
+
+router.delete('/categories/:id', serviceController.deleteCategory);
+
 
 module.exports = router;

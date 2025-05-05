@@ -29,14 +29,21 @@ module.exports = router; */}
 
 const express = require('express');
 const router = express.Router();
-const { validateRegisterAdmin, validateLoginAdmin } = require('../middleware/validationMiddleware');
+const { 
+  validateRegisterAdmin, 
+  validateLogin 
+} = require('../middleware/validationMiddleware');
 const { 
   registerAdmin, 
-  loginAdmin, 
+  loginUser, 
   updateAdmin, 
   updatePassword, 
   deleteAdmin, 
-  getAllAdmins 
+  getAllAdmins,
+  getAdminProfile,
+  forgotPassword,
+  verifyOTP,
+  resetPassword
 } = require('../controllers/authController');
 const verifyToken = require('../middleware/verifyToken');
 
@@ -44,7 +51,7 @@ const verifyToken = require('../middleware/verifyToken');
 router.post('/register', validateRegisterAdmin, registerAdmin);
 
 // Login Admin with Validation Middleware
-router.post('/login', validateLoginAdmin, loginAdmin);
+router.post('/login', validateLogin, loginUser);
 
 // Update Admin details (excluding password)
 router.put('/update/:id', verifyToken, updateAdmin);
@@ -57,6 +64,14 @@ router.delete('/delete/:id', verifyToken, deleteAdmin);
 
 // Get all admins (protected route)
 router.get('/admins', verifyToken, getAllAdmins);
+
+// Get admin profile
+router.get('/profile', verifyToken, getAdminProfile);
+
+// Password reset routes
+router.post('/forgot-password', forgotPassword);
+router.post('/verify-otp', verifyOTP);
+router.post('/reset-password', resetPassword);
 
 // Protected Route Example
 router.get('/protected', verifyToken, (req, res) => {

@@ -1,0 +1,263 @@
+// const appointmentModel = require('../models/appointmentModel');
+// const CartModel = require('../models/cartModel');
+
+// const createAppointment = async (req, res) => {
+//   const { customer_id, selected_date, selected_time, services = [], stylist_ids = [] } = req.body;
+
+//   try {
+//     // 1. Validate required fields
+//     if (!customer_id || !selected_date || !selected_time) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields (customer_id, selected_date, selected_time)"
+//       });
+//     }
+
+//     // 2. Validate services
+//     if (services.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "At least one service is required"
+//       });
+//     }
+
+//     // 3. Create complete appointment
+//     const result = await appointmentModel.createCompleteAppointment(
+//       customer_id,
+//       selected_date,
+//       selected_time,
+//       services,
+//       stylist_ids
+//     );
+
+//     // 4. Clear the cart
+//     await CartModel.clearCartByCustomerId(customer_id);
+
+//     res.status(201).json({
+//       success: true,
+//       appointment_ID: result.appointment_ID,
+//       services_processed: result.servicesCount,
+//       stylists_assigned: result.stylistsAssigned
+//     });
+
+//   } catch (err) {
+//     console.error("Appointment creation error:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//       received_data: req.body
+//     });
+//   }
+// };
+
+// const checkIfFirstTimeCustomer = async (req, res) => {
+//   const { customer_id } = req.params;
+//   try {
+//     const isFirstTime = await appointmentModel.checkIfFirstTimeCustomer(customer_id);
+//     res.status(200).json({ isFirstTime });
+//   } catch (err) {
+//     console.error("Error checking first-time customer status:", err);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+// module.exports = { 
+//   createAppointment,
+//   checkIfFirstTimeCustomer
+// };
+
+
+
+const appointmentModel = require('../models/appointmentModel');
+const CartModel = require('../models/cartModel');
+
+
+
+// 2. Let's update the controller function to ensure dates are passed correctly
+const createAppointment = async (req, res) => {
+  const { customer_id, selected_date, selected_time, services = [], stylist_ids = [] } = req.body;
+
+  try {
+    // 1. Validate required fields
+    if (!customer_id || !selected_date || !selected_time) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields (customer_id, selected_date, selected_time)"
+      });
+    }
+
+    // 2. Validate date format (YYYY-MM-DD)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(selected_date)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date format. Use YYYY-MM-DD"
+      });
+    }
+
+    // 3. Validate and normalize time format (accept HH:MM or HH:MM:SS)
+    let normalizedTime = selected_time;
+    if (selected_time.includes(':')) {
+      const timeParts = selected_time.split(':');
+      if (timeParts.length > 2) {
+        normalizedTime = `${timeParts[0]}:${timeParts[1]}`; // Keep only HH:MM
+      }
+    }
+
+    if (!/^\d{2}:\d{2}$/.test(normalizedTime)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid time format. Use HH:MM"
+      });
+    }
+
+    // 4. Validate services
+    if (services.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one service is required"
+      });
+    }
+
+    // 5. Create complete appointment with normalized time and exact date string
+    const result = await appointmentModel.createCompleteAppointment(
+      customer_id,
+      selected_date, // Pass the exact date string without modification
+      normalizedTime, // Use normalized time
+      services,
+      stylist_ids
+    );
+
+    // 6. Clear the cart
+    await CartModel.clearCartByCustomerId(customer_id);
+
+    res.status(201).json({
+      success: true,
+      appointment_ID: result.appointment_ID,
+      services_processed: result.servicesCount,
+      stylists_assigned: result.stylistsAssigned
+    });
+
+  } catch (err) {
+    console.error("Appointment creation error:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      received_data: req.body
+    });
+  }
+};
+
+
+// ... (rest of the controller methods remain the same)
+
+const checkIfFirstTimeCustomer = async (req, res) => {
+  const { customer_id } = req.params;
+  try {
+    const isFirstTime = await appointmentModel.checkIfFirstTimeCustomer(customer_id);
+    res.status(200).json({ isFirstTime });
+  } catch (err) {
+    console.error("Error checking first-time customer status:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// NEW: Customer requests cancellation
+const requestCancelAppointment = async (req, res) => {
+  const appointmentId = req.params.id;
+
+  try {
+    const result = await appointmentModel.sendCancelRequest(appointmentId);
+
+    if (!result || result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or already cancelled"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Cancellation request submitted"
+    });
+  } catch (err) {
+    console.error("Error sending cancel request:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
+
+const getAppointmentsByCustomer = async (req, res) => {
+  const customerId = req.params.customer_id;
+
+  try {
+    const appointments = await appointmentModel.getAppointmentsByCustomer(customerId);
+    res.status(200).json({ success: true, data: appointments });
+  } catch (err) {
+    console.error("Error fetching customer appointments:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
+// Get all pending cancellation requests
+const getPendingCancellationRequests = async (req, res) => {
+  try {
+    const requests = await appointmentModel.getPendingCancellationRequests();
+    
+    // Fetch payment details for each request
+    const requestsWithPayments = await Promise.all(
+      requests.map(async (request) => {
+        try {
+          const paymentRes = await axios.get(`http://localhost:5001/api/payment/appointment-payment/${request.appointment_ID}`);
+          return {
+            ...request,
+            payment: paymentRes.data.paymentDetails[0] || null
+          };
+        } catch (error) {
+          return request; // Continue even if payment fetch fails
+        }
+      })
+    );
+    
+    res.status(200).json({ success: true, data: requestsWithPayments });
+  } catch (err) {
+    console.error("Error fetching cancellation requests:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Process cancellation request (approve/reject)
+const processCancellationRequest = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body; // 'Approved' or 'Rejected'
+
+  if (!['Approved', 'Rejected'].includes(action)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid action. Must be 'Approved' or 'Rejected'"
+    });
+  }
+
+  try {
+    const result = await appointmentModel.processCancellationRequest(id, action);
+    res.status(200).json({ 
+      success: true, 
+      message: `Cancellation request ${action.toLowerCase()}`,
+      data: result
+    });
+  } catch (err) {
+    console.error("Error processing cancellation request:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
+module.exports = { 
+  createAppointment,
+  checkIfFirstTimeCustomer,
+  requestCancelAppointment,
+  getAppointmentsByCustomer,
+  getPendingCancellationRequests,
+  processCancellationRequest
+};

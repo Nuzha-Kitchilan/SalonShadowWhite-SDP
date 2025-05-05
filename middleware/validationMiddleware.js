@@ -26,7 +26,7 @@ const validateRegisterAdmin = (req, res, next) => {
 };
 
 // Validation for Admin Login
-const validateLoginAdmin = (req, res, next) => {
+const validateLogin = (req, res, next) => {
     // Ensure req exists
     if (!req) {
         return res.status(500).json({ 
@@ -54,4 +54,4 @@ const validateLoginAdmin = (req, res, next) => {
     next();
 };
 
-module.exports = { validateRegisterAdmin, validateLoginAdmin };
+module.exports = { validateRegisterAdmin, validateLogin };
