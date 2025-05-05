@@ -30,7 +30,7 @@ const CategoryMenu = ({ open, onClose, setCurrentView, onBack }) => {
         setCategories(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error(err);
-        setCategories([
+        setCategories([ // Fallback categories for testing
           { category_id: 5, category_name: "Haircut" },
           { category_id: 6, category_name: "Hair Color" },
         ]);
@@ -66,6 +66,10 @@ const CategoryMenu = ({ open, onClose, setCurrentView, onBack }) => {
     setSelectedCategory(null);
   };
 
+  const handleAddToCart = (item) => {
+    setCartItems((prev) => [...prev, item]);
+  };
+
   useEffect(() => {
     if (!open) {
       setTimeout(() => {
@@ -75,8 +79,10 @@ const CategoryMenu = ({ open, onClose, setCurrentView, onBack }) => {
     }
   }, [open]);
 
-  const handleAddToCart = (item) => {
-    setCartItems((prev) => [...prev, item]);
+  // Navigate back to BookingModal when the back button is clicked
+  const handleBackToBooking = () => {
+    setCurrentView("BookingModal");
+    onBack();
   };
 
   if (showServiceView) {
@@ -125,7 +131,7 @@ const CategoryMenu = ({ open, onClose, setCurrentView, onBack }) => {
               boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
             },
           }}
-          onClick={onBack} // Trigger onBack function passed from parent
+          onClick={handleBackToBooking} // Use the handleBackToBooking function
         >
           <ArrowBackIcon />
         </IconButton>

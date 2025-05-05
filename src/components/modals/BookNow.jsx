@@ -8,10 +8,9 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SpecialRequest from "../SpecialRequest";
 import CategoryMenu from "./CategoryMenu";
-import bookingHeaderImg from "../../assets/booking-header.png"; // Adjust path as needed
+import bookingHeaderImg from "../../assets/booking-header.png";
 
 const BookingButton = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -116,7 +115,7 @@ const BookingButton = () => {
   const renderContent = () => {
     switch (currentView) {
       case "specialRequest":
-        return <SpecialRequest />;
+        return <SpecialRequest setCurrentView={setCurrentView} />;
       case "categories":
         return <CategoryMenu setCurrentView={setCurrentView} />;
       default:
@@ -159,7 +158,6 @@ const BookingButton = () => {
         }}
       >
         {renderHeader()}
-
         <Box
           sx={{
             px: currentView === "categories" ? 0 : 2,

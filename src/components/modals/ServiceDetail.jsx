@@ -14,6 +14,7 @@ const ServiceDetailModal = ({
   onBack,
   onClose,
   onAddToCart,
+  onBackToCategory,
   cartItems = [] // ✅ Fix: define cartItems as a prop with default empty array
 }) => {
   const [showStylistSelect, setShowStylistSelect] = useState(false);
