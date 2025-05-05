@@ -7,11 +7,13 @@ import {
   ListItemText,
   Divider,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Importing Back Arrow Icon
 import ServiceModal from "./ServiceModal";
 
-const CategoryMenu = ({ open, onClose, setCurrentView }) => {
+const CategoryMenu = ({ open, onClose, setCurrentView, onBack }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [services, setServices] = useState([]);
@@ -111,6 +113,22 @@ const CategoryMenu = ({ open, onClose, setCurrentView }) => {
         >
           Please select a category of your selected service.
         </Typography>
+
+        {/* Back Button */}
+        <IconButton
+          sx={{
+            marginTop: 2,
+            alignSelf: "flex-start",
+            color: "#BEAF9B",
+            "&:hover": {
+              backgroundColor: "transparent",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+            },
+          }}
+          onClick={onBack} // Trigger onBack function passed from parent
+        >
+          <ArrowBackIcon />
+        </IconButton>
       </Box>
 
       <Divider />
