@@ -28,7 +28,7 @@ class PerformanceModel {
         ${selectFields}
       FROM Appointment a
       LEFT JOIN Payment p ON a.appointment_ID = p.appointment_ID
-      WHERE a.appointment_status = 'Completed'
+      WHERE a.appointment_status = 'Scheduled'
       GROUP BY ${groupBy}, time_label
       ORDER BY time_slot
     `);

@@ -456,6 +456,57 @@
 const db = require('../config/db');
 
 // 1. Create a complete appointment
+// const createCompleteAppointment = async (
+//   customer_id,
+//   appointment_date,
+//   appointment_time,
+//   services = [],
+//   stylist_ids = []
+// ) => {
+//   const connection = await db.getConnection();
+//   try {
+//     await connection.beginTransaction();
+
+//     const formattedDate = appointment_date;
+
+//     const [appointmentResult] = await connection.query(
+//       `INSERT INTO Appointment (customer_id, appointment_date, appointment_time, appointment_status)
+//        VALUES (?, ?, ?, 'Scheduled')`,
+//       [customer_id, formattedDate, appointment_time]
+//     );
+
+//     const appointment_ID = appointmentResult.insertId;
+
+//     // Insert into Appointment_Service_Stylist table
+//     let serviceStylistPairs = 0;
+//     for (const service of services) {
+//       for (const stylist_id of stylist_ids) {
+//         if (stylist_id) {
+//           await connection.query(
+//             `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
+//              VALUES (?, ?, ?)`,
+//             [appointment_ID, service.service_id, stylist_id]
+//           );
+//           serviceStylistPairs++;
+//         }
+//       }
+//     }
+
+//     await connection.commit();
+//     connection.release();
+
+//     return {
+//       appointment_ID,
+//       serviceStylistPairs
+//     };
+//   } catch (err) {
+//     await connection.rollback();
+//     connection.release();
+//     throw err;
+//   }
+// };
+
+
 const createCompleteAppointment = async (
   customer_id,
   appointment_date,
@@ -480,8 +531,9 @@ const createCompleteAppointment = async (
     // Insert into Appointment_Service_Stylist table
     let serviceStylistPairs = 0;
     for (const service of services) {
-      for (const stylist_id of stylist_ids) {
-        if (stylist_id) {
+      if (stylist_ids.length > 0) {
+        // Case 1: Specific stylists were selected
+        for (const stylist_id of stylist_ids) {
           await connection.query(
             `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
              VALUES (?, ?, ?)`,
@@ -489,6 +541,14 @@ const createCompleteAppointment = async (
           );
           serviceStylistPairs++;
         }
+      } else {
+        // Case 2: No stylist selected (insert with NULL)
+        await connection.query(
+          `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
+           VALUES (?, ?, NULL)`,
+          [appointment_ID, service.service_id]
+        );
+        serviceStylistPairs++;
       }
     }
 
@@ -505,6 +565,7 @@ const createCompleteAppointment = async (
     throw err;
   }
 };
+
 
 // 2. Check if customer is booking for the first time
 const checkIfFirstTimeCustomer = async (customer_id) => {
