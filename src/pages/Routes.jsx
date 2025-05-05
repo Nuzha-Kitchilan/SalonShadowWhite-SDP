@@ -1,4 +1,19 @@
-// import { Routes, Route } from "react-router-dom";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { Routes, Route, Navigate } from "react-router-dom";
 // import Dashboard from "./Dashboard";
 // import Services from "./Services";
 // import Gallery from "./Gallery";
@@ -10,35 +25,72 @@
 // import CancelReq from "./CancelReq";
 // import AllApt from "./AllApt";
 // import TodayApt from "./TodayApt";
+// import WorkingHours from "./WorkingHours";
 // import Layout from "../components/Layout";
 // import Login from "../auth/Login";
+// import ForgotPassword from "../auth/ForgotPassword";
 // import Register from "../auth/Register";
+// import ProtectedRoute from "../auth/ProtectedRoute";
+// import SpecialReq from "./SpecialReq";
+// import Profile from "./Profile";
+// import Unauthorized from "../auth/Unauthorized";
 
 // const AppRoutes = () => {
 //   return (
 //     <Routes>
-//       <Route path="/" element={<Login />}></Route>
+//       {/* Public routes */}
+//       <Route path="/login" element={<Login />} />
+//       <Route path="/forgot-password" element={<ForgotPassword />} />
 //       <Route path="/register" element={<Register />} />
+//       <Route path="/unauthorized" element={<Unauthorized />} />
 
-//       <Route element={<Layout />}>
-//         <Route path="dashboard" element={<Dashboard />} />
-//         <Route path="services" element={<Services />} />
-//         <Route path="gallery" element={<Gallery />} />
-//         <Route path="reviews" element={<Reviews />} />
-//         <Route path="inventory" element={<Inventory />} />
-//         <Route path="report" element={<Reports />} />
-//         <Route path="stylists" element={<Stylists />} />
-//         <Route path="applications" element={<Applications />} />
-//         <Route path="cancel-requests" element={<CancelReq />} />
-//         <Route path="appointments" element={<AllApt />} />
-//         <Route path="today-appointments" element={<TodayApt />} />
+//       {/* Common protected routes (all authenticated users) */}
+//       <Route element={<ProtectedRoute />}>
+//         <Route element={<Layout />}>
+//           <Route index element={<Dashboard />} />
+//           <Route path="/reports" element={<Reports />} />
+//           <Route path="/todayapt" element={<TodayApt />} />
+//         </Route>
 //       </Route>
-//       {/* </Route><Route path="/login" element={<Login />} /> */}
+
+//       {/* Admin-only protected routes */}
+//       <Route element={<ProtectedRoute adminOnly />}>
+//         <Route element={<Layout />}>
+//           <Route path="/services" element={<Services />} />
+//           <Route path="/gallery" element={<Gallery />} />
+//           <Route path="/reviews" element={<Reviews />} />
+//           <Route path="/inventory" element={<Inventory />} />
+//           <Route path="/stylists" element={<Stylists />} />
+//           <Route path="/applications" element={<Applications />} />
+//           <Route path="/allapt" element={<AllApt />} />
+//           <Route path="/cancelreq" element={<CancelReq />} />
+//           <Route path="/workinghours" element={<WorkingHours />} />
+//           <Route path="/specialreq" element={<SpecialReq />} />
+//           <Route path="/profile" element={<Profile />} />
+//         </Route>
+//       </Route>
+
+//       {/* Fallback routes */}
+//       <Route path="/" element={<Navigate to="/dashboard" />} />
+//       <Route path="*" element={<Navigate to="/login" />} />
 //     </Routes>
 //   );
 // };
 
 // export default AppRoutes;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -53,39 +105,55 @@ import Applications from "./Applications";
 import CancelReq from "./CancelReq";
 import AllApt from "./AllApt";
 import TodayApt from "./TodayApt";
+import WorkingHours from "./WorkingHours";
 import Layout from "../components/Layout";
 import Login from "../auth/Login";
+import ForgotPassword from "../auth/ForgotPassword";
 import Register from "../auth/Register";
+import ProtectedRoute from "../auth/ProtectedRoute";
+import SpecialReq from "./SpecialReq";
+import Profile from "./Profile";
+import Unauthorized from "../auth/Unauthorized";
+
+
 
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/login" element={<Login />} />
-      
-      {/* Register route with redirect */}
-      <Route path="/register" element={
-        <Register />
-      } />
-      
-      {/* Add a redirect route that sends users back to login after registration */}
-      <Route path="/register/success" element={<Navigate to="/login" />} />
-      
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="services" element={<Services />} />
-        <Route path="gallery" element={<Gallery />} />
-        <Route path="reviews" element={<Reviews />} />
-        <Route path="inventory" element={<Inventory />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="stylists" element={<Stylists />} />
-        <Route path="applications" element={<Applications />} />
-        <Route path="cancelreq" element={<CancelReq />} />
-        <Route path="allapt" element={<AllApt />} />
-        <Route path="todayapt" element={<TodayApt />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* Common protected routes (all authenticated users) */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="/todayapt" element={<TodayApt />} />
+          <Route path="/reports" element={<Reports />} />
+        </Route>
       </Route>
-      
-      {/* Default route - redirect to login */}
-      <Route path="*" element={<Navigate to="/login" />} />
+
+      {/* Admin-only protected routes */}
+      <Route element={<ProtectedRoute adminOnly />}>
+        <Route element={<Layout />}>
+          <Route path="/services" element={<Services />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/stylists" element={<Stylists />} />
+          <Route path="/applications" element={<Applications />} />
+          <Route path="/allapt" element={<AllApt />} />
+          <Route path="/cancelreq" element={<CancelReq />} />
+          <Route path="/workinghours" element={<WorkingHours />} />
+          <Route path="/specialreq" element={<SpecialReq />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+      </Route>
+
+      {/* Fallback routes */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };

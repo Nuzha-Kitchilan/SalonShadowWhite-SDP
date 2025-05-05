@@ -242,7 +242,6 @@ const Gallery = () => {
 
 export default Gallery; */}
 
-
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
@@ -260,6 +259,8 @@ import {
   TextField,
   IconButton,
   CircularProgress,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -276,16 +277,29 @@ const Gallery = () => {
   const [imageFile, setImageFile] = useState(null);
   const [formData, setFormData] = useState({ title: "", description: "" });
   const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+
+  // Helper function to show notifications
+  const showNotification = (message, severity = "info") => {
+    setSnackbar({ open: true, message, severity });
+  };
 
   // Fetch all images
   const fetchImages = useCallback(async () => {
     setLoading(true);
     try {
       const res = await axios.get(API_URL);
-      setImages(res.data);
+      // Ensure we have image_id for each image
+      const formattedImages = (res.data.data || []).map(img => ({
+        ...img,
+        // Fallback to temporary ID if missing
+        image_id: img.image_id || `temp-${Math.random().toString(36).substr(2, 9)}`
+      }));
+      setImages(formattedImages);
     } catch (error) {
       console.error("Error fetching images:", error);
-      alert("Failed to load images. Please check your server.");
+      showNotification("Failed to load images. Please check your server.", "error");
+      setImages([]);
     } finally {
       setLoading(false);
     }
@@ -297,7 +311,10 @@ const Gallery = () => {
 
   // Handle Image Upload
   const handleUpload = async () => {
-    if (!imageFile) return alert("Please select an image.");
+    if (!imageFile || !formData.title || !formData.description) {
+      showNotification("Please provide all fields (image, title, description)", "warning");
+      return;
+    }
 
     const form = new FormData();
     form.append("image", imageFile);
@@ -306,17 +323,28 @@ const Gallery = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(API_URL, form);
-      // Add the new image to the state immediately
-      setImages(prevImages => [...prevImages, response.data]);
-      setOpenUpload(false);
-      setImageFile(null);
-      setFormData({ title: "", description: "" });
-      // Fetch all images to ensure sync with server
-      fetchImages();
+      const response = await axios.post(API_URL, form, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      if (response.data.success) {
+        const newImage = {
+          ...response.data.data,
+          image_id: response.data.data.image_id || `new-${Date.now()}`
+        };
+        setImages(prev => [...prev, newImage]);
+        setOpenUpload(false);
+        setFormData({ title: "", description: "" });
+        setImageFile(null);
+        showNotification("Image uploaded successfully!", "success");
+      } else {
+        throw new Error(response.data.error || "Upload failed");
+      }
     } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("Failed to upload image.");
+      console.error("Upload error:", error);
+      showNotification(error.response?.data?.error || error.message || "Upload failed", "error");
     } finally {
       setLoading(false);
     }
@@ -327,14 +355,19 @@ const Gallery = () => {
     if (!selectedImage) return;
     setLoading(true);
     try {
-      await axios.delete(`${API_URL}/${selectedImage.image_id}`);
-      // Remove the deleted image from state immediately
-      setImages(prevImages => prevImages.filter(img => img.image_id !== selectedImage.image_id));
-      setOpenDelete(false);
-      setSelectedImage(null);
+      const response = await axios.delete(`${API_URL}/${selectedImage.image_id}`);
+      
+      if (response.data && response.data.success) {
+        setImages(prevImages => prevImages.filter(img => img.image_id !== selectedImage.image_id));
+        setOpenDelete(false);
+        setSelectedImage(null);
+        showNotification("Image deleted successfully!", "success");
+      } else {
+        throw new Error(response.data?.error || "Delete failed");
+      }
     } catch (error) {
       console.error("Error deleting image:", error);
-      alert("Failed to delete image.");
+      showNotification("Failed to delete image: " + (error.response?.data?.error || error.message), "error");
     } finally {
       setLoading(false);
     }
@@ -347,23 +380,64 @@ const Gallery = () => {
     setOpenEdit(true);
   };
 
-  // Handle Image Update
+  // Handle Image Update - Modified with improved error handling and form data structure
   const handleUpdate = async () => {
     if (!selectedImage) return;
+    
     setLoading(true);
     try {
-      const response = await axios.put(`${API_URL}/${selectedImage.image_id}`, formData);
-      // Update the image in state immediately
-      setImages(prevImages => 
-        prevImages.map(img => 
-          img.image_id === selectedImage.image_id ? { ...img, ...formData } : img
-        )
+      // Create a plain JavaScript object with the updated data
+      const updateData = {
+        title: formData.title,
+        description: formData.description
+      };
+  
+      console.log('Sending update for image:', selectedImage.image_id);
+      console.log("Selected Image ID:", selectedImage?.image_id);
+      console.log('With data:', updateData);
+  
+      const response = await axios.put(
+        `${API_URL}/${selectedImage.image_id}`,
+        updateData,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
-      setOpenEdit(false);
-      setSelectedImage(null);
+      
+      console.log('Update response:', response.data);
+      
+      if (response.data.success) {
+        setImages(prevImages => 
+          prevImages.map(img => 
+            img.image_id === selectedImage.image_id ? { 
+              ...img, 
+              title: formData.title,
+              description: formData.description
+            } : img
+          )
+        );
+        setOpenEdit(false);
+        setSelectedImage(null);
+        showNotification("Image details updated successfully!", "success");
+      } else {
+        throw new Error(response.data.error || "Update failed");
+      }
     } catch (error) {
-      console.error("Error updating image:", error);
-      alert("Failed to update image.");
+      console.error("Update error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        request: error.config
+      });
+      
+      showNotification(
+        error.response?.data?.error || 
+        error.message || 
+        "Update failed. Please check the console for details.", 
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -387,132 +461,210 @@ const Gallery = () => {
         Upload Image
       </Button>
 
-      {/* Loading indicator */}
       {loading && (
         <div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
-          <CircularProgress style={{ color: "#a36a4f" }} />
+          <CircularProgress size={24} style={{ color: "#a36a4f" }} />
         </div>
       )}
 
-      {/* Image Grid */}
       <Grid container spacing={3} style={{ marginTop: "20px" }}>
-        {images.map((image) => (
-          <Grid item key={image.image_id} xs={12} sm={6} md={4} lg={3}>
-            <Card
-              style={{
-                boxShadow: "0 8px 20px rgba(163, 106, 79, 0.5)",
-                transition: "transform 0.3s ease",
-              }}
-              sx={{
-                "&:hover": {
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              <CardMedia component="img" height="200" image={image.image_url} alt={image.title} />
-              <CardContent>
-                <Typography variant="h6">{image.title}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {image.description}
-                </Typography>
-              </CardContent>
-              <div style={{ display: "flex", justifyContent: "center", padding: "10px" }}>
-                <IconButton 
-                  color="success" 
-                  onClick={() => handleEditClick(image)} 
-                  style={{ color: "green" }}
-                  disabled={loading}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  color="error"
-                  onClick={() => {
-                    setSelectedImage(image);
-                    setOpenDelete(true);
-                  }}
-                  style={{ color: "red" }}
-                  disabled={loading}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </div>
-            </Card>
+        {images.length === 0 && !loading ? (
+          <Grid item xs={12}>
+            <Typography variant="body1" align="center" color="textSecondary">
+              No images found. Upload some images to get started!
+            </Typography>
           </Grid>
-        ))}
+        ) : (
+          images.map((image) => (
+            <Grid item key={image.image_id} xs={12} sm={6} md={4} lg={3}>
+              <Card
+                style={{
+                  boxShadow: "0 8px 20px rgba(163, 106, 79, 0.5)",
+                  transition: "transform 0.3s ease",
+                }}
+                sx={{
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                  },
+                }}
+              >
+                <CardMedia 
+                  component="img" 
+                  height="200" 
+                  image={image.image_url} 
+                  alt={image.title || "Gallery image"} 
+                  onError={(e) => {
+                    e.target.onerror = null; 
+                    e.target.src = "https://via.placeholder.com/200?text=Image+Error";
+                  }}
+                />
+                <CardContent>
+                  <Typography variant="h6" component="div">
+                    {image.title || "Untitled"}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {image.description || "No description"}
+                  </Typography>
+                </CardContent>
+                <div style={{ display: "flex", justifyContent: "center", padding: "10px" }}>
+                  <IconButton 
+                    aria-label="edit"
+                    onClick={() => handleEditClick(image)} 
+                    style={{ color: "#4CAF50" }}
+                    disabled={loading}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => {
+                      setSelectedImage(image);
+                      setOpenDelete(true);
+                    }}
+                    style={{ color: "#F44336" }}
+                    disabled={loading}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+              </Card>
+            </Grid>
+          ))
+        )}
       </Grid>
 
       {/* Upload Dialog */}
-      <Dialog open={openUpload} onClose={() => setOpenUpload(false)}>
+      <Dialog open={openUpload} onClose={() => !loading && setOpenUpload(false)} fullWidth maxWidth="sm">
         <DialogTitle>Upload New Image</DialogTitle>
         <DialogContent>
           <TextField
             label="Title"
             fullWidth
-            margin="dense"
+            margin="normal"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
           <TextField
             label="Description"
             fullWidth
-            margin="dense"
+            margin="normal"
+            multiline
+            rows={3}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
-          <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            style={{ margin: "20px 0" }}
+            id="image-upload"
+          />
+          {imageFile && (
+            <Typography variant="caption" color="textSecondary">
+              Selected file: {imageFile.name} ({Math.round(imageFile.size / 1024)} KB)
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenUpload(false)} disabled={loading}>Cancel</Button>
-          <Button onClick={handleUpload} variant="contained" disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : "Upload"}
+          <Button onClick={() => setOpenUpload(false)} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUpload}
+            variant="contained"
+            disabled={loading || !imageFile}
+            style={{ backgroundColor: "#a36a4f" }}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {loading ? "Uploading..." : "Upload"}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Edit Dialog */}
-      <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
-        <DialogTitle>Edit Image</DialogTitle>
+      <Dialog open={openEdit} onClose={() => !loading && setOpenEdit(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Edit Image Details</DialogTitle>
         <DialogContent>
           <TextField
             label="Title"
             fullWidth
-            margin="dense"
+            margin="normal"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
           <TextField
             label="Description"
             fullWidth
-            margin="dense"
+            margin="normal"
+            multiline
+            rows={3}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenEdit(false)} disabled={loading}>Cancel</Button>
-          <Button onClick={handleUpdate} variant="contained" disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : "Update"}
+          <Button onClick={() => setOpenEdit(false)} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUpdate}
+            variant="contained"
+            disabled={loading}
+            style={{ backgroundColor: "#a36a4f" }}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {loading ? "Updating..." : "Update"}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+      <Dialog open={openDelete} onClose={() => !loading && setOpenDelete(false)}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this image?</Typography>
+          <Typography variant="body1">
+            Are you sure you want to delete this image?
+          </Typography>
+          {selectedImage && (
+            <Typography variant="body2" color="textSecondary" style={{ marginTop: 10 }}>
+              Title: {selectedImage.title}
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDelete(false)} disabled={loading}>Cancel</Button>
-          <Button onClick={handleDelete} variant="contained" color="error" disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : "Delete"}
+          <Button onClick={() => setOpenDelete(false)} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDelete}
+            variant="contained"
+            color="error"
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {loading ? "Deleting..." : "Delete"}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar for notifications */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
 export default Gallery;
-

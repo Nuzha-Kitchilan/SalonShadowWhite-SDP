@@ -453,7 +453,7 @@ const Inventory = () => {
 
   const fetchInventory = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/api/inventory");
+      const response = await axios.get("/inventory");
       setInventory(response.data);
     } catch (error) {
       console.error("Error fetching inventory:", error);
@@ -489,7 +489,7 @@ const Inventory = () => {
     }
 
     try {
-      const response = await axios.put(`http://localhost:5001/api/inventory/${editItem.inventory_id}`, editItem);
+      const response = await axios.put(`/inventory/${editItem.inventory_id}`, editItem);
       fetchInventory();
       setOpenModal(false);
     } catch (error) {
@@ -505,7 +505,7 @@ const Inventory = () => {
   const handleDeleteConfirm = async () => {
     if (!selectedItem) return;
     try {
-      await axios.delete(`http://localhost:5001/api/inventory/${selectedItem.inventory_id}`);
+      await axios.delete(`/inventory/${selectedItem.inventory_id}`);
       fetchInventory();
       setDeleteDialogOpen(false);
     } catch (error) {
@@ -533,7 +533,7 @@ const Inventory = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5001/api/inventory', newItemToSubmit);
+      const response = await axios.post('/inventory', newItemToSubmit);
       fetchInventory();  // Refresh inventory list after adding
       setAddItemModalOpen(false);  // Close the modal
     } catch (error) {

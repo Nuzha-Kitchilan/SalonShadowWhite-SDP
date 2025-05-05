@@ -1,29 +1,58 @@
+// import React from 'react';
+// import { Navigate, Outlet } from 'react-router-dom';
+// import { AuthContext } from './AuthContext';
+
+// const ProtectedRoute = () => {
+//   const { isAuthenticated, isLoading } = React.useContext(AuthContext);
+
+//   if (isLoading) {
+//     return <div className="loading-spinner">Loading...</div>; // Replace with your loader
+//   }
+
+//   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+// };
+
+// export default ProtectedRoute;
+
+
+
+
+
+
+
+
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { jwtDecode } from "jwt-decode"; // Correct import
+import { Navigate, Outlet } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
+const ProtectedRoute = ({ adminOnly = false, allowedRoles = [] }) => {
+  const { isAuthenticated, isLoading, user } = React.useContext(AuthContext);
 
-  if (!token) {
-    return <Navigate to="/login" />;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  try {
-    // Use the correct function name `jwtDecode` instead of `jwt_decode`
-    const decodedToken = jwtDecode(token);
-
-    const currentTime = Date.now() / 1000; // Get current time in seconds
-    if (decodedToken.exp < currentTime) {
-      localStorage.removeItem('token');
-      return <Navigate to="/login" />;
-    }
-  } catch (error) {
-    localStorage.removeItem('token');
-    return <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
-  return children;
+  // Admin has access to everything
+  if (user?.role === 'admin') {
+    return <Outlet />;
+  }
+
+  // Check if route requires admin but user isn't admin
+  if (adminOnly) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  // Check if user's role is in allowedRoles (if specified)
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
+
