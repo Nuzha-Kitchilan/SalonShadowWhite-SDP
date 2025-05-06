@@ -34,13 +34,18 @@ const Gallery = () => {
         <Box 
             sx={{ 
                 width: "100%", 
-                maxWidth: "100vw", 
+                maxWidth: "100%", 
                 minHeight: "100vh",
                 overflowX: "hidden",
                 position: "relative",
                 bgcolor: "#faf5f0",
                 display: "flex",
-                flexDirection: "column"
+                flexDirection: "column",
+                scrollbarWidth: "none", /* Firefox */
+                msOverflowStyle: "none",
+                "&::-webkit-scrollbar": {
+                  display: "none", /* Chrome, Safari, Opera */
+                },
             }}
         >
             {/* Top Banner */}
@@ -69,8 +74,9 @@ const Gallery = () => {
                 py: 4,
                 px: { xs: 2, md: 4 },
                 width: "100%",
+                overflowX: "hidden",
             }}>
-                <Container maxWidth="lg">
+                <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
                     <Typography variant="h4" component="h2" sx={{ 
                         mb: 4,
                         textAlign: "center",
@@ -87,6 +93,7 @@ const Gallery = () => {
                             sm: "repeat(3, 1fr)",
                             md: "repeat(4, 1fr)",
                         },
+                        width: "100%",
                     }}>
                         {images.length > 0 ? (
                             images.map((image, index) => (
@@ -143,9 +150,10 @@ const Gallery = () => {
                         height: "100vh",
                         m: 0,
                         maxHeight: "none",
-                        width: "100vw",
+                        width: "100%",
                         maxWidth: "none",
                         borderRadius: 0,
+                        overflowX: "hidden",
                     },
                 }}
             >
@@ -155,6 +163,7 @@ const Gallery = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    overflowX: "hidden",
                 }}>
                     {selectedImage && (
                         <Box sx={{
@@ -192,18 +201,32 @@ const Gallery = () => {
             </Dialog>
 
             {/* Global Styles */}
-            <style>
-                {`
-                    * {
-                        box-sizing: border-box;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    body {
-                        overflow-x: hidden;
-                    }
-                `}
-            </style>
+            <style jsx global>{`
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
+                html, body {
+                    overflow-x: hidden;
+                    width: 100%;
+                    max-width: 100%;
+                    margin: 0;
+                    padding: 0;
+                }
+                ::-webkit-scrollbar {
+                    display: none;
+                }
+                * {
+                    scrollbar-width: none;
+                }
+                .MuiBox-root, .MuiContainer-root, .MuiDialog-paper {
+                    max-width: 100%;
+                }
+                .MuiDialog-container, .MuiDialog-root {
+                    overflow-x: hidden !important;
+                }
+            `}</style>
         </Box>
     );
 };

@@ -23,13 +23,18 @@ const Stylists = () => {
   return (
     <Box sx={{ 
       width: '100%', 
-      maxWidth: '100vw', 
+      maxWidth: '100%', 
       minHeight: '100vh',
       overflowX: 'hidden',
       position: 'relative',
       bgcolor: '#f5f5f7',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      scrollbarWidth: 'none', /* Firefox */
+      msOverflowStyle: 'none',
+      '&::-webkit-scrollbar': {
+        display: 'none', /* Chrome, Safari, Opera */
+      },
     }}>
       {/* Header Banner */}
       <Box
@@ -72,8 +77,9 @@ const Stylists = () => {
         py: 4,
         px: { xs: 2, md: 4 },
         width: '100%',
+        overflowX: 'hidden',
       }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
           {loading ? (
             <Box sx={{ 
               display: 'flex', 
@@ -106,18 +112,29 @@ const Stylists = () => {
       </Box>
 
       {/* Global Styles */}
-      <style>
-        {`
-          * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-          }
-          body {
-            overflow-x: hidden;
-          }
-        `}
-      </style>
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+        html, body {
+          overflow-x: hidden;
+          width: 100%;
+          max-width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        * {
+          scrollbar-width: none;
+        }
+        .MuiBox-root, .MuiContainer-root {
+          max-width: 100%;
+        }
+      `}</style>
     </Box>
   );
 };
