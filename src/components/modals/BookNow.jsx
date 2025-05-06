@@ -28,7 +28,10 @@ const BookingButton = () => {
   const handleBackToMain = () => setCurrentView("main");
 
   const renderHeader = () => (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{  width: "100%", 
+      position: "relative",
+      height: { xs: '180px', sm: '300px', md: '400px' },
+      overflow: "hidden"  }}>
       <img
         src={bookingHeaderImg}
         alt="Booking Header"
@@ -132,12 +135,16 @@ const BookingButton = () => {
         sx={{
           backgroundColor: "#d3d3d3",
           color: "#333",
-          px: 4,
-          py: 1.5,
+          px: { xs: 3, sm: 4 }, // Reduce horizontal padding on mobile
+          py: { xs: 0, sm: 1.5 }, // Reduce vertical padding on mobile  
           fontWeight: "bold",
           fontSize: "1rem",
           borderRadius: "30px",
-          marginTop: "250px",
+          marginTop: { xs: "200px", sm: "250px" }, // Only 20px on mobile, 250px on desktop
+          position: { xs: "relative", sm: "static" }, // Relative on mobile
+          top: { xs: "-80px", sm: "auto" }, // Pull up on mobile
+          left: { xs: "50%", sm: "auto" }, // Center on mobile
+          transform: { xs: "translateX(-50%)", sm: "none" },
           "&:hover": {
             backgroundColor: "#c0c0c0",
           },
@@ -162,6 +169,11 @@ const BookingButton = () => {
           sx={{
             px: currentView === "categories" ? 0 : 2,
             py: currentView === "main" ? 0 : 2,
+            overflowY: "auto",
+            height: "calc(100% - 180px)",
+            "& ::-webkit-scrollbar": {
+              display: "none",
+            },
           }}
         >
           {renderContent()}

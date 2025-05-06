@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { Box, Typography, Container, List, ListItem, ListItemText, ListItemIcon, Divider } from "@mui/material";
 import { motion } from "framer-motion";
@@ -13,26 +15,53 @@ const AppointmentBooking = () => {
     <Box 
       sx={{ 
         width: "100%", 
-        maxWidth: "100vw", 
+        maxWidth: "100%", 
         minHeight: "100vh",
         overflowX: "hidden",
         position: "relative",
-        bgcolor: "#faf5f0"
+        bgcolor: "#faf5f0",
+        scrollbarWidth: "none",  /* Firefox */
+        "&::-webkit-scrollbar": {
+          display: "none",  /* Chrome, Safari, Opera */
+        },
+        msOverflowStyle: "none"
       }}
     >
       {/* Header Section */}
-      <Box sx={{ width: "100%", position: "relative", overflow: "hidden" }}>
+      <Box sx={{ 
+          width: "100%", 
+          position: "relative", 
+          overflow: "hidden",
+          height: { xs: '180px', sm: '300px', md: '400px' },
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}>
         <Box
           sx={{
             backgroundImage: `url(${stylistImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            height: { xs: "300px", md: "400px" },
+            height: "100%",
             display: "flex",
-            alignItems: "center",
+            alignItems: { xs: 'flex-start', sm: 'center' }, // Align to top on mobile
             justifyContent: "center",
             position: "relative",
-            flexDirection: "column"
+            pt: { xs: 2, sm: 0 }, // Add padding top on mobile
+            '&::before': {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.3)",
+              zIndex: 0
+            },
+            // Hide scrollbar for this element too
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
           }}
         >
           {/* Book Now Button with Motion */}
@@ -40,15 +69,25 @@ const AppointmentBooking = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            style={{
+              position: "relative",
+              zIndex: 1
+            }}
           >
-            <BookNowModal />
+            <BookNowModal 
+              sx={{ 
+                fontSize: { xs: '0.8rem', sm: '1rem' },
+                px: { xs: 2, sm: 3 },
+                py: { xs: 1, sm: 1.5 }
+              }} 
+            />
           </motion.div>
         </Box>
       </Box>
 
       {/* Salon Policies Section */}
-      <Box sx={{ width: "100%", bgcolor: "#faf5f0", py: 6 }}>
-        <Container maxWidth="lg">
+      <Box sx={{ width: "100%", bgcolor: "#faf5f0", py: 6, overflowX: "hidden" }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
           <Box 
             sx={{
               display: "flex",
@@ -56,8 +95,10 @@ const AppointmentBooking = () => {
               borderRadius: 2,
               overflow: "hidden",
               boxShadow: 3,
+              width: "100%",
             }}
           >
+            
             {/* Image */}
             <Box 
               sx={{
@@ -146,18 +187,29 @@ const AppointmentBooking = () => {
       </Box>
 
       {/* Global Styles */}
-      <style>
-        {`
-          * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-          }
-          body {
-            overflow-x: hidden;
-          }
-        `}
-      </style>
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+        html, body {
+          overflow-x: hidden;
+          width: 100%;
+          max-width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        * {
+          scrollbar-width: none;
+        }
+        .MuiBox-root {
+          max-width: 100%;
+        }
+      `}</style>
     </Box>
   );
 };
