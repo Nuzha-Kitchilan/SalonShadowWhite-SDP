@@ -36,7 +36,7 @@ const Services = () => {
       <Box
         sx={{
           width: '100%',
-          height: { xs: '300px', md: '400px' },
+          height: { xs: '200px', sm: '300px', md: '400px' },
           position: 'relative',
           overflow: 'hidden',
         }}

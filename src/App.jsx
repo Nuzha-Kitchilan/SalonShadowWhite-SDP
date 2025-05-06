@@ -6,7 +6,7 @@ import Services from "./pages/Services";
 import Gallery from "./pages/Gallery";
 import Stylists from "./pages/Stylists";
 import Contact from "./pages/Contact";
-import Join from "./pages/Join";
+import Careers from "./pages/Careers";
 import Book from "./pages/Book";
 import Login from "./pages/Login"; 
 import Register from "./pages/Register"; 
@@ -24,7 +24,7 @@ function App() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="stylists" element={<Stylists />} />
           <Route path="contact" element={<Contact />} />
-          <Route path="join" element={<Join />} />
+          <Route path="careers" element={<Careers />} />
           <Route path="book" element={<Book />} />
           <Route path="profile" element={<Profile />} />
         </Route>
