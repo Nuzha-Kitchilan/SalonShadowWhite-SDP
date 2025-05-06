@@ -45,7 +45,7 @@ const Gallery = () => {
         >
             {/* Top Banner */}
             <Box sx={{
-                height: { xs: "300px", md: "400px" },
+                height: { xs: '200px', sm: '300px', md: '400px' },
                 width: "100%",
                 position: "relative",
                 overflow: "hidden",
