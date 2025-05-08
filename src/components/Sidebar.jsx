@@ -1,171 +1,4 @@
 
-// import React, { useState } from "react";
-// import { Link, useLocation } from "react-router-dom";
-// import {
-//   Drawer,
-//   List,
-//   ListItem,
-//   ListItemButton,
-//   ListItemIcon,
-//   ListItemText,
-//   Collapse,
-// } from "@mui/material";
-// import DashboardIcon from "@mui/icons-material/Dashboard";
-// import ScheduleIcon from "@mui/icons-material/EventNote";
-// import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-// import ContentCutIcon from "@mui/icons-material/ContentCut";
-// import PeopleIcon from "@mui/icons-material/People";
-// import ReviewsIcon from "@mui/icons-material/RateReview";
-// import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-// import InventoryIcon from "@mui/icons-material/Inventory";
-// import WorkIcon from "@mui/icons-material/Work";
-// import AssessmentIcon from "@mui/icons-material/Assessment";
-// //import PeopleIcon from "@mui/icons-material/People";
-
-// const Sidebar = () => {
-//   const [openAppointments, setOpenAppointments] = useState(false);
-//   const location = useLocation();
-
-//   const handleAppointmentsClick = () => {
-//     setOpenAppointments(!openAppointments);
-//   };
-
-//   const menuItems = [
-//     { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-//     {
-//       text: "Appointments",
-//       icon: <ScheduleIcon />,
-//       expandable: true,
-//       open: openAppointments,
-//       subItems: [
-//         { text: "Today's Appointments", path: "/todayapt" },
-//         { text: "All Appointments", path: "/allapt" },
-//         { text: "Cancel Requests", path: "/cancelreq" },
-//         { text: "Working Hours", path: "/workinghours" },
-//         { text: "Special Requests", path: "/specialreq" },
-//       ],
-//     },
-//     { text: "Services", icon: <ContentCutIcon />, path: "/services" },
-//     { text: "Stylists", icon: <PeopleIcon />, path: "/stylists" },
-//     { text: "Reviews", icon: <ReviewsIcon />, path: "/reviews" },
-//     { text: "Gallery", icon: <PhotoLibraryIcon />, path: "/gallery" },
-//     { text: "Inventory", icon: <InventoryIcon />, path: "/inventory" },
-//     { text: "Applications", icon: <WorkIcon />, path: "/applications" },
-//     { text: "Report", icon: <AssessmentIcon />, path: "/reports" },
-//     {text: "Profile", icon: <PeopleIcon />, path: "/profile"},
-//   ];
-
-//   return (
-//     <Drawer
-//       variant="permanent"
-//       sx={{
-//         width: 220,
-//         flexShrink: 0,
-//         "& .MuiDrawer-paper": {
-//           width: 220,
-//           boxSizing: "border-box",
-//           backgroundColor: "#000",
-//           color: "#fff",
-//           marginTop: "64px",
-//           height: "calc(100vh - 64px)",
-//           position: "relative",
-//         },
-//       }}
-//     >
-//       <List>
-//         {menuItems.map((item, index) => (
-//           <React.Fragment key={index}>
-//             <ListItem disablePadding>
-//               <ListItemButton
-//                 onClick={item.expandable ? handleAppointmentsClick : null}
-//                 component={!item.expandable ? Link : "div"}
-//                 to={!item.expandable ? item.path : undefined}
-//                 selected={!item.expandable && location.pathname === item.path}
-//                 sx={{
-//                   padding: "10px",
-//                   borderRadius: "8px",
-//                   "&:hover": {
-//                     backgroundColor: "#FE8DA1",
-//                     color: "#000",
-//                   },
-//                   "&.Mui-selected": {
-//                     backgroundColor: "#FE8DA1",
-//                     color: "#000",
-//                   },
-//                   "&.Mui-selected:hover": {
-//                     backgroundColor: "#FE8DA1",
-//                   },
-//                 }}
-//               >
-//                 <ListItemIcon sx={{ color: "inherit" }}>{item.icon}</ListItemIcon>
-//                 <ListItemText primary={item.text} />
-//                 {item.expandable ? (item.open ? <ExpandLessIcon /> : <ExpandMoreIcon />) : null}
-//               </ListItemButton>
-//             </ListItem>
-
-//             {item.expandable && (
-//               <Collapse in={item.open} timeout="auto" unmountOnExit>
-//                 <List component="div" disablePadding>
-//                   {item.subItems.map((subItem, subIndex) => (
-//                     <ListItemButton
-//                       key={subIndex}
-//                       component={Link}
-//                       to={subItem.path}
-//                       selected={location.pathname === subItem.path}
-//                       sx={{
-//                         paddingLeft: 4,
-//                         marginBottom: "8px",
-//                         "&:hover": {
-//                           backgroundColor: "#FE8DA1",
-//                           color: "#000",
-//                         },
-//                         "&.Mui-selected": {
-//                           backgroundColor: "#FE8DA1",
-//                           color: "#000",
-//                         },
-//                         "&.Mui-selected:hover": {
-//                           backgroundColor: "#FE8DA1",
-//                         },
-//                       }}
-//                     >
-//                       <ListItemText primary={subItem.text} />
-//                     </ListItemButton>
-//                   ))}
-//                 </List>
-//               </Collapse>
-//             )}
-//           </React.Fragment>
-//         ))}
-//       </List>
-//     </Drawer>
-//   );
-// };
-
-// export default Sidebar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -177,6 +10,7 @@ import {
   ListItemText,
   Collapse,
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ScheduleIcon from "@mui/icons-material/EventNote";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -190,6 +24,81 @@ import WorkIcon from "@mui/icons-material/Work";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import { useAuth } from '../auth/AuthContext';
 
+// Custom styled components
+const StyledListItemButton = styled(ListItemButton)(({ theme, selected, selectedcolor }) => ({
+  padding: "12px 16px",
+  borderRadius: "8px",
+  margin: "4px 8px",
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  fontWeight: selected ? 600 : 500,
+  transition: 'all 0.2s',
+  position: 'relative',
+  '&.Mui-selected': {
+    backgroundColor: selectedcolor,
+    color: '#000',
+    '&:hover': {
+      backgroundColor: selectedcolor,
+      opacity: 0.9,
+    },
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      left: '-8px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      height: '60%',
+      width: '3px',
+      backgroundColor: '#BEAF9B', 
+      borderRadius: '0 4px 4px 0',
+    }
+  },
+  '&:hover': {
+    backgroundColor: 'rgba(190, 175, 155, 0.15)',
+    color: '#fff',
+  },
+}));
+
+const StyledListItemText = styled(ListItemText)({
+  '& .MuiTypography-root': {
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    fontSize: '0.9rem',
+  },
+});
+
+const SubListItemButton = styled(ListItemButton)(({ theme, selected, selectedcolor }) => ({
+  padding: "8px 16px 8px 48px",
+  borderRadius: "8px",
+  margin: "2px 8px",
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  fontSize: '0.85rem',
+  fontWeight: selected ? 600 : 400,
+  transition: 'all 0.2s',
+  position: 'relative',
+  '&.Mui-selected': {
+    backgroundColor: selectedcolor,
+    color: '#000',
+    '&:hover': {
+      backgroundColor: selectedcolor,
+      opacity: 0.9,
+    },
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      left: '24px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      height: '40%',
+      width: '2px',
+      backgroundColor: '#BEAF9B',
+      borderRadius: '0 4px 4px 0',
+    }
+  },
+  '&:hover': {
+    backgroundColor: 'rgba(190, 175, 155, 0.15)',
+    color: '#fff',
+  },
+}));
+
 const Sidebar = () => {
   const [openAppointments, setOpenAppointments] = useState(false);
   const location = useLocation();
@@ -199,25 +108,28 @@ const Sidebar = () => {
     setOpenAppointments(!openAppointments);
   };
 
+  // Primary color used throughout the site
+  const primaryColor = "#BEAF9B";
+
   // Menu items for non-admin users (Dashboard, Today's Appointments, Report)
   const nonAdminMenuItems = [
     { 
       text: "Dashboard", 
       icon: <DashboardIcon />, 
       path: "/",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Today's Appointments", 
       icon: <ScheduleIcon />, 
       path: "/todayapt",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Report", 
       icon: <AssessmentIcon />, 
       path: "/reports",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     }
   ];
 
@@ -227,20 +139,20 @@ const Sidebar = () => {
       text: "Dashboard", 
       icon: <DashboardIcon />, 
       path: "/",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Report", 
       icon: <AssessmentIcon />, 
       path: "/reports",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     {
       text: "Appointments",
       icon: <ScheduleIcon />,
       expandable: true,
       open: openAppointments,
-      selectedColor: "#FE8DA1",
+      selectedColor: primaryColor,
       subItems: [
         { text: "Today's Appointments", path: "/todayapt" },
         { text: "All Appointments", path: "/allapt" },
@@ -253,43 +165,43 @@ const Sidebar = () => {
       text: "Services", 
       icon: <ContentCutIcon />, 
       path: "/services",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Stylists", 
       icon: <PeopleIcon />, 
       path: "/stylists",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Reviews", 
       icon: <ReviewsIcon />, 
       path: "/reviews",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Gallery", 
       icon: <PhotoLibraryIcon />, 
       path: "/gallery",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Inventory", 
       icon: <InventoryIcon />, 
       path: "/inventory",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Applications", 
       icon: <WorkIcon />, 
       path: "/applications",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
     { 
       text: "Profile", 
       icon: <PeopleIcon />, 
       path: "/profile",
-      selectedColor: "#FE8DA1"
+      selectedColor: primaryColor
     },
   ];
 
@@ -299,98 +211,98 @@ const Sidebar = () => {
     <Drawer
       variant="permanent"
       sx={{
-        width: 220,
+        width: 220,  // Increased width here
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: 220,
+          width: 240,  // Increased width here
           boxSizing: "border-box",
           backgroundColor: "#000",
           color: "#fff",
           marginTop: "64px",
           height: "calc(100vh - 64px)",
           position: "relative",
+          borderRight: `1px solid rgba(190, 175, 155, 0.2)`,
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+          overflowY: 'auto',  // Enable vertical scrolling
+          '::-webkit-scrollbar': {
+            width: 0, // Hides the scrollbar
+            height: 0,
+          },
+          '::-webkit-scrollbar-thumb': {
+            background: 'transparent', // Keeps the scrollbar thumb hidden
+          },
         },
       }}
     >
-      <List>
+      {/* Navigation list */}
+      <List sx={{ p: 1 }}>
         {menuItems.map((item, index) => (
           <React.Fragment key={index}>
             {item.expandable ? (
               <>
                 <ListItem disablePadding>
-                  <ListItemButton
+                  <StyledListItemButton
                     onClick={handleAppointmentsClick}
-                    sx={{
-                      padding: "10px",
-                      borderRadius: "8px",
-                      "&:hover": {
-                        backgroundColor: item.selectedColor,
-                        color: "#000",
-                      },
-                    }}
+                    selected={openAppointments}
+                    selectedcolor={item.selectedColor}
                   >
-                    <ListItemIcon sx={{ color: "inherit" }}>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                    {item.open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </ListItemButton>
+                    <ListItemIcon 
+                      sx={{ 
+                        color: openAppointments ? '#000' : 'rgba(255, 255, 255, 0.7)',
+                        minWidth: '40px',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <StyledListItemText primary={item.text} />
+                    {item.open ? 
+                      <ExpandLessIcon fontSize="small" /> : 
+                      <ExpandMoreIcon fontSize="small" />
+                    }
+                  </StyledListItemButton>
                 </ListItem>
+                
                 <Collapse in={openAppointments} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.subItems.map((subItem, subIndex) => (
-                      <ListItemButton
+                      <SubListItemButton
                         key={subIndex}
                         component={Link}
                         to={subItem.path}
                         selected={location.pathname === subItem.path}
-                        sx={{
-                          paddingLeft: 4,
-                          marginBottom: "8px",
-                          "&.Mui-selected": {
-                            backgroundColor: item.selectedColor,
-                            color: "#000",
-                            "&:hover": {
-                              backgroundColor: item.selectedColor,
-                              opacity: 0.8,
-                            },
-                          },
-                          "&:hover": {
-                            backgroundColor: item.selectedColor,
-                            color: "#000",
-                          },
-                        }}
+                        selectedcolor={item.selectedColor}
                       >
-                        <ListItemText primary={subItem.text} />
-                      </ListItemButton>
+                        <StyledListItemText 
+                          primary={subItem.text} 
+                          sx={{ 
+                            '& .MuiTypography-root': { 
+                              fontSize: '0.85rem',
+                            }
+                          }}
+                        />
+                      </SubListItemButton>
                     ))}
                   </List>
                 </Collapse>
               </>
             ) : (
               <ListItem disablePadding>
-                <ListItemButton
+                <StyledListItemButton
                   component={Link}
                   to={item.path}
                   selected={location.pathname === item.path}
-                  sx={{
-                    padding: "10px",
-                    borderRadius: "8px",
-                    "&.Mui-selected": {
-                      backgroundColor: item.selectedColor,
-                      color: "#000",
-                      "&:hover": {
-                        backgroundColor: item.selectedColor,
-                        opacity: 0.8,
-                      },
-                    },
-                    "&:hover": {
-                      backgroundColor: item.selectedColor,
-                      color: "#000",
-                    },
-                  }}
+                  selectedcolor={item.selectedColor}
                 >
-                  <ListItemIcon sx={{ color: "inherit" }}>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
+                  <ListItemIcon 
+                    sx={{ 
+                      color: location.pathname === item.path ? '#000' : 'rgba(255, 255, 255, 0.7)',
+                      minWidth: '40px',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <StyledListItemText primary={item.text} />
+                </StyledListItemButton>
               </ListItem>
             )}
           </React.Fragment>
