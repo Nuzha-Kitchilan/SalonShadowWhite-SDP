@@ -9,18 +9,51 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  CircularProgress,
+  Box
 } from '@mui/material';
+import axios from 'axios';
 
 const ServiceForm = ({ open, onClose, service, categories, adminId, refreshData }) => {
   const [formData, setFormData] = useState({
     service_name: '',
-    category_id: categories.length > 0 ? categories[0].category_id : '',
+    category_id: '',
     time_duration: '',
     price: '',
     description: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localCategories, setLocalCategories] = useState(categories || []);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch categories if needed
+  useEffect(() => {
+    async function fetchCategories() {
+      setLoading(true);
+      try {
+        const response = await axios.get('http://localhost:5001/api/categories');
+        setLocalCategories(response.data);
+        // Update form with first category if we're adding a new service
+        if (!service && response.data.length > 0) {
+          setFormData(prev => ({
+            ...prev,
+            category_id: response.data[0].category_id
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (open && (!categories || categories.length === 0)) {
+      fetchCategories();
+    } else if (open) {
+      setLocalCategories(categories);
+    }
+  }, [open, categories, service]);
 
   // Reset form when opening/closing or when service prop changes
   useEffect(() => {
@@ -35,17 +68,17 @@ const ServiceForm = ({ open, onClose, service, categories, adminId, refreshData 
           description: service.description || ''
         });
       } else {
-        // Add mode
+        // Add mode - initialize with first category if available
         setFormData({
           service_name: '',
-          category_id: categories.length > 0 ? categories[0].category_id : '',
+          category_id: localCategories.length > 0 ? localCategories[0].category_id : '',
           time_duration: '',
           price: '',
           description: ''
         });
       }
     }
-  }, [open, service, categories]);
+  }, [open, service, localCategories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,74 +123,87 @@ const ServiceForm = ({ open, onClose, service, categories, adminId, refreshData 
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{service ? 'Edit Service' : 'Add New Service'}</DialogTitle>
       <DialogContent>
-        <TextField
-          name="service_name"
-          label="Service Name"
-          fullWidth
-          margin="normal"
-          value={formData.service_name}
-          onChange={handleChange}
-          required
-        />
+        {loading ? (
+          <Box display="flex" justifyContent="center" my={3}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <TextField
+              name="service_name"
+              label="Service Name"
+              fullWidth
+              margin="normal"
+              value={formData.service_name}
+              onChange={handleChange}
+              required
+            />
 
-        <FormControl fullWidth margin="normal" required>
-          <InputLabel>Category</InputLabel>
-          <Select
-            name="category_id"
-            value={formData.category_id}
-            onChange={handleChange}
-            label="Category"
-          >
-            {categories.map(category => (
-              <MenuItem key={category.category_id} value={category.category_id}>
-                {category.category_name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <FormControl fullWidth margin="normal" required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                name="category_id"
+                value={formData.category_id}
+                onChange={handleChange}
+                label="Category"
+                disabled={localCategories.length === 0}
+              >
+                {localCategories.length === 0 ? (
+                  <MenuItem value="">No categories available</MenuItem>
+                ) : (
+                  localCategories.map(category => (
+                    <MenuItem key={category.category_id} value={category.category_id}>
+                      {category.category_name}
+                    </MenuItem>
+                  ))
+                )}
+              </Select>
+            </FormControl>
 
-        <TextField
-          name="time_duration"
-          label="Duration (minutes)"
-          type="number"
-          fullWidth
-          margin="normal"
-          value={formData.time_duration}
-          onChange={handleChange}
-          required
-        />
+            <TextField
+              name="time_duration"
+              label="Duration (minutes)"
+              type="number"
+              fullWidth
+              margin="normal"
+              value={formData.time_duration}
+              onChange={handleChange}
+              required
+            />
 
-        <TextField
-          name="price"
-          label="Price"
-          type="number"
-          fullWidth
-          margin="normal"
-          value={formData.price}
-          onChange={handleChange}
-          required
-          inputProps={{ step: "0.01" }}
-        />
+            <TextField
+              name="price"
+              label="Price"
+              type="number"
+              fullWidth
+              margin="normal"
+              value={formData.price}
+              onChange={handleChange}
+              required
+              inputProps={{ step: "0.01" }}
+            />
 
-        <TextField
-          name="description"
-          label="Description"
-          fullWidth
-          margin="normal"
-          multiline
-          rows={3}
-          value={formData.description}
-          onChange={handleChange}
-        />
+            <TextField
+              name="description"
+              label="Description"
+              fullWidth
+              margin="normal"
+              multiline
+              rows={3}
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </>
+        )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={isSubmitting}>
+        <Button onClick={onClose} disabled={isSubmitting || loading}>
           Cancel
         </Button>
         <Button 
           onClick={handleSubmit} 
           color="primary" 
-          disabled={isSubmitting}
+          disabled={isSubmitting || loading || localCategories.length === 0}
         >
           {isSubmitting ? 'Saving...' : 'Save'}
         </Button>

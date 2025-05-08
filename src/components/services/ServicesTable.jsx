@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table, TableHead, TableBody, TableRow, TableCell,
@@ -12,6 +13,7 @@ import SearchAndFilter from './SearchAndFilter';
 
 const ServicesTable = ({ categories, setCategories, adminId }) => {
   const [services, setServices] = useState([]);
+  const [localCategories, setLocalCategories] = useState(categories || []);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -23,6 +25,34 @@ const ServicesTable = ({ categories, setCategories, adminId }) => {
 
   const [page, setPage] = useState(0); // Pagination
   const [rowsPerPage, setRowsPerPage] = useState(10); // Show 10 rows per page
+
+  // Effect to sync categories from props
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setLocalCategories(categories);
+    }
+  }, [categories]);
+
+  // Fetch categories if not available
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/categories');
+      const fetchedCategories = response.data;
+      setLocalCategories(fetchedCategories);
+      if (setCategories) {
+        setCategories(fetchedCategories);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }, [setCategories]);
+
+  // Ensure categories are loaded
+  useEffect(() => {
+    if (!localCategories || localCategories.length === 0) {
+      fetchCategories();
+    }
+  }, [localCategories, fetchCategories]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -78,6 +108,19 @@ const ServicesTable = ({ categories, setCategories, adminId }) => {
 
   const paginatedServices = filteredServices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+  const handleOpenForm = () => {
+    // Ensure categories are loaded before opening form
+    if (localCategories.length === 0) {
+      fetchCategories().then(() => {
+        setSelectedService(null);
+        setOpenForm(true);
+      });
+    } else {
+      setSelectedService(null);
+      setOpenForm(true);
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -98,10 +141,7 @@ const ServicesTable = ({ categories, setCategories, adminId }) => {
     <>
       <Button
         variant="contained"
-        onClick={() => {
-          setSelectedService(null);
-          setOpenForm(true);
-        }}
+        onClick={handleOpenForm}
         sx={{ mb: 2 }}
       >
         + Add Service
@@ -112,7 +152,7 @@ const ServicesTable = ({ categories, setCategories, adminId }) => {
         setSearchTerm={setSearchTerm}
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
-        categories={categories}
+        categories={localCategories}
       />
 
       <TableContainer component={Paper}>
@@ -142,8 +182,15 @@ const ServicesTable = ({ categories, setCategories, adminId }) => {
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={() => {
-                      setSelectedService(service);
-                      setOpenForm(true);
+                      if (localCategories.length === 0) {
+                        fetchCategories().then(() => {
+                          setSelectedService(service);
+                          setOpenForm(true);
+                        });
+                      } else {
+                        setSelectedService(service);
+                        setOpenForm(true);
+                      }
                     }}>
                       <Edit color="primary" />
                     </IconButton>
@@ -181,7 +228,7 @@ const ServicesTable = ({ categories, setCategories, adminId }) => {
         open={openForm}
         onClose={() => setOpenForm(false)}
         service={selectedService}
-        categories={categories}
+        categories={localCategories}
         adminId={adminId}
         refreshData={() => fetchServices(debouncedSearchTerm, categoryFilter)}
       />
