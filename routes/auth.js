@@ -47,6 +47,8 @@ const {
 } = require('../controllers/authController');
 const verifyToken = require('../middleware/verifyToken');
 
+
+
 // Register Admin with Validation Middleware
 router.post('/register', validateRegisterAdmin, registerAdmin);
 

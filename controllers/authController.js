@@ -574,22 +574,93 @@ const loginUser = async (req, res) => {
 
 
 // Update Admin Details
+// const updateAdmin = async (req, res) => {
+//     try {
+//         const adminId = req.params.id;
+//         const { first_name, last_name, email, role, profile_url } = req.body;
+
+//         if (!adminId) {
+//             return res.status(400).json({ message: 'Admin ID is required' });
+//         }
+
+//         await Admin.updateAdmin(adminId, first_name, last_name, email, role, profile_url);
+//         return res.json({ message: 'Admin details updated successfully' });
+//     } catch (error) {
+//         console.error('Update admin error:', error);
+//         return res.status(500).json({ message: 'Server error', error: error.message });
+//     }
+// };
+
+
+
+
+
+// Controller function
+// Controller function
 const updateAdmin = async (req, res) => {
     try {
         const adminId = req.params.id;
-        const { first_name, last_name, email, role, profile_url } = req.body;
+        const { first_name, last_name, email, role } = req.body;
+        // Note: profile_url might be coming from req.body in a hidden field 
+        const profile_url = req.body.profile_url;
+        const profile_pic_file = req.file;
 
+        console.log('Update admin request:');
+        console.log('Admin ID:', adminId);
+        console.log('Form data:', { first_name, last_name, email, role, profile_url });
+        console.log('File:', profile_pic_file ? 'File uploaded' : 'No file uploaded');
+
+        // Check for admin ID first
         if (!adminId) {
             return res.status(400).json({ message: 'Admin ID is required' });
         }
 
-        await Admin.updateAdmin(adminId, first_name, last_name, email, role, profile_url);
-        return res.json({ message: 'Admin details updated successfully' });
+        // Debug the validation checks
+        const validationChecks = {
+            first_name: Boolean(first_name),
+            last_name: Boolean(last_name),
+            email: Boolean(email),
+            role: Boolean(role)
+        };
+        
+        console.log('Validation checks:', validationChecks);
+
+        // Modify validation to handle empty strings too
+        if (!first_name?.trim() || !last_name?.trim() || !email?.trim() || !role?.trim()) {
+            console.log('Validation failed: One or more required fields are missing or empty');
+            return res.status(400).json({ 
+                message: 'Required fields are missing or empty',
+                validationErrors: {
+                    first_name: !first_name?.trim() ? 'First name is required' : null,
+                    last_name: !last_name?.trim() ? 'Last name is required' : null,
+                    email: !email?.trim() ? 'Email is required' : null,
+                    role: !role?.trim() ? 'Role is required' : null
+                }
+            });
+        }
+
+        const result = await Admin.updateAdmin(
+            adminId, 
+            first_name.trim(), 
+            last_name.trim(), 
+            email.trim(), 
+            role.trim(), 
+            profile_url, 
+            profile_pic_file
+        );
+        
+        return res.json({ 
+            message: 'Admin details updated successfully',
+            admin: result
+        });
     } catch (error) {
         console.error('Update admin error:', error);
         return res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
+
 
 // Update Admin Password
 const updatePassword = async (req, res) => {

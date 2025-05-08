@@ -95,6 +95,7 @@ createAdmin: async (first_name, last_name, email, username, password, role, prof
 module.exports = Admin; */}
 
 const db = require('../config/db');
+const cloudinary = require('cloudinary').v2; 
 
 const Admin = {
   // 🔍 Find admin by username
@@ -124,30 +125,144 @@ const Admin = {
   },
 
   // ✅ Create a new admin (expects password to be pre-hashed)
-  createAdmin: async (first_name, last_name, email, username, password, role, profile_url) => {
-    // Set default value for profile_url if it's undefined
-    const safeProfileUrl = profile_url || null;
+  // createAdmin: async (first_name, last_name, email, username, password, role, profile_url) => {
+  //   // Set default value for profile_url if it's undefined
+  //   const safeProfileUrl = profile_url || null;
     
-    // IMPORTANT: Password should already be hashed by the controller before reaching this point
+  //   // IMPORTANT: Password should already be hashed by the controller before reaching this point
+  //   const sql = 'INSERT INTO admins (first_name, last_name, email, username, password, role, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  //   const [result] = await db.execute(sql, [
+  //     first_name, 
+  //     last_name, 
+  //     email, 
+  //     username, 
+  //     password, // This should be a bcrypt hashed password
+  //     role, 
+  //     safeProfileUrl
+  //   ]);
+  //   return result;
+  // },
+
+
+
+// ✅ Enhanced createAdmin with Cloudinary support
+createAdmin: async (first_name, last_name, email, username, password, role, profile_pic_file) => {
+  try {
+    let profileUrl = null;
+    
+    // If profile picture file was provided
+    if (profile_pic_file) {
+      const uploadResult = await cloudinary.uploader.upload(profile_pic_file.path, {
+        folder: 'admin_profiles',
+        transformation: [
+          { width: 200, height: 200, crop: 'thumb', gravity: 'face' }
+        ]
+      });
+      profileUrl = uploadResult.secure_url;
+    }
+
     const sql = 'INSERT INTO admins (first_name, last_name, email, username, password, role, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?)';
     const [result] = await db.execute(sql, [
       first_name, 
       last_name, 
       email, 
       username, 
-      password, // This should be a bcrypt hashed password
+      password,
       role, 
-      safeProfileUrl
+      profileUrl
     ]);
+    
     return result;
-  },
+  } catch (err) {
+    console.error('Error creating admin with Cloudinary:', err);
+    throw err;
+  }
+},
+
+
 
   // ✏️ Update admin details (excluding password)
-  updateAdmin: async (adminId, first_name, last_name, email, role, profile_url) => {
+  // updateAdmin: async (adminId, first_name, last_name, email, role, profile_url) => {
+  //   const sql = 'UPDATE admins SET first_name = ?, last_name = ?, email = ?, role = ?, profile_url = ? WHERE id = ?';
+  //   const [result] = await db.execute(sql, [first_name, last_name, email, role, profile_url, adminId]);
+  //   return result;
+  // },
+
+
+  // Model function
+// Model function
+updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, profile_pic_file) => {
+  try {
+    // Initialize the finalProfileUrl with the existing URL or null
+    let finalProfileUrl = profile_url;
+    
+    // If a new file was uploaded, process it with Cloudinary
+    if (profile_pic_file) {
+      try {
+        console.log('Uploading file to Cloudinary:', profile_pic_file.path);
+        
+        // Upload new image to Cloudinary
+        const uploadResult = await cloudinary.uploader.upload(profile_pic_file.path, {
+          folder: 'admin_profiles',
+          transformation: [
+            { width: 200, height: 200, crop: 'thumb', gravity: 'face' }
+          ]
+        });
+        
+        console.log('Cloudinary upload successful:', uploadResult.secure_url);
+        finalProfileUrl = uploadResult.secure_url;
+        
+        // Optional: Delete old image from Cloudinary if it exists
+        if (profile_url) {
+          try {
+            const publicId = profile_url.split('/').pop().split('.')[0];
+            console.log('Deleting old Cloudinary image:', publicId);
+            await cloudinary.uploader.destroy(`admin_profiles/${publicId}`);
+          } catch (deleteErr) {
+            console.warn('Failed to delete old image, continuing with update:', deleteErr);
+            // Continue with the update even if image deletion fails
+          }
+        }
+      } catch (uploadErr) {
+        console.error('Cloudinary upload error:', uploadErr);
+        // If Cloudinary upload fails, keep using the old profile URL
+        // Do not throw here, so we can still update other admin fields
+      }
+    }
+
+    // Ensure finalProfileUrl is not undefined before SQL execution
+    if (finalProfileUrl === undefined) {
+      finalProfileUrl = null;
+    }
+
+    console.log('Executing SQL update with params:', {
+      first_name, 
+      last_name, 
+      email, 
+      role, 
+      finalProfileUrl,
+      adminId
+    });
+
     const sql = 'UPDATE admins SET first_name = ?, last_name = ?, email = ?, role = ?, profile_url = ? WHERE id = ?';
-    const [result] = await db.execute(sql, [first_name, last_name, email, role, profile_url, adminId]);
-    return result;
-  },
+    const [result] = await db.execute(sql, [
+      first_name, 
+      last_name, 
+      email, 
+      role, 
+      finalProfileUrl, // Now guaranteed to be a value or null, not undefined
+      adminId
+    ]);
+    
+    // Get the updated admin record to return
+    const [updatedAdmin] = await db.execute('SELECT * FROM admins WHERE id = ?', [adminId]);
+    return updatedAdmin[0];
+  } catch (err) {
+    console.error('Error updating admin:', err);
+    throw err;
+  }
+},
+
 
   // 🔑 Update password (expects password to be pre-hashed)
   updatePassword: async (adminId, newPassword) => {
