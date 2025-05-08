@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -8,9 +9,12 @@ import {
   Button,
   Avatar,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  Box,
+  Typography,
+  Divider
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Add, Remove } from '@mui/icons-material';
 
 const EditStylistDialog = ({ 
   open, 
@@ -32,172 +36,461 @@ const EditStylistDialog = ({
 
   const renderPhoneInputs = (phoneNumbers) => {
     return phoneNumbers.map((phone, index) => (
-      <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+      <Box 
+        key={index} 
+        sx={{ 
+          display: "flex", 
+          alignItems: "center", 
+          mb: 1.5 
+        }}
+      >
         <TextField
           fullWidth
           label={`Phone ${index + 1}`}
           value={phone}
           onChange={(e) => handlePhoneChange(index, e.target.value)}
           margin="dense"
-          InputProps={{ autoComplete: "off" }}
+          InputProps={{ 
+            autoComplete: "off",
+            sx: {
+              borderRadius: "6px",
+              backgroundColor: "rgba(249, 245, 240, 0.6)",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(190, 175, 155, 0.3)",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(190, 175, 155, 0.5)",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#BEAF9B",
+              }
+            }
+          }}
+          InputLabelProps={{
+            sx: {
+              color: "rgba(69, 60, 51, 0.7)",
+              "&.Mui-focused": {
+                color: "#BEAF9B"
+              }
+            }
+          }}
         />
         {phoneNumbers.length > 1 && (
-          <Button
+          <IconButton
             onClick={() => handleRemovePhoneNumber(index)}
             color="error"
-            style={{ marginLeft: "8px" }}
+            sx={{ 
+              ml: 1,
+              backgroundColor: "rgba(211, 47, 47, 0.05)",
+              color: "#d32f2f",
+              "&:hover": {
+                backgroundColor: "rgba(211, 47, 47, 0.1)",
+                transform: "scale(1.1)",
+              }
+            }}
             tabIndex={0}
           >
-            Remove
-          </Button>
+            <Remove />
+          </IconButton>
         )}
-      </div>
+      </Box>
     ));
   };
 
+  const inputSx = {
+    borderRadius: "6px",
+    backgroundColor: "rgba(249, 245, 240, 0.6)",
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: "rgba(190, 175, 155, 0.3)",
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: "rgba(190, 175, 155, 0.5)",
+    },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#BEAF9B",
+    }
+  };
+
+  const labelSx = {
+    color: "rgba(69, 60, 51, 0.7)",
+    "&.Mui-focused": {
+      color: "#BEAF9B"
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit Stylist</DialogTitle>
-      <DialogContent>
-        <Avatar
-          sx={{
-            width: 120,
-            height: 120,
-            margin: "10px auto",
-            fontSize: "3rem",
-            backgroundColor: "lightgray",
+    <Dialog 
+      open={open} 
+      onClose={handleClose} 
+      fullWidth 
+      maxWidth="md"
+      PaperProps={{
+        sx: {
+          borderRadius: "12px",
+          background: "linear-gradient(145deg, #ffffff, #f9f5f0)",
+          boxShadow: "0 8px 32px rgba(190, 175, 155, 0.25)",
+          border: "1px solid rgba(190, 175, 155, 0.2)",
+          overflow: "hidden"
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        backgroundColor: "rgba(190, 175, 155, 0.08)", 
+        borderBottom: "1px dashed rgba(190, 175, 155, 0.3)",
+        py: 2.5
+      }}>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            fontWeight: 500, 
+            color: "#453C33",
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+            textAlign: "center"
           }}
-          src={formData.profile_url || ""}
         >
-          {formData.firstname ? formData.firstname[0] : "S"}
-        </Avatar>
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            backgroundColor: "#FE8DA1",
-            color: "white",
-            "&:hover": { backgroundColor: "#ff6f91" },
-            marginBottom: "10px",
-            display: "block",
-            width: "100%",
-            textAlign: "center",
+          Edit Stylist
+        </Typography>
+      </DialogTitle>
+      
+      <DialogContent sx={{ px: 4, py: 3, backgroundColor: "#ffffff" }}>
+        <Box sx={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: "center", 
+          mb: 3,
+          pb: 3,
+          borderBottom: "1px dashed rgba(190, 175, 155, 0.3)"
+        }}>
+          <Avatar
+            sx={{
+              width: 120,
+              height: 120,
+              mb: 2,
+              fontSize: "3rem",
+              fontWeight: 500,
+              backgroundColor: "#BEAF9B",
+              color: "#fff",
+              boxShadow: "0 4px 16px rgba(190, 175, 155, 0.4)",
+              border: "3px solid #fff"
+            }}
+            src={formData.profile_url || ""}
+          >
+            {formData.firstname ? formData.firstname[0] : "S"}
+          </Avatar>
+          
+          <Button
+            variant="contained"
+            component="label"
+            sx={{
+              backgroundColor: "#BEAF9B",
+              color: "white",
+              borderRadius: "6px",
+              padding: "10px 16px",
+              fontFamily: "'Poppins', 'Roboto', sans-serif",
+              fontWeight: 500,
+              textTransform: "none",
+              boxShadow: "0 4px 8px rgba(190, 175, 155, 0.25)",
+              "&:hover": { 
+                backgroundColor: "#a89683",
+                boxShadow: "0 6px 12px rgba(190, 175, 155, 0.35)",
+                transform: "translateY(-2px)"
+              },
+              transition: "all 0.3s ease"
+            }}
+          >
+            Choose Picture
+            <input type="file" onChange={handleImageChange} hidden />
+          </Button>
+        </Box>
+        
+        <Box sx={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: 2.5,
+          mb: 3
+        }}>
+          <TextField
+            fullWidth
+            label="First Name"
+            name="firstname"
+            value={formData.firstname}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+          
+          <TextField
+            fullWidth
+            label="Last Name"
+            name="lastname"
+            value={formData.lastname}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+        </Box>
+        
+        <Box sx={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: 2.5,
+          mb: 3 
+        }}>
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+          
+          <TextField
+            fullWidth
+            label="Role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+        </Box>
+        
+        <Box sx={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: 2.5,
+          mb: 3 
+        }}>
+          <TextField
+            fullWidth
+            label="Username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+          
+          <TextField
+            fullWidth
+            label="Password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            value={formData.password}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{
+              sx: inputSx,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                    sx={{ color: "#BEAF9B" }}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+        </Box>
+        
+        <Divider sx={{ 
+          my: 2, 
+          borderColor: "rgba(190, 175, 155, 0.2)",
+          "&::before, &::after": {
+            borderColor: "rgba(190, 175, 155, 0.2)",
+          }
+        }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "#BEAF9B", 
+              px: 1,
+              fontFamily: "'Poppins', 'Roboto', sans-serif",
+            }}
+          >
+            Address Information
+          </Typography>
+        </Divider>
+        
+        <Box sx={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: 2.5,
+          mb: 3 
+        }}>
+          <TextField
+            fullWidth
+            label="House No"
+            name="house_no"
+            value={formData.house_no}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+          
+          <TextField
+            fullWidth
+            label="Street"
+            name="street"
+            value={formData.street}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+          
+          <TextField
+            fullWidth
+            label="City"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            margin="dense"
+            InputProps={{ sx: inputSx }}
+            InputLabelProps={{ sx: labelSx }}
+          />
+        </Box>
+        
+        <Divider sx={{ 
+          my: 2, 
+          borderColor: "rgba(190, 175, 155, 0.2)",
+          "&::before, &::after": {
+            borderColor: "rgba(190, 175, 155, 0.2)",
+          }
+        }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "#BEAF9B", 
+              px: 1,
+              fontFamily: "'Poppins', 'Roboto', sans-serif",
+            }}
+          >
+            Phone Numbers
+          </Typography>
+        </Divider>
+        
+        {renderPhoneInputs(formData.phone_numbers)}
+        
+        <Button 
+          onClick={handleAddPhoneNumber} 
+          startIcon={<Add />}
+          sx={{ 
+            mt: 1,
+            mb: 3,
+            color: "#BEAF9B",
+            borderColor: "rgba(190, 175, 155, 0.5)",
+            borderStyle: "dashed",
+            borderWidth: "1px",
+            borderRadius: "6px",
+            padding: "8px 16px",
+            textTransform: "none",
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+            "&:hover": {
+              backgroundColor: "rgba(190, 175, 155, 0.05)",
+              borderColor: "#BEAF9B",
+            }
           }}
         >
-          Choose Picture
-          <input type="file" onChange={handleImageChange} hidden />
+          Add Phone Number
         </Button>
+        
+        <Divider sx={{ 
+          my: 2, 
+          borderColor: "rgba(190, 175, 155, 0.2)",
+          "&::before, &::after": {
+            borderColor: "rgba(190, 175, 155, 0.2)",
+          }
+        }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "#BEAF9B", 
+              px: 1,
+              fontFamily: "'Poppins', 'Roboto', sans-serif",
+            }}
+          >
+            Bio
+          </Typography>
+        </Divider>
+        
         <TextField
           fullWidth
-          label="First Name"
-          name="firstname"
-          value={formData.firstname}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="Last Name"
-          name="lastname"
-          value={formData.lastname}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="Email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="Username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          name="password"
-          type={showPassword ? "text" : "password"}
-          value={formData.password}
-          onChange={handleChange}
-          margin="dense"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        <TextField
-          fullWidth
-          label="Role"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="Bio"
+          label="Stylist Bio"
           name="bio"
           value={formData.bio || ""}
           onChange={handleChange}
           margin="dense"
           multiline
-          rows={3}
+          rows={4}
           placeholder="A brief description about this stylist"
+          InputProps={{ 
+            sx: {
+              ...inputSx,
+              fontStyle: "italic",
+            }
+          }}
+          InputLabelProps={{ sx: labelSx }}
         />
-        <TextField
-          fullWidth
-          label="House No"
-          name="house_no"
-          value={formData.house_no}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="Street"
-          name="street"
-          value={formData.street}
-          onChange={handleChange}
-          margin="dense"
-        />
-        <TextField
-          fullWidth
-          label="City"
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          margin="dense"
-        />
-
-        {renderPhoneInputs(formData.phone_numbers)}
-
-        <Button onClick={handleAddPhoneNumber} sx={{ mt: 1 }}>
-          Add Phone Number
-        </Button>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}
-          sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}>
+      
+      <DialogActions sx={{ 
+        p: 3, 
+        backgroundColor: "rgba(190, 175, 155, 0.08)",
+        borderTop: "1px dashed rgba(190, 175, 155, 0.3)",
+        justifyContent: "center",
+        gap: 2
+      }}>
+        <Button 
+          onClick={handleClose}
+          variant="outlined"
+          sx={{ 
+            color: "#BEAF9B", 
+            borderColor: "#BEAF9B",
+            borderRadius: "6px",
+            padding: "10px 24px",
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+            fontWeight: 500,
+            textTransform: "none",
+            "&:hover": { 
+              borderColor: "#a89683",
+              backgroundColor: "rgba(190, 175, 155, 0.05)",
+            }
+          }}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSave} 
-          sx={{ backgroundColor: "#FE8DA1", color: "#fff", '&:hover': { backgroundColor: "#fe6a9f" } }}>
-          Save
+        <Button 
+          onClick={handleSave}
+          variant="contained"
+          sx={{ 
+            backgroundColor: "#BEAF9B",
+            color: "white",
+            borderRadius: "6px",
+            padding: "10px 24px",
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+            fontWeight: 500,
+            textTransform: "none",
+            boxShadow: "0 4px 8px rgba(190, 175, 155, 0.25)",
+            "&:hover": { 
+              backgroundColor: "#a89683",
+              boxShadow: "0 6px 12px rgba(190, 175, 155, 0.35)",
+            }
+          }}
+        >
+          Save Changes
         </Button>
       </DialogActions>
     </Dialog>
