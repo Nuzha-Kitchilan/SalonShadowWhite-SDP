@@ -109,9 +109,52 @@ module.exports = {
   },
 
 
+  // getDetailedRevenue: async (range) => {
+  //   let interval;
+  //   switch(range) {
+  //     case 'weekly': interval = '7 DAY'; break;
+  //     case 'monthly': interval = '1 MONTH'; break;
+  //     case 'yearly': interval = '1 YEAR'; break;
+  //     default: interval = '7 DAY';
+  //   }
+  
+  //   const query = `
+  //     SELECT 
+  //       SUM(amount_paid) AS total_revenue,
+  //       SUM(CASE WHEN payment_status = 'Paid' THEN amount_paid ELSE 0 END) AS paid_amount,
+  //       SUM(CASE WHEN payment_status = 'Pending' THEN amount_paid ELSE 0 END) AS pending_amount,
+  //       SUM(CASE WHEN payment_type = 'Online' THEN amount_paid ELSE 0 END) AS online_payments,
+  //       SUM(CASE WHEN payment_type = 'Pay at Salon' THEN amount_paid ELSE 0 END) AS onsite_payments,
+  //       COUNT(*) AS total_transactions,
+  //       AVG(amount_paid) AS average_transaction,
+  //       (SUM(CASE WHEN payment_type = 'Online' THEN amount_paid ELSE 0 END) / SUM(amount_paid)) * 100 AS online_percentage
+  //     FROM Payment
+  //     WHERE payment_date >= DATE_SUB(NOW(), INTERVAL ${interval})
+  //   `;
+  
+  //   const [results] = await db.query(query);
+  //   const row = results[0] || {};
+  
+  //   return {
+  //     total_revenue: Number(row.total_revenue) || 0,
+  //     paid_amount: Number(row.paid_amount) || 0,
+  //     pending_amount: Number(row.pending_amount) || 0,
+  //     online_payments: Number(row.online_payments) || 0,
+  //     onsite_payments: Number(row.onsite_payments) || 0,
+  //     total_transactions: Number(row.total_transactions) || 0,
+  //     average_transaction: Number(row.average_transaction) || 0,
+  //     online_percentage: Number(row.online_percentage) || 0
+  //   };
+  // },
+  
+  
+  
+
+
   getDetailedRevenue: async (range) => {
     let interval;
     switch(range) {
+      case 'daily': interval = '1 DAY'; break;
       case 'weekly': interval = '7 DAY'; break;
       case 'monthly': interval = '1 MONTH'; break;
       case 'yearly': interval = '1 YEAR'; break;
@@ -120,14 +163,17 @@ module.exports = {
   
     const query = `
       SELECT 
-        SUM(amount_paid) AS total_revenue,
-        SUM(CASE WHEN payment_status = 'Paid' THEN amount_paid ELSE 0 END) AS paid_amount,
-        SUM(CASE WHEN payment_status = 'Pending' THEN amount_paid ELSE 0 END) AS pending_amount,
-        SUM(CASE WHEN payment_type = 'Online' THEN amount_paid ELSE 0 END) AS online_payments,
-        SUM(CASE WHEN payment_type = 'Pay at Salon' THEN amount_paid ELSE 0 END) AS onsite_payments,
+        IFNULL(SUM(amount_paid), 0) AS total_revenue,
+        IFNULL(SUM(CASE WHEN payment_status = 'Paid' THEN amount_paid ELSE 0 END), 0) AS paid_amount,
+        IFNULL(SUM(CASE WHEN payment_status = 'Pending' THEN payment_amount - amount_paid ELSE 0 END), 0) AS pending_amount,
+        IFNULL(SUM(CASE WHEN payment_type = 'Online' THEN amount_paid ELSE 0 END), 0) AS online_payments,
+        IFNULL(SUM(CASE WHEN payment_type = 'Pay at Salon' THEN amount_paid ELSE 0 END), 0) AS onsite_payments,
         COUNT(*) AS total_transactions,
-        AVG(amount_paid) AS average_transaction,
-        (SUM(CASE WHEN payment_type = 'Online' THEN amount_paid ELSE 0 END) / SUM(amount_paid)) * 100 AS online_percentage
+        IFNULL(AVG(amount_paid), 0) AS average_transaction,
+        CASE 
+          WHEN SUM(amount_paid) = 0 THEN 0
+          ELSE ROUND((SUM(CASE WHEN payment_type = 'Online' THEN amount_paid ELSE 0 END) / SUM(amount_paid)) * 100, 1)
+        END AS online_percentage
       FROM Payment
       WHERE payment_date >= DATE_SUB(NOW(), INTERVAL ${interval})
     `;
@@ -136,19 +182,19 @@ module.exports = {
     const row = results[0] || {};
   
     return {
-      total_revenue: Number(row.total_revenue) || 0,
-      paid_amount: Number(row.paid_amount) || 0,
-      pending_amount: Number(row.pending_amount) || 0,
-      online_payments: Number(row.online_payments) || 0,
-      onsite_payments: Number(row.onsite_payments) || 0,
-      total_transactions: Number(row.total_transactions) || 0,
-      average_transaction: Number(row.average_transaction) || 0,
-      online_percentage: Number(row.online_percentage) || 0
+      total_revenue: Number(row.total_revenue),
+      paid_amount: Number(row.paid_amount),
+      pending_amount: Number(row.pending_amount),
+      online_payments: Number(row.online_payments),
+      onsite_payments: Number(row.onsite_payments),
+      total_transactions: Number(row.total_transactions),
+      average_transaction: Number(row.average_transaction),
+      online_percentage: Number(row.online_percentage)
     };
   },
   
   
-  
+
 
 
   getRevenueTrendData: async (type, year) => {
