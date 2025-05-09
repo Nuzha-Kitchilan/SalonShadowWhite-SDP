@@ -105,82 +105,6 @@ exports.getDetailedRevenueData = async (startDate, endDate, groupBy) => {
 
 
 
-
-
-
-
-
-
-
-
-
-// exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
-//   let groupFields, groupBySql, orderBy;
-
-//   // Set the appropriate fields and groupings based on the `groupBy` parameter
-//   switch (groupBy) {
-//     case 'week':
-//       groupFields = `YEARWEEK(a.appointment_date, 1) AS period_key,
-//         CONCAT('Week ', WEEK(a.appointment_date, 1), ', ', YEAR(a.appointment_date)) AS period_label`;
-//       groupBySql = `YEARWEEK(a.appointment_date, 1), CONCAT('Week ', WEEK(a.appointment_date, 1), ', ', YEAR(a.appointment_date))`;
-//       orderBy = `period_key`;
-//       break;
-//     case 'month':
-//       groupFields = `DATE_FORMAT(a.appointment_date, '%Y-%m') AS period_key,
-//         DATE_FORMAT(a.appointment_date, '%M %Y') AS period_label`;
-//       groupBySql = `DATE_FORMAT(a.appointment_date, '%Y-%m'), DATE_FORMAT(a.appointment_date, '%M %Y')`;
-//       orderBy = `period_key`;
-//       break;
-//     case 'quarter':
-//       groupFields = `CONCAT(YEAR(a.appointment_date), '-Q', QUARTER(a.appointment_date)) AS period_key,
-//         CONCAT('Q', QUARTER(a.appointment_date), ' ', YEAR(a.appointment_date)) AS period_label`;
-//       groupBySql = `YEAR(a.appointment_date), QUARTER(a.appointment_date), CONCAT('Q', QUARTER(a.appointment_date), ' ', YEAR(a.appointment_date))`;
-//       orderBy = `YEAR(a.appointment_date), QUARTER(a.appointment_date)`;
-//       break;
-//     case 'year':
-//       groupFields = `YEAR(a.appointment_date) AS period_key,
-//         YEAR(a.appointment_date) AS period_label`;
-//       groupBySql = `YEAR(a.appointment_date)`;
-//       orderBy = `period_key`;
-//       break;
-//     default: // day
-//       groupFields = `DATE(a.appointment_date) AS period_key,
-//         DATE_FORMAT(a.appointment_date, '%M %e, %Y') AS period_label`;
-//       groupBySql = `DATE(a.appointment_date), DATE_FORMAT(a.appointment_date, '%M %e, %Y')`;
-//       orderBy = `period_key`;
-//   }
-
-//   // Your provided query integrated with the model function
-//   const query = `
-//   SELECT
-//     DATE(a.appointment_date) AS period_key,
-//     DATE_FORMAT(a.appointment_date, "%M %e, %Y") AS period_label,
-//     COALESCE(SUM(s.price), 0) AS total_revenue,
-//     COALESCE(COUNT(*), 0) AS total_appointments,
-//     COALESCE(IFNULL(SUM(s.price) / NULLIF(COUNT(*), 0), 0), 0) AS avg_revenue_per_appointment,
-//     COALESCE(COUNT(DISTINCT a.customer_ID), 0) AS unique_clients,
-//     COALESCE(COUNT(DISTINCT ass.stylist_ID), 0) AS active_stylists
-//   FROM Appointment a
-//   JOIN Appointment_Service_Stylist ass ON a.appointment_ID = ass.appointment_ID
-//   JOIN Service s ON ass.service_ID = s.service_ID
-//   WHERE DATE(a.appointment_date) BETWEEN ? AND ?
-//   AND a.appointment_status = 'completed'
-//   GROUP BY DATE(a.appointment_date), DATE_FORMAT(a.appointment_date, "%M %e, %Y")
-//   ORDER BY period_key
-//   LIMIT 0, 1000;
-// `;
-
-//   // Execute the query and return the result
-//   const [rows] = await db.execute(query, [startDate, endDate]);
-//   return rows;
-// };
-
-
-
-
-
-
-
 exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
   let groupFields, groupBySql, orderBy;
 
@@ -216,8 +140,8 @@ exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
     SELECT
       summary.period_key,
       ${groupBy === 'day' ? `DATE_FORMAT(summary.period_key, '%M %e, %Y')` :
-        groupBy === 'month' ? `DATE_FORMAT(summary.period_key, '%M %Y')` :
-        groupBy === 'week' ? `CONCAT('Week ', WEEK(STR_TO_DATE(summary.period_key, '%Y%u'), 1), ', ', YEAR(STR_TO_DATE(summary.period_key, '%Y%u')))` :
+        groupBy === 'month' ? `DATE_FORMAT(STR_TO_DATE(CONCAT(summary.period_key, '-01'), '%Y-%m-%d'), '%M %Y')` :
+        groupBy === 'week' ? `CONCAT('Week ', RIGHT(summary.period_key, 2), ', ', LEFT(summary.period_key, 4))` :
         groupBy === 'quarter' ? `CONCAT('Q', SUBSTRING_INDEX(summary.period_key, '-Q', -1), ' ', SUBSTRING_INDEX(summary.period_key, '-Q', 1))` :
         `summary.period_key`
       } AS period_label,
@@ -258,79 +182,6 @@ exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
 
 
 
-
-
-
-
-
-// exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
-//   let groupFields, groupBySql, orderBy, periodLabelFormat;
-
-//   switch (groupBy) {
-//     case 'day':
-//       groupFields = `DATE(a.appointment_date) AS period_key`;
-//       groupBySql = `DATE(a.appointment_date)`;
-//       orderBy = `summary.period_key`;
-//       periodLabelFormat = `DATE_FORMAT(summary.period_key, '%M %e, %Y')`;
-//       break;
-//     case 'week':
-//       groupFields = `CONCAT(YEAR(a.appointment_date), ' ', LPAD(WEEK(a.appointment_date, 1), 2, '0')) AS period_key`;
-//       groupBySql = `YEAR(a.appointment_date), WEEK(a.appointment_date, 1)`;
-//       orderBy = `summary.period_key`;  // ✅ FIXED: use summary.period_key
-//       periodLabelFormat = `CONCAT('Week ', WEEK(STR_TO_DATE(summary.period_key, '%Y %u'), 1), ', ', YEAR(STR_TO_DATE(summary.period_key, '%Y %u')))`; 
-//       break;
-//     case 'month':
-//       groupFields = `DATE_FORMAT(a.appointment_date, '%Y-%m') AS period_key`;
-//       groupBySql = `YEAR(a.appointment_date), MONTH(a.appointment_date)`;
-//       orderBy = `summary.period_key`;
-//       periodLabelFormat = `DATE_FORMAT(STR_TO_DATE(summary.period_key, '%Y-%m'), '%M %Y')`;
-//       break;
-//     case 'year':
-//       groupFields = `YEAR(a.appointment_date) AS period_key`;
-//       groupBySql = `YEAR(a.appointment_date)`;
-//       orderBy = `summary.period_key`;
-//       periodLabelFormat = `summary.period_key`;
-//       break;
-//     default:
-//       throw new Error('Invalid groupBy value');
-//   }
-
-//   const query = `
-//     SELECT
-//       summary.period_key,
-//       ${periodLabelFormat} AS period_label,
-//       summary.total_revenue,
-//       summary.total_appointments,
-//       summary.avg_revenue_per_appointment,
-//       summary.unique_clients,
-//       summary.active_stylists,
-//       summary.stylist_names,
-//       summary.service_names
-//     FROM (
-//       SELECT
-//         ${groupFields},
-//         COALESCE(SUM(s.price), 0) AS total_revenue,
-//         COALESCE(COUNT(*), 0) AS total_appointments,
-//         COALESCE(IFNULL(SUM(s.price) / NULLIF(COUNT(*), 0), 0), 0) AS avg_revenue_per_appointment,
-//         COALESCE(COUNT(DISTINCT a.customer_ID), 0) AS unique_clients,
-//         COALESCE(COUNT(DISTINCT ass.stylist_ID), 0) AS active_stylists,
-//         GROUP_CONCAT(DISTINCT CONCAT(stylist.firstname, ' ', stylist.lastname) ORDER BY stylist.firstname SEPARATOR ', ') AS stylist_names,
-//         GROUP_CONCAT(DISTINCT s.service_name ORDER BY s.service_name SEPARATOR ', ') AS service_names
-//       FROM Appointment a
-//       JOIN Appointment_Service_Stylist ass ON a.appointment_ID = ass.appointment_ID
-//       JOIN Service s ON ass.service_ID = s.service_ID
-//       JOIN Stylists stylist ON ass.stylist_ID = stylist.stylist_ID
-//       WHERE DATE(a.appointment_date) BETWEEN ? AND ?
-//         AND a.appointment_status = 'completed'
-//       GROUP BY ${groupBySql}
-//     ) AS summary
-//     ORDER BY ${orderBy}
-//     LIMIT 0, 1000;
-//   `;
-
-//   const [rows] = await pool.execute(query, [startDate, endDate]);
-//   return rows;
-// };
 
 
 

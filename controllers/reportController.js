@@ -40,36 +40,151 @@ exports.getRevenueReport = async (req, res) => {
   }
 };
 
-// Test PDF Generation
-exports.testPDF = async (req, res) => {
-  try {
-    const doc = new PDFDocument();
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=test.pdf');
-    
-    doc.pipe(res);
-    doc.fontSize(25).text('This is a test PDF', 100, 100);
-    doc.end();
-  } catch (error) {
-    console.error('Test PDF error:', error);
-    res.status(500).send('PDF generation failed');
-  }
-};
 
-// Advanced Revenue Report
-// Enhanced Advanced Revenue Report Controller
+
+
+// exports.getAdvancedRevenueReport = async (req, res) => {
+//   try {
+//     const { startDate, endDate, format = 'pdf', reportType = 'summary', groupBy = 'day', preview = false } = req.query;
+    
+//     // Validate and set defaults
+//     const validReportTypes = ['summary', 'detailed', 'trend', 'comparison', 'stylist'];
+//     const reportTypeValid = validReportTypes.includes(reportType) ? reportType : 'summary';
+    
+//     const validGroupBys = ['day', 'week', 'month', 'quarter', 'year', 'service', 'stylist'];
+//     const groupByValid = validGroupBys.includes(groupBy) ? groupBy : 'day';
+
+//     // Get data based on report type
+//     let reportData;
+//     switch(reportTypeValid) {
+//       case 'detailed':
+//         reportData = await reportModel.getDetailedRevenueData(startDate, endDate, groupByValid);
+//         break;
+//       case 'trend':
+//         reportData = await reportModel.getRevenueTrends(startDate, endDate, groupByValid);
+//         break;
+//       case 'comparison':
+//         reportData = await reportModel.getPeriodComparison(startDate, endDate, groupByValid);
+//         break;
+//       case 'stylist':
+//         reportData = await reportModel.getStylistPerformance(startDate, endDate);
+//         break;
+//       default: // summary
+//         reportData = await reportModel.getSummaryRevenueData(startDate, endDate, groupByValid);
+//     }
+
+//     // If preview requested, return JSON data
+//     if (preview === 'true' || preview === true) {
+//       const chartData = generateChartData(reportData, reportTypeValid);
+//       const serviceChartData = generateServiceChartData(reportData);
+      
+//       return res.json({
+//         rows: Array.isArray(reportData) ? reportData : 
+//               (reportData?.current_period || []),
+//         chartData,
+//         serviceChartData
+//       });
+//     }
+
+    
+
+//     // const visualizationData = {
+//     //   summaryStats: {
+//     //     totalRevenue: reportData.reduce((sum, row) => sum + Number(row.total_revenue || 0), 0),
+//     //     totalAppointments: reportData.reduce((sum, row) => sum + Number(row.total_appointments || 0), 0),
+//     //     // Add other metrics as needed
+//     //   },
+//     //   // Include the original data
+//     //   rows: reportData
+//     // };
+
+
+    
+
+//     // Calculate top stylist
+// const stylistMap = {};
+// data.forEach(row => {
+//   const name = row.stylist_name || 'Unknown';
+//   stylistMap[name] = (stylistMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
+// });
+// const topStylistEntry = Object.entries(stylistMap).sort((a,b) => b[1]-a[1])[0];
+
+// // Calculate top service
+// const serviceMap = {};
+// data.forEach(row => {
+//   const name = row.service_name || 'Unknown';
+//   serviceMap[name] = (serviceMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
+// });
+// const topServiceEntry = Object.entries(serviceMap).sort((a,b) => b[1]-a[1])[0];
+
+// const uniqueClients = new Set(data.map(row => row.customer_ID)).size;
+
+// const summaryStats = {
+//   totalRevenue: data.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0),
+//   totalAppointments: data.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0),
+//   avgRevenuePerAppointment: data.length > 0 ? (data.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0) / data.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0)) : 0,
+//   uniqueClients: uniqueClients,
+//   top_stylist: topStylistEntry ? topStylistEntry[0] : 'N/A',
+//   top_stylist_revenue: topStylistEntry ? topStylistEntry[1] : 0,
+//   top_service: topServiceEntry ? topServiceEntry[0] : 'N/A',
+//   top_service_revenue: topServiceEntry ? topServiceEntry[1] : 0,
+//   revenue_growth_rate: 0 // optional or set if available
+// };
+
+// const visualizationData = {
+//   summaryStats,
+//   chartData: generateChartData(data),
+//   rows: data
+// };
+
+
+
+
+//     // Generate report based on format
+//     if (format.toLowerCase() === 'csv') {
+//       const csv = generateCSV(reportData, visualizationData);
+//       res.setHeader('Content-Type', 'text/csv');
+//       res.setHeader('Content-Disposition', `attachment; filename=revenue_${reportType}_${startDate}_to_${endDate}.csv`);
+//       return res.send(csv);
+//     } else {
+//       const pdf = await generateEnhancedPDF(reportData, visualizationData, {
+//         startDate, 
+//         endDate,
+//         reportType: reportTypeValid,
+//         groupBy: groupByValid
+//       });
+//       res.setHeader('Content-Type', 'application/pdf');
+//       res.setHeader('Content-Disposition', `attachment; filename=revenue_${reportType}_${startDate}_to_${endDate}.pdf`);
+//       return res.send(pdf);
+//     }
+//   } catch (error) {
+//     console.error('Advanced report error:', error);
+//     res.status(500).json({ 
+//       success: false,
+//       message: 'Failed to generate advanced report',
+//       error: process.env.NODE_ENV === 'development' ? error.message : undefined
+//     });
+//   }
+// };
+
+// Enhanced PDF visualization data generator
+
+
+
+
+
+
+
 exports.getAdvancedRevenueReport = async (req, res) => {
   try {
     const { startDate, endDate, format = 'pdf', reportType = 'summary', groupBy = 'day', preview = false } = req.query;
     
-    // Validate and set defaults
     const validReportTypes = ['summary', 'detailed', 'trend', 'comparison', 'stylist'];
     const reportTypeValid = validReportTypes.includes(reportType) ? reportType : 'summary';
     
     const validGroupBys = ['day', 'week', 'month', 'quarter', 'year', 'service', 'stylist'];
     const groupByValid = validGroupBys.includes(groupBy) ? groupBy : 'day';
 
-    // Get data based on report type
     let reportData;
     switch(reportTypeValid) {
       case 'detailed':
@@ -88,35 +203,54 @@ exports.getAdvancedRevenueReport = async (req, res) => {
         reportData = await reportModel.getSummaryRevenueData(startDate, endDate, groupByValid);
     }
 
-    // If preview requested, return JSON data
     if (preview === 'true' || preview === true) {
       const chartData = generateChartData(reportData, reportTypeValid);
       const serviceChartData = generateServiceChartData(reportData);
-      
       return res.json({
-        rows: Array.isArray(reportData) ? reportData : 
-              (reportData?.current_period || []),
+        rows: Array.isArray(reportData) ? reportData : (reportData?.current_period || []),
         chartData,
         serviceChartData
       });
     }
 
-    // Generate proper visualization data for PDF
-    //const visualizationData = await generatePDFVisualizationData(reportData, reportTypeValid, groupByValid);
+    // ✅ FIX: Use reportData instead of "data"
+    const stylistMap = {};
+    reportData.forEach(row => {
+      const name = row.stylist_name || 'Unknown';
+      stylistMap[name] = (stylistMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
+    });
+    const topStylistEntry = Object.entries(stylistMap).sort((a, b) => b[1] - a[1])[0];
 
+    const serviceMap = {};
+    reportData.forEach(row => {
+      const name = row.service_name || 'Unknown';
+      serviceMap[name] = (serviceMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
+    });
+    const topServiceEntry = Object.entries(serviceMap).sort((a, b) => b[1] - a[1])[0];
+
+    const uniqueClients = new Set(reportData.map(row => row.customer_ID)).size;
+
+    const summaryStats = {
+      totalRevenue: reportData.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0),
+      totalAppointments: reportData.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0),
+      avgRevenuePerAppointment: reportData.length > 0
+        ? (reportData.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0) /
+           reportData.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0))
+        : 0,
+      uniqueClients: uniqueClients,
+      top_stylist: topStylistEntry ? topStylistEntry[0] : 'N/A',
+      top_stylist_revenue: topStylistEntry ? topStylistEntry[1] : 0,
+      top_service: topServiceEntry ? topServiceEntry[0] : 'N/A',
+      top_service_revenue: topServiceEntry ? topServiceEntry[1] : 0,
+      revenue_growth_rate: 0 // optionally compute from comparison
+    };
 
     const visualizationData = {
-      summaryStats: {
-        totalRevenue: reportData.reduce((sum, row) => sum + Number(row.total_revenue || 0), 0),
-        totalAppointments: reportData.reduce((sum, row) => sum + Number(row.total_appointments || 0), 0),
-        // Add other metrics as needed
-      },
-      // Include the original data
+      summaryStats,
+      chartData: generateChartData(reportData, reportTypeValid),
       rows: reportData
     };
 
-
-    // Generate report based on format
     if (format.toLowerCase() === 'csv') {
       const csv = generateCSV(reportData, visualizationData);
       res.setHeader('Content-Type', 'text/csv');
@@ -135,7 +269,7 @@ exports.getAdvancedRevenueReport = async (req, res) => {
     }
   } catch (error) {
     console.error('Advanced report error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Failed to generate advanced report',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
@@ -143,7 +277,21 @@ exports.getAdvancedRevenueReport = async (req, res) => {
   }
 };
 
-// Enhanced PDF visualization data generator
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function generatePDFVisualizationData(reportData, reportType, groupBy) {
   const data = Array.isArray(reportData) ? reportData : 
                (reportData?.current_period || []);
@@ -208,28 +356,62 @@ async function generateVisualizationData(reportData, reportType, groupBy) {
 }
 
 // Helper function to generate chart data for preview
-function generateChartData(reportData, reportType) {
-  // Convert reportData into a format suitable for Chart.js
-  const data = Array.isArray(reportData) ? reportData :
-               (reportData?.current_period || []);
+// function generateChartData(reportData, reportType) {
+//   // Convert reportData into a format suitable for Chart.js
+//   const data = Array.isArray(reportData) ? reportData :
+//                (reportData?.current_period || []);
   
-  // Sort data by period to ensure chronological order
+//   // Sort data by period to ensure chronological order
+//   const sortedData = [...data].sort((a, b) => {
+//     if (!a.period || !b.period) return 0;
+//     return String(a.period).localeCompare(String(b.period));
+//   });
+  
+//   // Extract unique periods
+//   const periods = Array.from(new Set(sortedData.map(item => item.period_label || item.period)));
+  
+//   // Calculate revenue per period (aggregating by period)
+//   const revenueByPeriod = {};
+//   sortedData.forEach(item => {
+//     const period = item.period_label || item.period;
+//     revenueByPeriod[period] = (revenueByPeriod[period] || 0) + Number(item.revenue || 0);
+//   });
+  
+//   // Format for Chart.js
+//   return {
+//     labels: periods,
+//     datasets: [
+//       {
+//         label: 'Revenue',
+//         data: periods.map(period => revenueByPeriod[period] || 0),
+//         borderColor: 'rgb(75, 192, 192)',
+//         backgroundColor: 'rgba(75, 192, 192, 0.5)',
+//         tension: 0.1
+//       }
+//     ]
+//   };
+// }
+
+
+
+
+
+function generateChartData(reportData, reportType) {
+  const data = Array.isArray(reportData) ? reportData : (reportData?.current_period || []);
+  
   const sortedData = [...data].sort((a, b) => {
     if (!a.period || !b.period) return 0;
     return String(a.period).localeCompare(String(b.period));
   });
-  
-  // Extract unique periods
+
   const periods = Array.from(new Set(sortedData.map(item => item.period_label || item.period)));
-  
-  // Calculate revenue per period (aggregating by period)
+
   const revenueByPeriod = {};
   sortedData.forEach(item => {
     const period = item.period_label || item.period;
-    revenueByPeriod[period] = (revenueByPeriod[period] || 0) + Number(item.revenue || 0);
+    revenueByPeriod[period] = (revenueByPeriod[period] || 0) + Number(item.revenue || item.total_revenue || 0);
   });
-  
-  // Format for Chart.js
+
   return {
     labels: periods,
     datasets: [
@@ -243,6 +425,11 @@ function generateChartData(reportData, reportType) {
     ]
   };
 }
+
+
+
+
+
 
 // Helper function to generate service breakdown chart data
 function generateServiceChartData(reportData) {

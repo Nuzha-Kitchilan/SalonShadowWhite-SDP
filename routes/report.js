@@ -22,7 +22,7 @@ const reportController = require('../controllers/reportController');
 
 // Basic Report Routes
 router.get('/revenue', reportController.getRevenueReport);
-router.get('/test-pdf', reportController.testPDF);
+//router.get('/test-pdf', reportController.testPDF);
 
 // Advanced Report Routes
 router.get('/advanced-revenue', reportController.getAdvancedRevenueReport);
