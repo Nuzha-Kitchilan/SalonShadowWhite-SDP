@@ -121,13 +121,13 @@ const RevenueTrend = () => {
 
   return (
     <Box sx={{ 
-      p: 2, 
+      p: 4, 
       borderRadius: '8px',
       border: '1px solid rgba(190, 175, 155, 0.3)',
       boxShadow: 'none',
       background: 'linear-gradient(135deg, rgba(190,175,155,0.3), rgba(255,255,255,0.9))'
     }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
         <Typography 
           variant="subtitle1" 
           sx={{ 
