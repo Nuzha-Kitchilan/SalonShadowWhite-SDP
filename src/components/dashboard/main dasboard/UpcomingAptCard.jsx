@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format, parseISO, isToday, isTomorrow } from 'date-fns';
@@ -17,7 +18,7 @@ import {
   CircularProgress,
   Box
 } from '@mui/material';
-import { Schedule, Person, Spa, People } from '@mui/icons-material';
+import { Schedule, Spa, People } from '@mui/icons-material';
 
 const UpcomingAppointmentsCard = () => {
   const [appointments, setAppointments] = useState([]);
@@ -50,16 +51,24 @@ const UpcomingAppointmentsCard = () => {
 
   const getDayBadgeColor = (dateString) => {
     const date = parseISO(dateString);
-    if (isToday(date)) return 'success.main';
-    if (isTomorrow(date)) return 'info.main';
-    return 'secondary.main';
+    if (isToday(date)) return '#BEAF9B'; // Beige/brown color scheme
+    if (isTomorrow(date)) return '#A59787'; // Darker beige
+    return '#8A7B6C'; // Darkest beige
   };
 
   if (loading) {
     return (
-      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Card sx={{ 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        borderRadius: '8px',
+        border: '1px solid rgba(190, 175, 155, 0.3)',
+        boxShadow: 'none',
+        background: 'linear-gradient(135deg, rgba(190,175,155,0.3), rgba(255,255,255,0.9))'
+      }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-          <CircularProgress />
+          <CircularProgress sx={{ color: '#BEAF9B' }} />
         </Box>
       </Card>
     );
@@ -67,13 +76,47 @@ const UpcomingAppointmentsCard = () => {
 
   if (error) {
     return (
-      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <CardHeader
-          title="Upcoming Appointments"
-          sx={{ backgroundColor: 'primary.main', color: 'primary.contrastText', padding: 2 }}
-        />
-        <CardContent sx={{ flexGrow: 1, padding: 0 }}>
-          <Typography color="error" sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+      <Card sx={{ 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        borderRadius: '8px',
+        border: '1px solid rgba(190, 175, 155, 0.3)',
+        boxShadow: 'none',
+        background: 'linear-gradient(135deg, rgba(190,175,155,0.3), rgba(255,255,255,0.9))'
+      }}>
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(190, 175, 155, 0.3)' }}>
+          <Schedule sx={{ color: '#453C33', mr: 1 }} />
+          <Typography 
+            variant="subtitle1" 
+            sx={{ 
+              fontFamily: "'Poppins', 'Roboto', sans-serif", 
+              fontWeight: 600,
+              color: '#453C33'
+            }}
+          >
+            Upcoming Appointments
+          </Typography>
+          <Badge 
+            badgeContent={0} 
+            sx={{ 
+              ml: 2,
+              '& .MuiBadge-badge': {
+                backgroundColor: '#BEAF9B',
+                color: 'white'
+              }
+            }} 
+          />
+        </Box>
+        <CardContent sx={{ flexGrow: 1, padding: 2 }}>
+          <Typography 
+            color="error" 
+            sx={{ 
+              textAlign: 'center', 
+              color: '#d32f2f',
+              fontFamily: "'Poppins', 'Roboto', sans-serif"
+            }}
+          >
             Error: {error}
           </Typography>
         </CardContent>
@@ -82,20 +125,49 @@ const UpcomingAppointmentsCard = () => {
   }
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <CardHeader
-        title={
-          <Box display="flex" alignItems="center">
-            <Typography variant="h6">Upcoming Appointments</Typography>
-            <Badge badgeContent={appointments.length} color="secondary" showZero sx={{ ml: 2 }} />
-          </Box>
-        }
-        avatar={<Schedule />}
-        sx={{ backgroundColor: 'primary.main', color: 'primary.contrastText', padding: 2 }}
-      />
-      <CardContent sx={{ flexGrow: 1, padding: 0 }}>
+    <Card sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column',
+      borderRadius: '8px',
+      border: '1px solid rgba(190, 175, 155, 0.3)',
+      boxShadow: 'none',
+      background: 'linear-gradient(135deg, rgba(190,175,155,0.3), rgba(255,255,255,0.9))'
+    }}>
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(190, 175, 155, 0.3)' }}>
+        <Schedule sx={{ color: '#453C33', mr: 1 }} />
+        <Typography 
+          variant="subtitle1" 
+          sx={{ 
+            fontFamily: "'Poppins', 'Roboto', sans-serif", 
+            fontWeight: 600,
+            color: '#666666'
+          }}
+        >
+          Upcoming Appointments
+        </Typography>
+        <Badge 
+          badgeContent={appointments.length} 
+          showZero 
+          sx={{ 
+            ml: 2,
+            '& .MuiBadge-badge': {
+              backgroundColor: '#BEAF9B',
+              color: 'white'
+            }
+          }} 
+        />
+      </Box>
+      <CardContent sx={{ flexGrow: 1, p: 0 }}>
         {appointments.length === 0 ? (
-          <Typography sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+          <Typography 
+            sx={{ 
+              p: 3, 
+              textAlign: 'center', 
+              color: '#666666',
+              fontFamily: "'Poppins', 'Roboto', sans-serif"
+            }}
+          >
             No upcoming appointments in the next 48 hours
           </Typography>
         ) : (
@@ -105,36 +177,73 @@ const UpcomingAppointmentsCard = () => {
                 <ListItem
                   sx={{
                     padding: 2,
-                    '&:hover': { backgroundColor: 'action.hover' }
+                    '&:hover': { backgroundColor: 'rgba(190, 175, 155, 0.1)' }
                   }}
                 >
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: getDayBadgeColor(appointment.date) }}>
+                    <Avatar 
+                      sx={{ 
+                        bgcolor: getDayBadgeColor(appointment.date),
+                        fontFamily: "'Poppins', 'Roboto', sans-serif",
+                      }}
+                    >
                       {format(parseISO(appointment.date), 'dd')}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
                       <Box display="flex" alignItems="center">
-                        <Typography variant="subtitle1" component="span" sx={{ mr: 1 }}>
+                        <Typography 
+                          variant="subtitle1" 
+                          component="span" 
+                          sx={{ 
+                            mr: 1,
+                            fontFamily: "'Poppins', 'Roboto', sans-serif",
+                            fontWeight: 500,
+                            color: '#453C33'
+                          }}
+                        >
                           {appointment.client_name}
                         </Typography>
                         <Chip
                           label={appointment.appointment_status}
                           size="small"
-                          color={appointment.appointment_status === 'Scheduled' ? 'primary' : 'default'}
+                          sx={{
+                            backgroundColor: appointment.appointment_status === 'Scheduled' ? 'rgba(190, 175, 155, 0.8)' : 'rgba(190, 175, 155, 0.4)',
+                            color: '#453C33',
+                            fontFamily: "'Poppins', 'Roboto', sans-serif",
+                            fontSize: '0.75rem',
+                            height: '24px'
+                          }}
                         />
                       </Box>
                     }
                     secondary={
                       <>
                         <Box display="flex" alignItems="center" mt={0.5}>
-                          <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
-                            <Schedule fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              mr: 2,
+                              color: '#666666',
+                              fontFamily: "'Poppins', 'Roboto', sans-serif",
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <Schedule fontSize="small" sx={{ mr: 0.5, color: '#8A7B6C' }} />
                             {appointment.time}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            <People fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              color: '#666666',
+                              fontFamily: "'Poppins', 'Roboto', sans-serif",
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <People fontSize="small" sx={{ mr: 0.5, color: '#8A7B6C' }} />
                             {appointment.stylists}
                           </Typography>
                         </Box>
@@ -144,8 +253,19 @@ const UpcomingAppointmentsCard = () => {
                               key={service}
                               label={service}
                               size="small"
-                              icon={<Spa fontSize="small" />}
-                              sx={{ mr: 0.5, mb: 0.5 }}
+                              icon={<Spa fontSize="small" sx={{ color: '#8A7B6C' }} />}
+                              sx={{ 
+                                mr: 0.5, 
+                                mb: 0.5,
+                                backgroundColor: 'rgba(190, 175, 155, 0.2)',
+                                color: '#666666',
+                                fontFamily: "'Poppins', 'Roboto', sans-serif",
+                                fontSize: '0.75rem',
+                                border: '1px solid rgba(190, 175, 155, 0.3)',
+                                '& .MuiChip-icon': {
+                                  color: '#8A7B6C'
+                                }
+                              }}
                             />
                           ))}
                         </Box>
@@ -153,7 +273,7 @@ const UpcomingAppointmentsCard = () => {
                     }
                   />
                 </ListItem>
-                {index < appointments.length - 1 && <Divider />}
+                {index < appointments.length - 1 && <Divider sx={{ borderColor: 'rgba(190, 175, 155, 0.2)' }} />}
               </React.Fragment>
             ))}
           </List>
