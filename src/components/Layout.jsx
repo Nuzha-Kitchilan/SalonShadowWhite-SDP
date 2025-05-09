@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
@@ -48,6 +49,8 @@ const Layout = () => {
           flexGrow: 1,
           height: "calc(100vh - 64px)",
           overflowY: "auto",
+          scrollbarWidth: "none", // Firefox
+          "&::-webkit-scrollbar": { display: "none" }, // Chrome, Safari, Edge
         }}
       >
         <Outlet /> {/* Renders the page content */}

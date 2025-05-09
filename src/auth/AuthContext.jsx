@@ -1,97 +1,3 @@
-// import { createContext, useState, useEffect, useCallback } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// export const AuthContext = createContext();
-
-// export const AuthProvider = ({ children }) => {
-//   const navigate = useNavigate();
-//   const [authState, setAuthState] = useState(() => {
-//     // Initialize synchronously from localStorage
-//     const token = localStorage.getItem("token");
-//     return {
-//       token,
-//       isAuthenticated: !!token,
-//       isLoading: false, // No initial loading needed
-//     };
-//   });
-
-//   // Validate token with backend (optional but recommended)
-//   const validateToken = useCallback(async () => {
-//     if (!authState.token) return false;
-
-//     try {
-//       const response = await fetch("http://localhost:5001/api/auth/validate", {
-//         headers: {
-//           Authorization: `Bearer ${authState.token}`,
-//         },
-//       });
-      
-//       if (!response.ok) {
-//         logout();
-//         return false;
-//       }
-//       return true;
-//     } catch (error) {
-//       console.error("Token validation failed:", error);
-//       logout();
-//       return false;
-//     }
-//   }, [authState.token]);
-
-//   const login = (token) => {
-//     localStorage.setItem("token", token);
-//     setAuthState({
-//       token,
-//       isAuthenticated: true,
-//       isLoading: false,
-//     });
-//     navigate("/"); // Redirect after login
-//   };
-
-//   const logout = () => {
-//     localStorage.removeItem("token");
-//     setAuthState({
-//       token: null,
-//       isAuthenticated: false,
-//       isLoading: false,
-//     });
-//     navigate("/login"); // Redirect to login after logout
-//   };
-
-//   // Optional: Periodically validate token
-//   useEffect(() => {
-//     if (authState.token) {
-//       const interval = setInterval(() => {
-//         validateToken();
-//       }, 60 * 60 * 1000); // Validate every 15 minutes
-
-//       return () => clearInterval(interval);
-//     }
-//   }, [authState.token, validateToken]);
-
-//   return (
-//     <AuthContext.Provider
-//       value={{
-//         token: authState.token,
-//         isAuthenticated: authState.isAuthenticated,
-//         isLoading: authState.isLoading,
-//         login,
-//         logout,
-//         validateToken,
-//       }}
-//     >
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-
-
-
-
-
-
-
 
 
 
@@ -214,3 +120,26 @@ export const useAuth = () => {
   }
   return context;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
