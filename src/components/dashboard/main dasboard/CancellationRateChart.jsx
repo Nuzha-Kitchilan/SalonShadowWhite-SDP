@@ -35,14 +35,36 @@ const CancellationRateChart = () => {
   const [error, setError] = useState(null);
   const theme = useTheme();
 
-  const calculateMetrics = (dataArray) => {
-    const totalCancelled = dataArray.reduce((sum, item) => sum + (item.cancelled || 0), 0);
-    const totalBooked = dataArray.reduce((sum, item) => sum + (item.booked || 0), 0);
-    const cancellationRate = totalBooked > 0 ? (totalCancelled / totalBooked) * 100 : 0;
-    const trend = dataArray.length > 1
-      ? dataArray[dataArray.length - 1].cancellation_rate - dataArray[0].cancellation_rate
-      : 0;
+  // const calculateMetrics = (dataArray) => {
+  //   const totalCancelled = dataArray.reduce((sum, item) => sum + (item.cancelled || 0), 0);
+  //   const totalBooked = dataArray.reduce((sum, item) => sum + (item.booked || 0), 0);
+  //   const cancellationRate = totalBooked > 0 ? (totalCancelled / totalBooked) * 100 : 0;
+  //   const trend = dataArray.length > 1
+  //     ? dataArray[dataArray.length - 1].cancellation_rate - dataArray[0].cancellation_rate
+  //     : 0;
 
+  //   return {
+  //     totalCancelled,
+  //     totalBooked,
+  //     cancellationRate,
+  //     trend
+  //   };
+  // };
+
+
+
+  const calculateMetrics = (dataArray) => {
+    const latestPeriod = dataArray[dataArray.length - 1] || {};
+    
+    const totalCancelled = Number(latestPeriod.cancelled) || 0;
+    const totalBooked = Number(latestPeriod.booked) || 0;
+    const cancellationRate = Number(latestPeriod.cancellation_rate) || 0;
+    
+    const prevPeriod = dataArray.length > 1 ? dataArray[dataArray.length - 2] : null;
+    const trend = prevPeriod
+      ? Number(latestPeriod.cancellation_rate) - Number(prevPeriod.cancellation_rate)
+      : 0;
+  
     return {
       totalCancelled,
       totalBooked,
@@ -50,6 +72,9 @@ const CancellationRateChart = () => {
       trend
     };
   };
+  
+  
+
 
   useEffect(() => {
     let isMounted = true;

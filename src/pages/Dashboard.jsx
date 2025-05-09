@@ -105,14 +105,14 @@
 
 import React, { useState } from 'react';
 import { Box, Typography, Grid, Tabs, Tab } from '@mui/material';
-import CalendarCard from '../components/dashboard/CalendarCard';
-import UpcomingAptCard from '../components/dashboard/UpcomingAptCard';
-import ServicePopularityChart from '../components/dashboard/ServicePopularityChart';
-import StylistPopularityChart from '../components/dashboard/StylistPopularityChart';
-import TimeHeatmap from '../components/dashboard/TimeHeatmap';
+import CalendarCard from '../components/dashboard/main dasboard/CalendarCard';
+import UpcomingAptCard from '../components/dashboard/main dasboard/UpcomingAptCard';
+import ServicePopularityChart from '../components/dashboard/main dasboard/ServicePopularityChart';
+import StylistPopularityChart from '../components/dashboard/main dasboard/StylistPopularityChart';
+import TimeHeatmap from '../components/dashboard/main dasboard/TimeHeatmap';
 import RevenueDashboard from '../components/dashboard/finance/RevenueDashboard';
-import CancellationRateChart from '../components/dashboard/CancellationRateChart';
-import DashboardLayout from '../components/dashboard/TopLayout';
+import CancellationRateChart from '../components/dashboard/main dasboard/CancellationRateChart';
+import DashboardLayout from '../components/dashboard/main dasboard/TopLayout';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
