@@ -1,99 +1,3 @@
-{/* const db = require('../config/db');
-  // Use .js extension with import
-
-const Admin = {
-  // 🔍 Find admin by username
-//   findByUsername: async (username) => {
-//     const sql = 'SELECT * FROM admins WHERE username = ?';
-//     const [results] = await db.execute(sql, [username]);
-//     return results[0];  // Return the first result
-//   },
-
-// Refactored findByUsername to use async/await
-findByUsername: async (username) => {
-    const sql = 'SELECT * FROM admins WHERE username = ?';
-    try {
-        const [results] = await db.execute(sql, [username]);
-        return results[0];  // Return the first result if it exists
-    } catch (err) {
-        console.error('Error in findByUsername:', err);
-        throw err;  // Re-throw the error so it can be handled at the controller level
-    }
-},
-
-
-
-
-  // 🔍 Find admin by email
-  findByEmail: async (email) => {
-    const sql = 'SELECT * FROM admins WHERE email = ?';
-    const [results] = await db.execute(sql, [email]);
-    return results[0];  // Return the first result
-  },
-
-  // 🔍 Find admin by ID
-  findById: async (adminId) => {
-    const sql = 'SELECT * FROM admins WHERE id = ?';
-    const [results] = await db.execute(sql, [adminId]);
-    return results[0];  // Return the first result
-  },
-
-  // // ✅ Create a new admin (without hashing password)
-  // createAdmin: async (first_name, last_name, email, username, password, role, profile_url) => {
-  //   const sql = 'INSERT INTO admins (first_name, last_name, email, username, password, role, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  //   const [result] = await db.execute(sql, [first_name, last_name, email, username, password, role, profile_url]);
-  //   return result;
-  // },
-
-  // ✅ Create a new admin (without hashing password)
-createAdmin: async (first_name, last_name, email, username, password, role, profile_url) => {
-  // Set default value for profile_url if it's undefined
-  const safeProfileUrl = profile_url || null;
-  
-  const sql = 'INSERT INTO admins (first_name, last_name, email, username, password, role, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  const [result] = await db.execute(sql, [
-    first_name, 
-    last_name, 
-    email, 
-    username, 
-    password, 
-    role, 
-    safeProfileUrl
-  ]);
-  return result;
-},
-
-  // ✏️ Update admin details (excluding password)
-  updateAdmin: async (adminId, first_name, last_name, email, role, profile_url) => {
-    const sql = 'UPDATE admins SET first_name = ?, last_name = ?, email = ?, role = ?, profile_url = ? WHERE id = ?';
-    const [result] = await db.execute(sql, [first_name, last_name, email, role, profile_url, adminId]);
-    return result;
-  },
-
-  // 🔑 Update password (no hashing)
-  updatePassword: async (adminId, newPassword) => {
-    const sql = 'UPDATE admins SET password = ? WHERE id = ?';
-    const [result] = await db.execute(sql, [newPassword, adminId]);
-    return result;
-  },
-
-  // ❌ Delete admin
-  deleteAdmin: async (adminId) => {
-    const sql = 'DELETE FROM admins WHERE id = ?';
-    const [result] = await db.execute(sql, [adminId]);
-    return result;
-  },
-
-  // 📜 Get all admins
-  getAllAdmins: async () => {
-    const sql = 'SELECT id, first_name, last_name, email, username, role, profile_url, created_at FROM admins';
-    const [results] = await db.execute(sql);
-    return results;
-  },
-};
-
-module.exports = Admin; */}
-
 const db = require('../config/db');
 const cloudinary = require('cloudinary').v2; 
 
@@ -124,28 +28,8 @@ const Admin = {
     return results[0];  // Return the first result
   },
 
-  // ✅ Create a new admin (expects password to be pre-hashed)
-  // createAdmin: async (first_name, last_name, email, username, password, role, profile_url) => {
-  //   // Set default value for profile_url if it's undefined
-  //   const safeProfileUrl = profile_url || null;
-    
-  //   // IMPORTANT: Password should already be hashed by the controller before reaching this point
-  //   const sql = 'INSERT INTO admins (first_name, last_name, email, username, password, role, profile_url) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  //   const [result] = await db.execute(sql, [
-  //     first_name, 
-  //     last_name, 
-  //     email, 
-  //     username, 
-  //     password, // This should be a bcrypt hashed password
-  //     role, 
-  //     safeProfileUrl
-  //   ]);
-  //   return result;
-  // },
 
 
-
-// ✅ Enhanced createAdmin with Cloudinary support
 createAdmin: async (first_name, last_name, email, username, password, role, profile_pic_file) => {
   try {
     let profileUrl = null;
@@ -181,27 +65,15 @@ createAdmin: async (first_name, last_name, email, username, password, role, prof
 
 
 
-  // ✏️ Update admin details (excluding password)
-  // updateAdmin: async (adminId, first_name, last_name, email, role, profile_url) => {
-  //   const sql = 'UPDATE admins SET first_name = ?, last_name = ?, email = ?, role = ?, profile_url = ? WHERE id = ?';
-  //   const [result] = await db.execute(sql, [first_name, last_name, email, role, profile_url, adminId]);
-  //   return result;
-  // },
-
-
-  // Model function
-// Model function
+ 
 updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, profile_pic_file) => {
   try {
-    // Initialize the finalProfileUrl with the existing URL or null
-    let finalProfileUrl = profile_url;
+    let finalProfileUrl = profile_url || null;
     
-    // If a new file was uploaded, process it with Cloudinary
+    // Process image if file was uploaded
     if (profile_pic_file) {
       try {
-        console.log('Uploading file to Cloudinary:', profile_pic_file.path);
-        
-        // Upload new image to Cloudinary
+        // Upload to Cloudinary
         const uploadResult = await cloudinary.uploader.upload(profile_pic_file.path, {
           folder: 'admin_profiles',
           transformation: [
@@ -209,53 +81,40 @@ updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, pr
           ]
         });
         
-        console.log('Cloudinary upload successful:', uploadResult.secure_url);
         finalProfileUrl = uploadResult.secure_url;
         
-        // Optional: Delete old image from Cloudinary if it exists
-        if (profile_url) {
+        // Delete old image if it exists and is from Cloudinary
+        if (profile_url && profile_url.includes('res.cloudinary.com')) {
           try {
-            const publicId = profile_url.split('/').pop().split('.')[0];
-            console.log('Deleting old Cloudinary image:', publicId);
-            await cloudinary.uploader.destroy(`admin_profiles/${publicId}`);
+            const publicId = profile_url.split('/').slice(-2).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
           } catch (deleteErr) {
-            console.warn('Failed to delete old image, continuing with update:', deleteErr);
-            // Continue with the update even if image deletion fails
+            console.warn('Failed to delete old image:', deleteErr);
           }
         }
       } catch (uploadErr) {
         console.error('Cloudinary upload error:', uploadErr);
-        // If Cloudinary upload fails, keep using the old profile URL
-        // Do not throw here, so we can still update other admin fields
+        throw new Error('Failed to upload image to Cloudinary');
       }
     }
 
-    // Ensure finalProfileUrl is not undefined before SQL execution
-    if (finalProfileUrl === undefined) {
-      finalProfileUrl = null;
-    }
-
-    console.log('Executing SQL update with params:', {
-      first_name, 
-      last_name, 
-      email, 
-      role, 
-      finalProfileUrl,
-      adminId
-    });
-
+    // Update database
     const sql = 'UPDATE admins SET first_name = ?, last_name = ?, email = ?, role = ?, profile_url = ? WHERE id = ?';
     const [result] = await db.execute(sql, [
       first_name, 
       last_name, 
       email, 
       role, 
-      finalProfileUrl, // Now guaranteed to be a value or null, not undefined
+      finalProfileUrl,
       adminId
     ]);
     
-    // Get the updated admin record to return
-    const [updatedAdmin] = await db.execute('SELECT * FROM admins WHERE id = ?', [adminId]);
+    // Return updated admin data
+    const [updatedAdmin] = await db.execute(
+      'SELECT id, first_name, last_name, email, role, profile_url FROM admins WHERE id = ?',
+      [adminId]
+    );
+    
     return updatedAdmin[0];
   } catch (err) {
     console.error('Error updating admin:', err);
