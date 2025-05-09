@@ -12,8 +12,6 @@ import {
 import {
   Box,
   Typography,
-  FormControl,
-  InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
@@ -45,70 +43,175 @@ const RevenueTrend = () => {
       {
         label: "Revenue",
         data: revenueData.map((item) => item.revenue),
-        fill: false,
-        borderColor: "#1976d2",
+        fill: true,
+        backgroundColor: 'rgba(190, 175, 155, 0.2)',
+        borderColor: "#BEAF9B",
         tension: 0.3,
+        pointBackgroundColor: "#8A7B6C",
+        pointBorderColor: "#fff",
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: "#BEAF9B",
       },
     ],
   };
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // allows us to control height manually
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          font: {
+            family: "'Poppins', 'Roboto', sans-serif",
+            size: 12
+          },
+          color: '#453C33'
+        }
       },
       tooltip: {
         mode: "index",
         intersect: false,
+        backgroundColor: 'rgba(138, 123, 108, 0.8)',
+        titleFont: {
+          family: "'Poppins', 'Roboto', sans-serif",
+          size: 14
+        },
+        bodyFont: {
+          family: "'Poppins', 'Roboto', sans-serif",
+          size: 13
+        },
+        callbacks: {
+          label: function(context) {
+            return `Revenue: $${context.parsed.y.toFixed(2)}`;
+          }
+        }
       },
     },
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          color: 'rgba(190, 175, 155, 0.2)',
+        },
+        ticks: {
+          font: {
+            family: "'Poppins', 'Roboto', sans-serif",
+          },
+          color: '#666666',
+          callback: function(value) {
+            return '$' + value;
+          }
+        }
       },
+      x: {
+        grid: {
+          color: 'rgba(190, 175, 155, 0.2)',
+        },
+        ticks: {
+          font: {
+            family: "'Poppins', 'Roboto', sans-serif",
+          },
+          color: '#666666'
+        }
+      }
     },
   };
 
   return (
-    <Box sx={{ p: 2, backgroundColor: "#fff", borderRadius: 2, boxShadow: 2 }}>
+    <Box sx={{ 
+      p: 2, 
+      borderRadius: '8px',
+      border: '1px solid rgba(190, 175, 155, 0.3)',
+      boxShadow: 'none',
+      background: 'linear-gradient(135deg, rgba(190,175,155,0.3), rgba(255,255,255,0.9))'
+    }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h6">Revenue Trend</Typography>
+        <Typography 
+          variant="subtitle1" 
+          sx={{ 
+            fontFamily: "'Poppins', 'Roboto', sans-serif", 
+            fontWeight: 600,
+            color: '#666666'
+          }}
+        >
+          Revenue Trend
+        </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <FormControl size="small">
-            <InputLabel>Range</InputLabel>
-            <Select 
-              value={range} 
-              label="Range" 
-              onChange={(e) => setRange(e.target.value)}
-            >
-              <MenuItem value="week">Weekly</MenuItem>
-              <MenuItem value="month">Monthly</MenuItem>
-              <MenuItem value="year">Yearly</MenuItem>
-            </Select>
-          </FormControl>
+          <Select 
+            value={range} 
+            onChange={(e) => setRange(e.target.value)}
+            size="small"
+            sx={{
+              height: 30,
+              fontSize: '0.875rem',
+              '& .MuiSelect-select': { py: 0.5 },
+              '&.MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(190, 175, 155, 0.5)',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#BEAF9B',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#BEAF9B',
+                },
+              },
+              color: '#453C33'
+            }}
+          >
+            <MenuItem value="week" sx={{ fontSize: '0.875rem', fontFamily: "'Poppins', 'Roboto', sans-serif" }}>Weekly</MenuItem>
+            <MenuItem value="month" sx={{ fontSize: '0.875rem', fontFamily: "'Poppins', 'Roboto', sans-serif" }}>Monthly</MenuItem>
+            <MenuItem value="year" sx={{ fontSize: '0.875rem', fontFamily: "'Poppins', 'Roboto', sans-serif" }}>Yearly</MenuItem>
+          </Select>
           {range !== 'year' && (
-            <FormControl size="small">
-              <InputLabel>Year</InputLabel>
-              <Select
-                value={year}
-                label="Year"
-                onChange={(e) => setYear(e.target.value)}
-              >
-                {Array.from({ length: 5 }, (_, i) => (
-                  <MenuItem key={i} value={new Date().getFullYear() - i}>
-                    {new Date().getFullYear() - i}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Select
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              size="small"
+              sx={{
+                height: 30,
+                fontSize: '0.875rem',
+                '& .MuiSelect-select': { py: 0.5 },
+                '&.MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'rgba(190, 175, 155, 0.5)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#BEAF9B',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#BEAF9B',
+                  },
+                },
+                color: '#453C33'
+              }}
+            >
+              {Array.from({ length: 5 }, (_, i) => (
+                <MenuItem 
+                  key={i} 
+                  value={new Date().getFullYear() - i}
+                  sx={{ fontSize: '0.875rem', fontFamily: "'Poppins', 'Roboto', sans-serif" }}
+                >
+                  {new Date().getFullYear() - i}
+                </MenuItem>
+              ))}
+            </Select>
           )}
         </Box>
       </Box>
 
       {/* Chart container with fixed height */}
-      <Box sx={{ height: 300, position: "relative" }}>
+      <Box 
+        sx={{ 
+          height: 300, 
+          position: "relative",
+          p: 1,
+          borderRadius: '4px',
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+        }}
+      >
         <Line data={chartData} options={chartOptions} />
       </Box>
     </Box>
