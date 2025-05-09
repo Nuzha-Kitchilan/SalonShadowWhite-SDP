@@ -36,45 +36,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = React.useContext(AuthContext);
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setError('');
-
-  //   if (!username || !password) {
-  //     setError('Please enter both username and password');
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch('http://localhost:5001/api/auth/login', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ username, password }),
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (!response.ok) {
-  //       setError(data.message || 'Login failed');
-  //       return;
-  //     }
-
-  //     if (!data.token) {
-  //       setError('No authentication token received');
-  //       return;
-  //     }
-
-  //     localStorage.setItem('token', data.token);
-  //     login(data.token);
-  //     navigate('/');
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     setError('Login failed. Please try again.');
-  //   }
-  // };
-
+ 
   
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
