@@ -11,6 +11,7 @@ import Book from "./pages/Book";
 import Login from "./pages/Login"; 
 import Register from "./pages/Register"; 
 import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
 
 
 
@@ -30,6 +31,7 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} /> 
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
       </Routes>
     </Router>

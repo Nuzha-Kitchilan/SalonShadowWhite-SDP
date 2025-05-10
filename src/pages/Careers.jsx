@@ -1,561 +1,22 @@
-{/* import React, { useState, useEffect } from "react";
-import { Container, Grid, Typography, Button, TextField, Box, Paper } from "@mui/material";
-import { School, Spa, MonetizationOn, AccessTime } from "@mui/icons-material";
-import { CloudUpload } from "@mui/icons-material";
-import { motion } from "framer-motion";
-import heroImage from "../assets/join2.jpg"; // Import your hero image
-import thriveImage from "../assets/thrive.jpg"; // Import the thrive together image
-import backgroundImage from "../assets/download.jpeg"; // Import the background image
-import aestheticImage from "../assets/aesthetic.jpeg"; // Import the aesthetic image
-
-const JoinOurTeam = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    resume: null,
-    whyJoin: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    setFormData((prevData) => ({ ...prevData, resume: e.target.files[0] }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
-
-  // Improved line drawing animation variants
-  const lineVariants = {
-    hidden: { 
-      width: 0,
-      opacity: 0
-    },
-    visible: {
-      width: "100%",
-      opacity: 1,
-      transition: { 
-        duration: 1.5, 
-        ease: "easeInOut",
-        delay: 0.3
-      }
-    }
-  };
-
-  return (
-    <Box sx={{ width: '100%', margin: 0, padding: 0 }}>
-      {/* Hero Section *
-      <Box
-        sx={{
-          textAlign: "center",
-          padding: "6rem 0",
-          backgroundImage: `url(${heroImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          color: "#8B4513", // Set color to SaddleBrown
-          width: "100vw",
-          marginLeft: 'calc(-50vw + 50%)', // Center the box
-          marginRight: 'calc(-50vw + 50%)',
-          boxSizing: 'border-box',
-        }}
-      >
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 40 }} // Start lower for smoother upward motion
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 2,
-              type: "spring",
-              stiffness: 80,
-              damping: 20,
-            }}
-          >
-            <Typography
-              variant="h3"
-              gutterBottom
-              sx={{
-                fontFamily: "'Playfair Display', serif", // Using Playfair Display font
-                fontSize: "3rem",
-                fontWeight: "bold",
-                fontStyle: "italic",
-                color: "#8B4513", // SaddleBrown color for the text
-                textShadow: "2px 2px 4px rgba(255, 255, 255, 0.9)"
-              }}
-            >
-              "Join Our Team and Grow Together"
-            </Typography>
-          </motion.div>
-          <Button
-            variant="contained"
-            color="primary"
-            href="#application-form"
-            sx={{
-              backgroundColor: "#8B4513",
-              '&:hover': {
-                backgroundColor: "#6A3B1F"
-              }
-            }}
-          >
-            Apply Now
-          </Button>
-        </Container>
-      </Box> */}
-
-      {/* Combined Gradient Section for "What You Will Get" and "Thrive Together" 
-      <Box
-        sx={{
-          background: "linear-gradient(to bottom, rgba(255, 243, 224, 0.3), rgba(159, 137, 130, 0.4), rgba(249, 249, 249, 0.2))",
-          position: "relative", // Added for absolute positioning of aesthetic image
-        }}
-      >
-        {/* Aesthetic Image - positioned to the left side between the two sections 
-        
-<Box
-  sx={{
-    position: "absolute",
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: "45%", // Width relative to container
-    height: "100%", // Full height of the gradient container
-    zIndex: 0,
-    opacity: 0.2, // Low opacity as requested
-    pointerEvents: "none", // Ensures the image doesn't interfere with clicks
-    "@media (max-width: 900px)": {
-      display: "none", // Hide on smaller screens
-    },
-  }}
->
-  <img
-    src={aestheticImage}
-    alt="Aesthetic"
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "cover", // Ensures the image covers the entire box
-    }}
-  />
-</Box> */}
-
-        {/* What You Will Get Section 
-        <Box
-          sx={{
-            padding: "3rem 0",
-            position: "relative", // For z-index
-            zIndex: 1, // Ensures content stays above the aesthetic image
-          }}
-        >
-          <Container>
-            <Typography variant="h4" gutterBottom textAlign="center">
-              What You Will Get Working With Us
-            </Typography>
-            <Grid container spacing={3}> */}
-              {/* Competitive Salary 
-              <Grid item xs={12} md={3}>
-                <Paper
-                  sx={{
-                    padding: "1.5rem",
-                    textAlign: "center",
-                    backgroundColor: "#fff3e0",
-                    borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
-                    "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
-                    }
-                  }}
-                >
-                  <MonetizationOn sx={{ fontSize: 40, color: "#8B4513" }} />
-                  <Typography variant="h6">Competitive Salary</Typography>
-                  <Typography variant="body1">
-                    We offer a competitive salary based on your experience and performance.
-                  </Typography>
-                </Paper>
-              </Grid> */}
-
-              {/* Education & Growth 
-              <Grid item xs={12} md={3}>
-                <Paper
-                  sx={{
-                    padding: "1.5rem",
-                    textAlign: "center",
-                    backgroundColor: "#fff3e0",
-                    borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
-                    "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
-                    }
-                  }}
-                >
-                  <School sx={{ fontSize: 40, color: "#8B4513" }} />
-                  <Typography variant="h6">Education & Growth</Typography>
-                  <Typography variant="body1">
-                    Pursue education in beauty and hairstyling with our professional development support.
-                  </Typography>
-                </Paper>
-              </Grid> */}
-
-              {/* Beauty with Benefits 
-              <Grid item xs={12} md={3}>
-                <Paper
-                  sx={{
-                    padding: "1.5rem",
-                    textAlign: "center",
-                    backgroundColor: "#fff3e0",
-                    borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
-                    "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
-                    }
-                  }}
-                >
-                  <Spa sx={{ fontSize: 40, color: "#8B4513" }} />
-                  <Typography variant="h6">Beauty with Benefits</Typography>
-                  <Typography variant="body1">
-                    Enjoy discounts on salon services and beauty treatments as part of our team.
-                  </Typography>
-                </Paper>
-              </Grid> */}
-
-              {/* Flexible Hours 
-              <Grid item xs={12} md={3}>
-                <Paper
-                  sx={{
-                    padding: "1.5rem",
-                    textAlign: "center",
-                    backgroundColor: "#fff3e0",
-                    borderRadius: "10px",
-                    transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth transition for transform and box-shadow
-                    "&:hover": {
-                      transform: "scale(1.05)", // Scale up on hover
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)", // Add a shadow for the pop-out effect
-                    }
-                  }}
-                >
-                  <AccessTime sx={{ fontSize: 40, color: "#8B4513" }} />
-                  <Typography variant="h6">Flexible Hours</Typography>
-                  <Typography variant="body1">
-                    Enjoy a work schedule that fits your lifestyle and personal commitments.
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Container>
-        </Box> */}
-
-        {/* Thrive Together Section (still within the gradient container) 
-        <Box
-          sx={{
-            padding: "3rem 0",
-            position: "relative", // For z-index
-            zIndex: 1, // Ensures content stays above the aesthetic image
-          }}
-        >
-          <Container>
-            <Grid container spacing={4} alignItems="center">
-              <Grid item xs={12} md={6} sx={{ position: "relative" }}>
-                <Box sx={{ position: "relative", zIndex: 1 }}>
-                  <img
-                    src={thriveImage}
-                    alt="Wild Honey Team"
-                    style={{
-                      width: "100%",
-                      maxWidth: "400px",
-                      height: "auto",
-                      borderRadius: "10px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
-                      margin: "0 auto",
-                      display: "block",
-                    }}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6} sx={{ position: "relative" }}>
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: "-550px", // Moves the box further left beyond the image
-                    width: "calc(100% + 550px)", // Extends it more to the left
-                    height: "120%",
-                    backgroundColor: "#9F8982",
-                    zIndex: -1,
-                    borderRadius: "10px",
-                    paddingLeft: "1rem", // Keeps text well-positioned
-                    boxSizing: "border-box",
-                    textAlign: "left",
-                    opacity: 0.85, // Make slightly more transparent to let gradient show through
-                  }}
-                />
-                <Box
-                  sx={{
-                    padding: "2rem",
-                    borderRadius: "10px",
-                    position: "relative",
-                    marginLeft: "-100px", // Keeps text well-positioned
-                  }}
-                >
-                  <Typography
-                    variant="h4"
-                    gutterBottom
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#ffffff",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    We Thrive Together
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    Salon Shadow White works hard to build our demand, and that's why we provide you with a full schedule starting your first day – so you can grow together with our business.
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    Maybe you have been a solo studio stylist, recently took time off for family or to care for a loved one, or you are just starting your career, and now you're looking to get back in the industry. If that sounds like you, we might be a good fit.
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Container>
-        </Box>
-      </Box> */}
-
-      {/* Application Form Section with Background Image 
-      <Box
-        id="application-form"
-        sx={{
-          padding: "3rem 0",
-          textAlign: "center",
-          position: "relative",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.15, // Low opacity as requested
-            zIndex: -1,
-          },
-        }}
-      >
-        <Container>
-          {/* Join Our Team with animated underline 
-          <Box sx={{ position: "relative", display: "inline-block", mb: 4 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: "bold",
-                color: "#8B4513",
-                position: "relative",
-                zIndex: 1,
-                marginBottom: "0.5rem" // Add space below the text for the line
-              }}
-            >
-              Join Our Team
-            </Typography>
-            
-            {/* Improved animated underline using motion.div instead of svg 
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={lineVariants}
-              style={{
-                height: "3px",
-                backgroundColor: "#8B4513",
-                borderRadius: "2px"
-              }}
-            />
-          </Box>
-
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3} justifyContent="center">
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Name"
-                  variant="outlined"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
-                    borderRadius: "8px",
-                    padding: "12px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  variant="outlined"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
-                    borderRadius: "8px",
-                    padding: "12px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  variant="outlined"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
-                    borderRadius: "8px",
-                    padding: "12px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-  <Button
-    fullWidth
-    variant="outlined"
-    component="label"
-    startIcon={<CloudUpload />}
-    sx={{
-      border: "2px dashed #8B4513",
-      color: "#8B4513",
-      borderRadius: "8px",
-      padding: "15px 12px", // Adjusted padding to match other fields
-      height: "56px", // Fixed height to match text fields
-      backgroundColor: "rgba(255, 255, 255, 0.8)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      textTransform: "none",
-      width: "100%", // Ensure full width
-      boxSizing: "border-box", // Ensure padding is included in width calculation
-      "&:hover": {
-        borderColor: "#6A3B1F",
-        backgroundColor: "rgba(255, 247, 229, 0.9)",
-      },
-    }}
-  >
-    Upload Resume (PDF)
-    <input type="file" accept=".pdf" hidden onChange={handleFileChange} />
-  </Button>
-</Grid>
-
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Why do you want to join us?"
-                  variant="outlined"
-                  multiline
-                  rows={4}
-                  name="whyJoin"
-                  value={formData.whyJoin}
-                  onChange={handleChange}
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)", // Slight transparency
-                    borderRadius: "8px",
-                    padding: "12px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  sx={{
-                    padding: "12px 30px",
-                    fontSize: "1.1rem",
-                    borderRadius: "30px",
-                    backgroundColor: "#8B4513",
-                    "&:hover": { backgroundColor: "#6A3B1F" },
-                  }}
-                >
-                  Submit Application
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Container>
-      </Box>
-    </Box>
-  );
-};
-
-export default JoinOurTeam; */}
-
-
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
-  Container, 
-  Grid, 
-  Typography, 
-  Button, 
   TextField, 
+  Button, 
+  Typography, 
   Box, 
-  Paper, 
+  Grid, 
+  Container,
+  Paper,
   Snackbar,
   Alert,
   CircularProgress
 } from "@mui/material";
-import { School, Spa, MonetizationOn, AccessTime } from "@mui/icons-material";
-import { motion } from "framer-motion";
-import heroImage from "../assets/join2.jpg";
-import thriveImage from "../assets/thrive.jpg";
-import backgroundImage from "../assets/download.jpeg";
-import aestheticImage from "../assets/aesthetic.jpeg";
+import SchoolIcon from "@mui/icons-material/School";
+import SpaIcon from "@mui/icons-material/Spa";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import careersPic from "../assets/careers.png"; // Using careers.png for header
+import thriveImage from "../assets/thrive2.png";
 import axios from "axios";
 
 const JoinOurTeam = () => {
@@ -582,6 +43,26 @@ const JoinOurTeam = () => {
     resumeUrl: "",
     whyJoin: ""
   });
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+    
+    // Add this to remove default margins from the body
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.documentElement.style.margin = "0";
+    document.documentElement.style.padding = "0";
+    
+    // Clean up function to restore default styles when component unmounts
+    return () => {
+      document.body.style.margin = "";
+      document.body.style.padding = "";
+      document.documentElement.style.margin = "";
+      document.documentElement.style.padding = "";
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -720,139 +201,84 @@ const JoinOurTeam = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
 
-  // Line drawing animation variants
-  const lineVariants = {
-    hidden: { 
-      width: 0,
-      opacity: 0
-    },
-    visible: {
-      width: "100%",
-      opacity: 1,
-      transition: { 
-        duration: 1.5, 
-        ease: "easeInOut",
-        delay: 0.3
-      }
-    }
-  };
-
   return (
-    <Box 
-      sx={{ 
-        width: '100vw', 
-        minHeight: '100vh',
-        maxWidth: '100%', // Prevent horizontal overflow
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      {/* Hero Section */}
+    <Box sx={{ 
+      width: '100%', 
+      maxWidth: '100%', 
+      minHeight: '100vh',
+      overflowX: 'hidden',
+      position: 'relative',
+      bgcolor: '#faf5f0', // Matching the Contact page background
+      display: 'flex',
+      flexDirection: 'column',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
+    }}>
+      {/* Header Banner */}
       <Box
         sx={{
-          textAlign: "center",
-          padding: "6rem 0",
-          backgroundImage: `url(${heroImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          color: "#8B4513",
-          width: "100%",
-          position: "relative",
-          boxSizing: 'border-box',
-          flexShrink: 0, // Prevent shrinking
+          width: '100%',
+          height: { xs: '200px', sm: '300px', md: '400px' },
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 2,
-              type: "spring",
-              stiffness: 80,
-              damping: 20,
-            }}
-          >
-            <Typography
-              variant="h3"
-              gutterBottom
-              sx={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: { xs: "2rem", sm: "3rem" }, // Responsive font size
-                fontWeight: "bold",
-                fontStyle: "italic",
-                color: "#8B4513",
-                textShadow: "2px 2px 4px rgba(255, 255, 255, 0.9)"
-              }}
-            >
-              "Join Our Team and Grow Together"
-            </Typography>
-          </motion.div>
-          <Button
-            variant="contained"
-            color="primary"
-            href="#application-form"
-            sx={{
-              backgroundColor: "#8B4513",
-              '&:hover': {
-                backgroundColor: "#6A3B1F"
-              }
-            }}
-          >
-            Apply Now
-          </Button>
-        </Container>
+        <Box
+          component="img"
+          src={careersPic}
+          alt="Careers"
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block'
+          }}
+        />
       </Box>
 
-      {/* Combined Gradient Section */}
-      <Box
-        sx={{
-          background: "linear-gradient(to bottom, rgba(255, 243, 224, 0.3), rgba(159, 137, 130, 0.4), rgba(249, 249, 249, 0.2))",
-          position: "relative",
-          width: "100%",
-          overflow: "hidden", // Prevent child elements from causing overflow
-          flexGrow: 1, // Allow this section to grow and fill space
-        }}
-      >
-        {/* Aesthetic Image */}
-        <Box
-          sx={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: "45%",
-            height: "100%",
-            zIndex: 0,
-            opacity: 0.2,
-            pointerEvents: "none",
-            display: { xs: "none", md: "block" } // Responsive display
-          }}
-        >
-          <img
-            src={aestheticImage}
-            alt="Aesthetic"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        </Box>
+      {/* Main Content */}
+      <Box sx={{
+        flex: 1,
+        py: 4,
+        px: { xs: 2, md: 4 },
+        width: '100%',
+        overflowX: 'hidden',
+        background: '#faf5f0',
+      }}>
+        <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
+          <Typography variant="h4" component="h2" sx={{ 
+            mb: 4,
+            textAlign: 'center',
+            fontWeight: 500
+          }}>
+            Join Our Team
+          </Typography>
 
-        {/* What You Will Get Section */}
-        <Box
-          sx={{
-            padding: "3rem 0",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          <Container>
-            <Typography variant="h4" gutterBottom textAlign="center">
+          {/* What You Will Get Section */}
+          <Box sx={{ mb: 6 }}>
+            <Typography variant="h5" sx={{ 
+              mb: 3, 
+              textAlign: 'center',
+              fontWeight: '500',
+              position: 'relative',
+              paddingBottom: '15px',
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: '0',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60px',
+                height: '2px',
+                backgroundColor: '#000'
+              }
+            }}>
               What You Will Get Working With Us
             </Typography>
+            
             <Grid container spacing={3}>
               {/* Competitive Salary */}
               <Grid item xs={12} sm={6} md={3}>
@@ -860,18 +286,33 @@ const JoinOurTeam = () => {
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
-                    backgroundColor: "#fff3e0",
+                    backgroundColor: "#fff",
                     borderRadius: "10px",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
                     "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
+                      transform: "scale(1.03)",
+                      boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
                     }
                   }}
                 >
-                  <MonetizationOn sx={{ fontSize: 40, color: "#8B4513" }} />
+                  <Box sx={{ 
+                    mb: 2, 
+                    bgcolor: 'rgba(0,0,0,0.03)', 
+                    color: '#000', 
+                    width: 60, 
+                    height: 60, 
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
+                    margin: '0 auto'
+                  }}>
+                    <MonetizationOnIcon sx={{ fontSize: 30 }} />
+                  </Box>
                   <Typography variant="h6">Competitive Salary</Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body2" sx={{ color: '#555', mt: 1 }}>
                     We offer a competitive salary based on your experience and performance.
                   </Typography>
                 </Paper>
@@ -883,18 +324,33 @@ const JoinOurTeam = () => {
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
-                    backgroundColor: "#fff3e0",
+                    backgroundColor: "#fff",
                     borderRadius: "10px",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
                     "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
+                      transform: "scale(1.03)",
+                      boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
                     }
                   }}
                 >
-                  <School sx={{ fontSize: 40, color: "#8B4513" }} />
+                  <Box sx={{ 
+                    mb: 2, 
+                    bgcolor: 'rgba(0,0,0,0.03)', 
+                    color: '#000', 
+                    width: 60, 
+                    height: 60, 
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
+                    margin: '0 auto'
+                  }}>
+                    <SchoolIcon sx={{ fontSize: 30 }} />
+                  </Box>
                   <Typography variant="h6">Education & Growth</Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body2" sx={{ color: '#555', mt: 1 }}>
                     Pursue education in beauty and hairstyling with our professional development support.
                   </Typography>
                 </Paper>
@@ -906,18 +362,33 @@ const JoinOurTeam = () => {
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
-                    backgroundColor: "#fff3e0",
+                    backgroundColor: "#fff",
                     borderRadius: "10px",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
                     "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
+                      transform: "scale(1.03)",
+                      boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
                     }
                   }}
                 >
-                  <Spa sx={{ fontSize: 40, color: "#8B4513" }} />
+                  <Box sx={{ 
+                    mb: 2, 
+                    bgcolor: 'rgba(0,0,0,0.03)', 
+                    color: '#000', 
+                    width: 60, 
+                    height: 60, 
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
+                    margin: '0 auto'
+                  }}>
+                    <SpaIcon sx={{ fontSize: 30 }} />
+                  </Box>
                   <Typography variant="h6">Beauty with Benefits</Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body2" sx={{ color: '#555', mt: 1 }}>
                     Enjoy discounts on salon services and beauty treatments as part of our team.
                   </Typography>
                 </Paper>
@@ -929,353 +400,404 @@ const JoinOurTeam = () => {
                   sx={{
                     padding: "1.5rem",
                     textAlign: "center",
-                    backgroundColor: "#fff3e0",
+                    backgroundColor: "#fff",
                     borderRadius: "10px",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
                     "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
+                      transform: "scale(1.03)",
+                      boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
                     }
                   }}
                 >
-                  <AccessTime sx={{ fontSize: 40, color: "#8B4513" }} />
+                  <Box sx={{ 
+                    mb: 2, 
+                    bgcolor: 'rgba(0,0,0,0.03)', 
+                    color: '#000', 
+                    width: 60, 
+                    height: 60, 
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
+                    margin: '0 auto'
+                  }}>
+                    <AccessTimeIcon sx={{ fontSize: 30 }} />
+                  </Box>
                   <Typography variant="h6">Flexible Hours</Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body2" sx={{ color: '#555', mt: 1 }}>
                     Enjoy a work schedule that fits your lifestyle and personal commitments.
                   </Typography>
                 </Paper>
               </Grid>
             </Grid>
-          </Container>
-        </Box>
-
-        {/* Thrive Together Section */}
-        <Box
-          sx={{
-            padding: "3rem 0",
-            position: "relative",
-            zIndex: 1,
-            width: "100%",
-          }}
-        >
-          <Container>
-            <Grid container spacing={4} alignItems="center">
-              <Grid item xs={12} md={6} sx={{ position: "relative" }}>
-                <Box sx={{ position: "relative", zIndex: 1 }}>
-                  <img
-                    src={thriveImage}
-                    alt="Wild Honey Team"
-                    style={{
-                      width: "100%",
-                      maxWidth: "400px",
-                      height: "auto",
-                      borderRadius: "10px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
-                      margin: "0 auto",
-                      display: "block",
-                    }}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6} sx={{ position: "relative" }}>
-                {/* Modified background box to prevent overflow */}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: { xs: 0, md: "-20%" }, // Responsive positioning
-                    width: { xs: "100%", md: "140%" }, // Responsive width
-                    height: "120%",
-                    backgroundColor: "#9F8982",
-                    zIndex: -1,
-                    borderRadius: "10px",
-                    opacity: 0.85,
-                  }}
-                />
-                <Box
-                  sx={{
-                    padding: "2rem",
-                    borderRadius: "10px",
-                    position: "relative",
-                    marginLeft: { xs: 0, md: "-10%" }, // Responsive margin
-                  }}
-                >
-                  <Typography
-                    variant="h4"
-                    gutterBottom
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#ffffff",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    We Thrive Together
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    Salon Shadow White works hard to build our demand, and that's why we provide you with a full schedule starting your first day – so you can grow together with our business.
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    Maybe you have been a solo studio stylist, recently took time off for family or to care for a loved one, or you are just starting your career, and now you're looking to get back in the industry. If that sounds like you, we might be a good fit.
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Container>
-        </Box>
-      </Box>
-
-      {/* Application Form Section */}
-      <Box
-        id="application-form"
-        sx={{
-          padding: "3rem 0",
-          textAlign: "center",
-          position: "relative",
-          width: "100%",
-          flexShrink: 0, // Prevent shrinking
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.15,
-            zIndex: -1,
-          },
-        }}
-      >
-        <Container>
-          {/* Join Our Team with animated underline */}
-          <Box sx={{ position: "relative", display: "inline-block", mb: 4 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: "bold",
-                color: "#8B4513",
-                position: "relative",
-                zIndex: 1,
-                marginBottom: "0.5rem"
-              }}
-            >
-              Join Our Team
-            </Typography>
-            
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={lineVariants}
-              style={{
-                height: "3px",
-                backgroundColor: "#8B4513",
-                borderRadius: "2px"
-              }}
-            />
           </Box>
 
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3} justifyContent="center">
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  variant="outlined"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName}
-                  disabled={loading}
-                  required
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)",
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
+          {/* Thrive Together Section */}
+          {/* <Box sx={{ mb: 6 }}>
+            <Box
+              sx={{
+                background: '#fff',
+                borderRadius: '8px',
+                boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                height: '600px',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
+                }
+              }}
+            >
+              <Grid container spacing={0}>
+                <Grid item xs={12} md={5} sx={{
+                  p: { xs: 0, md: 0 },
+                  display: { xs: 'none', md: 'block' }
+                }}>
+                  <Box sx={{ height: '100%' }}>
+                    <img
+                      src={thriveImage}
+                      alt="Shadow White Team"
+                      style={{
+                        width: "100%",
+                        maxWidth: "400px",
+                        height: "auto",
+                        borderRadius: "10px",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={7} sx={{
+                  p: { xs: 3, md: 4 },
+                  bgcolor: 'rgba(250,245,240,0.5)',
+                  display: 'flex',
+                  position: "relative",
+                  left: { xs: 0, md: "-10%" }, // Responsive positioning
+                  width: { xs: "100%", md: "100%" },
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                  <Box
+                    sx={{
+                      padding: "2rem",
+                      borderRadius: "10px",
+                      position: "relative",
+                      marginLeft: { xs: 0, md: "10%" }, // Responsive margin
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        mb: 3,
+                        fontWeight: '500',
+                        position: 'relative',
+                        paddingBottom: '10px',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          bottom: '0',
+                          left: '0',
+                          width: '40px',
+                          height: '2px',
+                          backgroundColor: '#000'
+                        }
+                      }}
+                    >
+                      We Thrive Together
+                    </Typography>
+
+                    <Typography variant="body1" paragraph sx={{ color: '#555' }}>
+                      Salon Shadow White works hard to build our demand, and that's why we provide you with a full schedule starting your first day – so you can grow together with our business.
+                    </Typography>
+
+                    <Typography variant="body1" paragraph sx={{ color: '#555' }}>
+                      Maybe you have been a solo studio stylist, recently took time off for family or to care for a loved one, or you are just starting your career, and now you're looking to get back in the industry. If that sounds like you, we might be a good fit.
+                    </Typography>
+                  </Box>
+                </Grid>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  variant="outlined"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  error={!!errors.lastName}
-                  helperText={errors.lastName}
-                  disabled={loading}
-                  required
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)",
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  variant="outlined"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                  disabled={loading}
-                  required
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)",
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  variant="outlined"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  error={!!errors.phone}
-                  helperText={errors.phone}
-                  disabled={loading}
-                  required
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)",
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Resume URL (link to your resume)"
-                  variant="outlined"
-                  name="resumeUrl"
-                  value={formData.resumeUrl}
-                  onChange={handleChange}
-                  error={!!errors.resumeUrl}
-                  helperText={errors.resumeUrl}
-                  disabled={loading}
-                  required
-                  placeholder="https://example.com/myresume.pdf"
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)",
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Why do you want to join us?"
-                  variant="outlined"
-                  multiline
-                  rows={4}
-                  name="whyJoin"
-                  value={formData.whyJoin}
-                  onChange={handleChange}
-                  error={!!errors.whyJoin}
-                  helperText={errors.whyJoin}
-                  disabled={loading}
-                  required
-                  sx={{
-                    backgroundColor: "rgba(249, 249, 249, 0.9)",
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      borderColor: "#8B4513",
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "#6A3B1F",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#6A3B1F",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  disabled={loading}
-                  sx={{
-                    padding: "12px 30px",
-                    fontSize: "1.1rem",
-                    borderRadius: "30px",
-                    backgroundColor: "#8B4513",
-                    "&:hover": { backgroundColor: "#6A3B1F" },
-                    position: "relative",
+            </Box>
+          </Box> */}
+
+
+            {/* Thrive Together Section */}
+            <Box
+                      sx={{
+                        padding: "3rem 0",
+                        position: "relative",
+                        zIndex: 1,
+                        width: "100%",
+                      }}
+                    >
+                      <Container>
+                        <Grid container spacing={4} alignItems="center">
+                          <Grid item xs={12} md={6} sx={{ position: "relative" }}>
+                            <Box sx={{ position: "relative", zIndex: 1 }}>
+                              <img
+                                src={thriveImage}
+                                alt="Shadow White Team"
+                                style={{
+                                  width: "100%",
+                                  maxWidth: "400px",
+                                  height: "auto",
+                                  borderRadius: "10px",
+                                  boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+                                  margin: "0 auto",
+                                  display: "block",
+                                }}
+                              />
+                            </Box>
+                          </Grid>
+                          <Grid item xs={12} md={6} sx={{ position: "relative" }}>
+                            {/* Modified background box to prevent overflow */}
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                top: 0,
+                                left: { xs: 0, md: "-20%" }, // Responsive positioning
+                                width: { xs: "100%", md: "140%" }, // Responsive width
+                                height: "120%",
+                                backgroundColor: "#B8A99A",
+                                zIndex: -1,
+                                borderRadius: "10px",
+                                opacity: 0.85,
+                              }}
+                            />
+                            <Box
+                              sx={{
+                                padding: "2rem",
+                                borderRadius: "10px",
+                                position: "relative",
+                                marginLeft: { xs: 0, md: "-20%" }, // Responsive margin
+                              }}
+                            >
+                              <Typography
+                                variant="h4"
+                                gutterBottom
+                                sx={{
+                                  fontWeight: "bold",
+                                  color: "#000000",
+                                  marginBottom: "1rem",
+                                }}
+                              >
+                                We Thrive Together
+                              </Typography>
+                              <Typography variant="body1" paragraph>
+                                Salon Shadow White works hard to build our demand, and that's why we provide you with a full schedule starting your first day – so you can grow together with our business.
+                              </Typography>
+                              <Typography variant="body1" paragraph>
+                                Maybe you have been a solo studio stylist, recently took time off for family or to care for a loved one, or you are just starting your career, and now you're looking to get back in the industry. If that sounds like you, we might be a good fit.
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </Container>
+                    </Box>
+
+
+          {/* Application Form Section */}
+          <Box
+            id="application-form"
+            sx={{
+              mb: 4
+            }}
+          >
+            <Box
+              sx={{
+                background: '#fff',
+                borderRadius: '8px',
+                boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
+                }
+              }}
+            >
+              <Box sx={{ 
+                p: { xs: 3, md: 4 },
+              }}>
+                <Typography
+                  variant="h5"
+                  sx={{ 
+                    mb: 3, 
+                    fontWeight: '500',
+                    position: 'relative',
+                    paddingBottom: '10px',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: '0',
+                      left: '0',
+                      width: '40px',
+                      height: '2px',
+                      backgroundColor: '#000'
+                    }
                   }}
                 >
-                  {loading ? (
-                    <>
-                      <CircularProgress 
-                        size={24} 
-                        sx={{ 
-                          color: "white",
-                          position: "absolute"
-                        }} 
+                  Apply Now
+                </Typography>
+
+                <form onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="First Name"
+                        variant="outlined"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        error={!!errors.firstName}
+                        helperText={errors.firstName}
+                        disabled={loading}
+                        required
+                        InputProps={{
+                          sx: { borderRadius: '8px' }
+                        }}
+                        sx={{ mb: 2 }}
                       />
-                      <Typography sx={{ visibility: "hidden" }}>Submit Application</Typography>
-                    </>
-                  ) : (
-                    "Submit Application"
-                  )}
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Last Name"
+                        variant="outlined"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        error={!!errors.lastName}
+                        helperText={errors.lastName}
+                        disabled={loading}
+                        required
+                        InputProps={{
+                          sx: { borderRadius: '8px' }
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Email"
+                        variant="outlined"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        disabled={loading}
+                        required
+                        InputProps={{
+                          sx: { borderRadius: '8px' }
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Phone Number"
+                        variant="outlined"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        error={!!errors.phone}
+                        helperText={errors.phone}
+                        disabled={loading}
+                        required
+                        InputProps={{
+                          sx: { borderRadius: '8px' }
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Resume URL (link to your resume)"
+                        variant="outlined"
+                        name="resumeUrl"
+                        value={formData.resumeUrl}
+                        onChange={handleChange}
+                        error={!!errors.resumeUrl}
+                        helperText={errors.resumeUrl}
+                        disabled={loading}
+                        required
+                        placeholder="https://example.com/myresume.pdf"
+                        InputProps={{
+                          sx: { borderRadius: '8px' }
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Why do you want to join us?"
+                        variant="outlined"
+                        multiline
+                        rows={4}
+                        name="whyJoin"
+                        value={formData.whyJoin}
+                        onChange={handleChange}
+                        error={!!errors.whyJoin}
+                        helperText={errors.whyJoin}
+                        disabled={loading}
+                        required
+                        InputProps={{
+                          sx: { borderRadius: '8px' }
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+                        <Button
+                          variant="contained"
+                          type="submit"
+                          disabled={loading}
+                          sx={{
+                            px: 4,
+                            py: 1.2,
+                            backgroundColor: '#000',
+                            color: '#fff',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                            transition: 'all 0.3s ease',
+                            '&:hover': { 
+                              backgroundColor: '#333',
+                              boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                              transform: 'translateY(-2px)'
+                            },
+                            position: 'relative'
+                          }}
+                        >
+                          {loading ? (
+                            <>
+                              <CircularProgress 
+                                size={24} 
+                                sx={{ 
+                                  color: "white",
+                                  position: "absolute"
+                                }} 
+                              />
+                              <Typography sx={{ visibility: "hidden" }}>Submit Application</Typography>
+                            </>
+                          ) : (
+                            "Submit Application"
+                          )}
+                        </Button>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </form>
+              </Box>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
@@ -1294,6 +816,31 @@ const JoinOurTeam = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Global Styles */}
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+        html, body {
+          overflow-x: hidden;
+          width: 100%;
+          max-width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        * {
+          scrollbar-width: none;
+        }
+        .MuiBox-root, .MuiContainer-root {
+          max-width: 100%;
+        }
+      `}</style>
     </Box>
   );
 };
