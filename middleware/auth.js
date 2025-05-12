@@ -300,6 +300,60 @@ const authenticateAdmin = (req, res, next) => {
   }
 };
 
+// const authenticateCustomer = (req, res, next) => {
+//   try {
+//     // 1. Extract token from Authorization header
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//       return res.status(401).json({ 
+//         error: 'Authentication required',
+//         message: 'Bearer token missing in Authorization header'
+//       });
+//     }
+
+//     const token = authHeader.split(' ')[1];
+    
+//     // 2. Verify and decode the token
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+    
+//     // 3. Check if it's a customer token
+//     const role = decoded.role ? decoded.role.toLowerCase() : '';
+//     if (!decoded.customer_ID && role !== 'customer') {
+//       return res.status(403).json({ 
+//         error: 'Customer access required',
+//         message: 'User role does not have customer privileges'
+//       });
+//     }
+
+//     // 4. Attach customer data to request
+//     req.user = {
+//       id: decoded.id,
+//       username: decoded.username,
+//       role: decoded.role || 'customer',
+//       customer_ID: decoded.customer_ID,
+//       name: decoded.name,
+//       profile_url: decoded.profile_url
+//     };
+    
+//     next();
+//   } catch (error) {
+//     // Handle specific JWT errors
+//     if (error instanceof jwt.TokenExpiredError) {
+//       return res.status(401).json({ 
+//         error: 'Expired token',
+//         message: 'Token has expired. Please login again'
+//       });
+//     }
+
+//     return res.status(401).json({ 
+//       error: 'Invalid token',
+//       message: error.message
+//     });
+//   }
+// };
+
+
+// Enhanced Authentication Middleware
 const authenticateCustomer = (req, res, next) => {
   try {
     // 1. Extract token from Authorization header
@@ -314,40 +368,66 @@ const authenticateCustomer = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     
     // 2. Verify and decode the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+    // Use environment variable for secret key, with a fallback only for development
+    const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key-replace-in-production';
     
-    // 3. Check if it's a customer token
-    const role = decoded.role ? decoded.role.toLowerCase() : '';
-    if (!decoded.customer_ID && role !== 'customer') {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    
+    // 3. Comprehensive token validation
+    if (!decoded) {
       return res.status(403).json({ 
-        error: 'Customer access required',
-        message: 'User role does not have customer privileges'
+        error: 'Invalid token',
+        message: 'Token could not be verified'
       });
     }
 
-    // 4. Attach customer data to request
+    // 4. Check token expiration (additional check)
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < currentTimestamp) {
+      return res.status(401).json({ 
+        error: 'Token expired',
+        message: 'Your session has expired. Please log in again.'
+      });
+    }
+
+    // 5. Validate customer-specific requirements
+    if (!decoded.customer_ID) {
+      return res.status(403).json({ 
+        error: 'Customer access required',
+        message: 'Invalid customer authentication'
+      });
+    }
+
+    // 6. Attach decoded user information to request
     req.user = {
-      id: decoded.id,
+      id: decoded.customer_ID,
       username: decoded.username,
       role: decoded.role || 'customer',
-      customer_ID: decoded.customer_ID,
-      name: decoded.name,
-      profile_url: decoded.profile_url
+      email: decoded.email
     };
     
     next();
   } catch (error) {
-    // Handle specific JWT errors
+    // Detailed error handling
     if (error instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ 
-        error: 'Expired token',
-        message: 'Token has expired. Please login again'
+        error: 'Token expired',
+        message: 'Your session has expired. Please log in again.'
       });
     }
 
-    return res.status(401).json({ 
-      error: 'Invalid token',
-      message: error.message
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({ 
+        error: 'Invalid token',
+        message: 'The provided token is invalid.'
+      });
+    }
+
+    // Catch-all for other unexpected errors
+    console.error('Authentication error:', error);
+    return res.status(500).json({ 
+      error: 'Authentication failed',
+      message: 'An unexpected error occurred during authentication.'
     });
   }
 };

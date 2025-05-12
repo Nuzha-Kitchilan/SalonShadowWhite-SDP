@@ -35,6 +35,7 @@ const stylistPopularityRoutes = require('./routes/dashboard/stylists');
 const customerPopularityRoutes = require('./routes/dashboard/customer');
 const performanceRoutes = require('./routes/dashboard/performance');
 const reportRoutes = require('./routes/report');
+const reviewRoutes = require('./routes/review');
 const app = express();
 
 app.use(cors({
@@ -72,6 +73,7 @@ app.use('/api/dashboard/stylists', stylistPopularityRoutes);
 app.use('/api/dashboard/customer', customerPopularityRoutes);
 app.use('/api/dashboard/performance', performanceRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/review', reviewRoutes);
 
 
 app.get('/', (req, res) => {

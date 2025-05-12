@@ -507,65 +507,276 @@ const db = require('../config/db');
 // };
 
 
+// const createCompleteAppointment = async (
+//   customer_id,
+//   appointment_date,
+//   appointment_time,
+//   services = [],
+//   stylist_ids = []
+// ) => {
+//   const connection = await db.getConnection();
+//   try {
+//     await connection.beginTransaction();
+
+//     const formattedDate = appointment_date;
+
+//     const [appointmentResult] = await connection.query(
+//       `INSERT INTO Appointment (customer_id, appointment_date, appointment_time, appointment_status)
+//        VALUES (?, ?, ?, 'Scheduled')`,
+//       [customer_id, formattedDate, appointment_time]
+//     );
+
+//     const appointment_ID = appointmentResult.insertId;
+
+//     // Insert into Appointment_Service_Stylist table
+//     let serviceStylistPairs = 0;
+//     for (const service of services) {
+//       if (stylist_ids.length > 0) {
+//         // Case 1: Specific stylists were selected
+//         for (const stylist_id of stylist_ids) {
+//           await connection.query(
+//             `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
+//              VALUES (?, ?, ?)`,
+//             [appointment_ID, service.service_id, stylist_id]
+//           );
+//           serviceStylistPairs++;
+//         }
+//       } else {
+//         // Case 2: No stylist selected (insert with NULL)
+//         await connection.query(
+//           `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
+//            VALUES (?, ?, NULL)`,
+//           [appointment_ID, service.service_id]
+//         );
+//         serviceStylistPairs++;
+//       }
+//     }
+
+//     await connection.commit();
+//     connection.release();
+
+//     return {
+//       appointment_ID,
+//       serviceStylistPairs
+//     };
+//   } catch (err) {
+//     await connection.rollback();
+//     connection.release();
+//     throw err;
+//   }
+// };
+
+
+
+// const createCompleteAppointment = async (
+//   customer_id,
+//   appointment_date,
+//   appointment_time,
+//   cartItems
+// ) => {
+//   const connection = await db.getConnection();
+//   try {
+//     await connection.beginTransaction();
+
+//     // 1. Create the appointment
+//     const [appointmentResult] = await connection.query(
+//       `INSERT INTO appointment (customer_id, appointment_date, appointment_time, appointment_status)
+//        VALUES (?, ?, ?, 'Scheduled')`,
+//       [customer_id, appointment_date, appointment_time]
+//     );
+
+//     const appointment_ID = appointmentResult.insertId;
+
+//     // 2. Process each cart item individually
+//     const insertedRecords = [];
+//     for (const item of cartItems) {
+//       try {
+//         // Validate required fields
+//         if (typeof item.service_id === 'undefined' || typeof item.stylist_id === 'undefined') {
+//           throw new Error(`Missing service_id or stylist_id in cart item`);
+//         }
+
+//         // Insert the service-stylist association
+//         const [result] = await connection.query(
+//           `INSERT INTO appointment_service_stylist 
+//            (appointment_ID, service_ID, stylist_ID)
+//            VALUES (?, ?, ?)`,
+//           [appointment_ID, item.service_id, item.stylist_id]
+//         );
+
+//         insertedRecords.push({
+//           appointment_ID,
+//           service_ID: item.service_id,
+//           stylist_ID: item.stylist_id,
+//           insertId: result.insertId
+//         });
+//       } catch (itemError) {
+//         // Handle specific item errors without failing entire transaction
+//         console.error(`Failed to insert item:`, {
+//           item,
+//           error: itemError.message
+//         });
+//         continue; // Skip to next item
+//       }
+//     }
+
+//     // 3. Verify at least one association was created
+//     if (insertedRecords.length === 0) {
+//       throw new Error('No service-stylist associations were created');
+//     }
+
+//     await connection.commit();
+//     connection.release();
+
+//     return {
+//       success: true,
+//       appointment_ID,
+//       inserted_records: insertedRecords,
+//       message: `Created appointment with ${insertedRecords.length} service-stylist associations`
+//     };
+
+//   } catch (error) {
+//     await connection.rollback();
+//     connection.release();
+    
+//     console.error('Appointment creation failed:', {
+//       error: error.message,
+//       customer_id,
+//       appointment_date,
+//       appointment_time,
+//       cartItems
+//     });
+
+//     throw {
+//       ...error,
+//       isOperational: true,
+//       details: {
+//         customer_id,
+//         appointment_date,
+//         appointment_time,
+//         cartItems
+//       }
+//     };
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// models/appointmentModel.js
+
 const createCompleteAppointment = async (
   customer_id,
   appointment_date,
   appointment_time,
-  services = [],
-  stylist_ids = []
+  cartItems
 ) => {
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
 
-    const formattedDate = appointment_date;
-
+    // 1. Create the appointment
     const [appointmentResult] = await connection.query(
-      `INSERT INTO Appointment (customer_id, appointment_date, appointment_time, appointment_status)
+      `INSERT INTO appointment (customer_id, appointment_date, appointment_time, appointment_status)
        VALUES (?, ?, ?, 'Scheduled')`,
-      [customer_id, formattedDate, appointment_time]
+      [customer_id, appointment_date, appointment_time]
     );
 
     const appointment_ID = appointmentResult.insertId;
 
-    // Insert into Appointment_Service_Stylist table
-    let serviceStylistPairs = 0;
-    for (const service of services) {
-      if (stylist_ids.length > 0) {
-        // Case 1: Specific stylists were selected
-        for (const stylist_id of stylist_ids) {
-          await connection.query(
-            `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
-             VALUES (?, ?, ?)`,
-            [appointment_ID, service.service_id, stylist_id]
-          );
-          serviceStylistPairs++;
+    // 2. Process each cart item individually
+    const insertedRecords = [];
+    for (const item of cartItems) {
+      try {
+        // Validate required fields
+        if (typeof item.service_id === 'undefined') {
+          throw new Error(`Missing service_id in cart item`);
         }
-      } else {
-        // Case 2: No stylist selected (insert with NULL)
-        await connection.query(
-          `INSERT INTO Appointment_Service_Stylist (appointment_ID, service_ID, stylist_ID)
-           VALUES (?, ?, NULL)`,
-          [appointment_ID, service.service_id]
+
+        // Insert the service-stylist association
+        // Note: stylist_ID can be null - we allow this case now
+        const [result] = await connection.query(
+          `INSERT INTO appointment_service_stylist 
+           (appointment_ID, service_ID, stylist_ID)
+           VALUES (?, ?, ?)`,
+          [appointment_ID, item.service_id, item.stylist_id]
         );
-        serviceStylistPairs++;
+
+        insertedRecords.push({
+          appointment_ID,
+          service_ID: item.service_id,
+          stylist_ID: item.stylist_id,
+          insertId: result.insertId
+        });
+      } catch (itemError) {
+        // Handle specific item errors without failing entire transaction
+        console.error(`Failed to insert item:`, {
+          item,
+          error: itemError.message
+        });
+        continue; // Skip to next item
       }
+    }
+
+    // 3. Verify at least one association was created
+    if (insertedRecords.length === 0) {
+      throw new Error('No service-stylist associations were created');
     }
 
     await connection.commit();
     connection.release();
 
     return {
+      success: true,
       appointment_ID,
-      serviceStylistPairs
+      inserted_records: insertedRecords,
+      message: `Created appointment with ${insertedRecords.length} service-stylist associations`
     };
-  } catch (err) {
+
+  } catch (error) {
     await connection.rollback();
     connection.release();
-    throw err;
+    
+    console.error('Appointment creation failed:', {
+      error: error.message,
+      customer_id,
+      appointment_date,
+      appointment_time,
+      cartItems
+    });
+
+    throw {
+      ...error,
+      isOperational: true,
+      details: {
+        customer_id,
+        appointment_date,
+        appointment_time,
+        cartItems
+      }
+    };
   }
 };
-
 
 // 2. Check if customer is booking for the first time
 const checkIfFirstTimeCustomer = async (customer_id) => {
@@ -602,6 +813,40 @@ const sendCancelRequest = async (appointmentId) => {
 };
 
 // 4. Get all appointments for a customer
+// const getAppointmentsByCustomer = async (customerId) => {
+//   const connection = await db.getConnection();
+//   try {
+//     const [appointments] = await connection.query(
+//       `SELECT 
+//         a.appointment_ID,
+//         a.appointment_date,
+//         a.appointment_time,
+//         a.appointment_status,
+//         a.cancellation_status,
+//         a.cancel_request_time,
+//         GROUP_CONCAT(DISTINCT s.service_name) AS services,
+//         GROUP_CONCAT(DISTINCT CONCAT(st.firstname, ' ', st.lastname)) AS stylists
+//       FROM Appointment a
+//       LEFT JOIN Appointment_Service_Stylist ass ON a.appointment_ID = ass.appointment_ID
+//       LEFT JOIN Service s ON ass.service_ID = s.service_ID
+//       LEFT JOIN Stylists st ON ass.stylist_ID = st.stylist_ID
+//       WHERE a.customer_id = ?
+//       GROUP BY a.appointment_ID
+//       ORDER BY a.appointment_date DESC, a.appointment_time DESC`,
+//       [customerId]
+//     );
+
+//     return appointments;
+//   } catch (err) {
+//     throw new Error('Error fetching appointments: ' + err.message);
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+
+
+
 const getAppointmentsByCustomer = async (customerId) => {
   const connection = await db.getConnection();
   try {
@@ -614,7 +859,8 @@ const getAppointmentsByCustomer = async (customerId) => {
         a.cancellation_status,
         a.cancel_request_time,
         GROUP_CONCAT(DISTINCT s.service_name) AS services,
-        GROUP_CONCAT(DISTINCT CONCAT(st.firstname, ' ', st.lastname)) AS stylists
+        GROUP_CONCAT(DISTINCT CONCAT(st.firstname, ' ', st.lastname)) AS stylists,
+        GROUP_CONCAT(DISTINCT st.stylist_ID) AS stylist_IDs  -- Add this line
       FROM Appointment a
       LEFT JOIN Appointment_Service_Stylist ass ON a.appointment_ID = ass.appointment_ID
       LEFT JOIN Service s ON ass.service_ID = s.service_ID
@@ -625,13 +871,34 @@ const getAppointmentsByCustomer = async (customerId) => {
       [customerId]
     );
 
-    return appointments;
+    // Process the results to pair stylist names with IDs
+    const processedAppointments = appointments.map(appointment => {
+      const stylistNames = appointment.stylists ? appointment.stylists.split(',') : [];
+      const stylistIds = appointment.stylist_IDs ? appointment.stylist_IDs.split(',') : [];
+      
+      // Create an array of stylist objects with name and ID
+      const stylists = stylistNames.map((name, index) => ({
+        name: name.trim(),
+        id: stylistIds[index] ? stylistIds[index].trim() : null
+      }));
+
+      return {
+        ...appointment,
+        stylists,  // Now contains both names and IDs
+        primaryStylistId: stylistIds[0] || null  // Add primary stylist ID if needed
+      };
+    });
+
+    return processedAppointments;
   } catch (err) {
     throw new Error('Error fetching appointments: ' + err.message);
   } finally {
     connection.release();
   }
 };
+
+
+
 
 // 5. Get all pending cancellation requests (with payment, services, stylists, phones)
 const getPendingCancellationRequests = async () => {
@@ -715,13 +982,14 @@ const getPendingCancellationRequests = async () => {
   }
 };
 
-// 6. Process cancellation request (approve/reject)
+
 const processCancellationRequest = async (appointmentId, action) => {
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
 
-    const [result] = await connection.query(
+    // 1. First update the appointment status
+    const [appointmentResult] = await connection.query(
       `UPDATE Appointment
        SET cancellation_status = ?, 
            appointment_status = IF(? = 'Approved', 'Cancelled', appointment_status)
@@ -729,19 +997,63 @@ const processCancellationRequest = async (appointmentId, action) => {
       [action, action, appointmentId]
     );
 
-    if (result.affectedRows === 0) {
+    if (appointmentResult.affectedRows === 0) {
       throw new Error('No pending cancellation request found for this appointment');
     }
 
+    let paymentUpdateResult = null;
+
+    // 2. Only process payment updates for approved cancellations
+    if (action === 'Approved') {
+      // Get current payment status
+      const [payment] = await connection.query(
+        `SELECT payment_status FROM Payment WHERE appointment_ID = ?`,
+        [appointmentId]
+      );
+
+      if (payment.length > 0) {
+        const currentStatus = payment[0].payment_status;
+        let newStatus = currentStatus;
+
+        // Determine new status based on current status
+        if (currentStatus === 'Paid' || currentStatus === 'Partially Paid') {
+          newStatus = 'Refunded';
+        } else if (currentStatus === 'Pending') {
+          newStatus = 'Cancelled';
+        }
+        // For other statuses, we won't change them
+
+        // Only update if status needs to change
+        if (newStatus !== currentStatus) {
+          [paymentUpdateResult] = await connection.query(
+            `UPDATE Payment 
+             SET payment_status = ?
+             WHERE appointment_ID = ?`,
+            [newStatus, appointmentId]
+          );
+        }
+      }
+    }
+
     await connection.commit();
-    return { success: true, action };
+    
+    return { 
+      success: true, 
+      message: `Cancellation ${action.toLowerCase()} successfully`,
+      data: {
+        action,
+        paymentUpdated: paymentUpdateResult ? paymentUpdateResult.affectedRows > 0 : false
+      }
+    };
   } catch (err) {
     await connection.rollback();
+    console.error("Error processing cancellation:", err);
     throw err;
   } finally {
     connection.release();
   }
 };
+
 
 // Export all
 module.exports = {

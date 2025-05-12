@@ -116,6 +116,68 @@ exports.getCustomerInfo = async (req, res) => {
     }
 };
 
+// exports.submitRequest = async (req, res) => {
+//     try {
+//         const authHeader = req.headers.authorization;
+//         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//             return res.status(401).json({ 
+//                 success: false, 
+//                 message: 'Authentication required' 
+//             });
+//         }
+
+//         const token = authHeader.split(' ')[1];
+//         const decoded = jwt.decode(token);
+        
+//         if (!decoded || !decoded.customer_ID) {
+//             return res.status(401).json({
+//                 success: false,
+//                 message: 'Invalid token format'
+//             });
+//         }
+        
+//         const { firstName, lastName, email, phone_number, request_details } = req.body;
+        
+//         // Validate all required fields
+//         if (!firstName || !lastName || !email || !phone_number || !request_details) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'All fields are required'
+//             });
+//         }
+        
+//         // Create the special request
+//         const requestId = await SpecialRequest.create({
+//             customer_id: decoded.customer_ID,
+//             first_name: firstName,
+//             last_name: lastName,
+//             email: email,
+//             phone_number: phone_number,
+//             request_details: request_details
+//         });
+        
+//         return res.status(201).json({
+//             success: true,
+//             message: 'Special request submitted successfully',
+//             request_id: requestId
+//         });
+        
+//     } catch (error) {
+//         console.error('Error submitting special request:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: error.message || 'Failed to submit special request'
+//         });
+//     }
+// };
+
+// NEW CODE FOR ADMIN FUNCTIONALITY
+
+
+
+
+
+
 exports.submitRequest = async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -136,16 +198,39 @@ exports.submitRequest = async (req, res) => {
             });
         }
         
-        const { firstName, lastName, email, phone_number, request_details } = req.body;
+        const { 
+            firstName, 
+            lastName, 
+            email, 
+            phone_number, 
+            request_details,
+            service_id,
+            preferred_date,
+            preferred_time
+        } = req.body;
         
         // Validate all required fields
-        if (!firstName || !lastName || !email || !phone_number || !request_details) {
+        const requiredFields = {
+            'First Name': firstName,
+            'Last Name': lastName,
+            'Email': email,
+            'Phone Number': phone_number,
+            'Request Details': request_details,
+            'Preferred Date': preferred_date,
+            'Preferred Time': preferred_time
+        };
+
+        const missingFields = Object.entries(requiredFields)
+            .filter(([_, value]) => !value)
+            .map(([field]) => field);
+
+        if (missingFields.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: 'All fields are required'
+                message: `Missing required fields: ${missingFields.join(', ')}`
             });
         }
-        
+
         // Create the special request
         const requestId = await SpecialRequest.create({
             customer_id: decoded.customer_ID,
@@ -153,7 +238,10 @@ exports.submitRequest = async (req, res) => {
             last_name: lastName,
             email: email,
             phone_number: phone_number,
-            request_details: request_details
+            request_details: request_details,
+            service_id: service_id,
+            preferred_date: preferred_date,
+            preferred_time: preferred_time
         });
         
         return res.status(201).json({
@@ -164,14 +252,76 @@ exports.submitRequest = async (req, res) => {
         
     } catch (error) {
         console.error('Error submitting special request:', error);
-        res.status(500).json({
+        res.status(error.message.includes('Missing or invalid') ? 400 : 500).json({
             success: false,
             message: error.message || 'Failed to submit special request'
         });
     }
 };
 
-// NEW CODE FOR ADMIN FUNCTIONALITY
+
+
+
+
+
+
+
+
+
+
+
+// exports.getAllRequests = async (req, res) => {
+//     try {
+//         // Check for admin authentication
+//         const authHeader = req.headers.authorization;
+//         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//             return res.status(401).json({ 
+//                 success: false, 
+//                 message: 'Authentication required' 
+//             });
+//         }
+
+//         const token = authHeader.split(' ')[1];
+        
+//         try {
+//             // Decode token without verification
+//             const decoded = jwt.decode(token);
+            
+//             if (!decoded || decoded.role.toLowerCase() !== 'admin') {
+//                 return res.status(403).json({
+//                     success: false,
+//                     message: 'Admin access required'
+//                 });
+//             }
+            
+//             // Fetch all special requests
+//             const requests = await SpecialRequest.getAllRequests();
+
+//             return res.status(200).json({
+//                 success: true,
+//                 requests
+//             });
+//         } catch (jwtError) {
+//             console.error('JWT decoding error:', jwtError);
+//             return res.status(401).json({
+//                 success: false,
+//                 message: 'Invalid token'
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error fetching all special requests:', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'Failed to fetch special requests'
+//         });
+//     }
+// };
+
+
+
+
+
+
 exports.getAllRequests = async (req, res) => {
     try {
         // Check for admin authentication
@@ -218,6 +368,9 @@ exports.getAllRequests = async (req, res) => {
         });
     }
 };
+
+
+
 
 exports.updateRequestStatus = async (req, res) => {
     try {

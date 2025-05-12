@@ -1,7 +1,10 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const customerModel = require("../models/customerModel"); // Import customer model
-const SECRET_KEY = "your-secret-key"; // Replace with a more secure secret key for JWT
+//const SECRET_KEY = "your-secret-key"; // Replace with a more secure secret key for JWT
+const SECRET_KEY = process.env.JWT_SECRET; // ✅ from .env
+
+
 
 // Register Customer (Create Account)
 async function registerCustomer(req, res) {
@@ -78,7 +81,7 @@ async function loginCustomer(req, res) {
     }
 
     // Create JWT token
-    const token = jwt.sign({ customer_ID: customer.customer_ID, username: customer.username }, SECRET_KEY, {
+    const token = jwt.sign({ customer_ID: customer.customer_ID, role: 'customer', username: customer.username }, SECRET_KEY, {
       expiresIn: "1h", // Token expires in 1 hour
     });
 

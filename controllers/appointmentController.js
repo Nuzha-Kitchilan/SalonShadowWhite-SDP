@@ -74,6 +74,82 @@ const CartModel = require('../models/cartModel');
 
 
 // 2. Let's update the controller function to ensure dates are passed correctly
+// const createAppointment = async (req, res) => {
+//   const { customer_id, selected_date, selected_time, services = [], stylist_ids = [] } = req.body;
+
+//   try {
+//     // 1. Validate required fields
+//     if (!customer_id || !selected_date || !selected_time) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields (customer_id, selected_date, selected_time)"
+//       });
+//     }
+
+//     // 2. Validate date format (YYYY-MM-DD)
+//     if (!/^\d{4}-\d{2}-\d{2}$/.test(selected_date)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid date format. Use YYYY-MM-DD"
+//       });
+//     }
+
+//     // 3. Validate and normalize time format (accept HH:MM or HH:MM:SS)
+//     let normalizedTime = selected_time;
+//     if (selected_time.includes(':')) {
+//       const timeParts = selected_time.split(':');
+//       if (timeParts.length > 2) {
+//         normalizedTime = `${timeParts[0]}:${timeParts[1]}`; // Keep only HH:MM
+//       }
+//     }
+
+//     if (!/^\d{2}:\d{2}$/.test(normalizedTime)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid time format. Use HH:MM"
+//       });
+//     }
+
+//     // 4. Validate services
+//     if (services.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "At least one service is required"
+//       });
+//     }
+
+//     // 5. Create complete appointment with normalized time and exact date string
+//     const result = await appointmentModel.createCompleteAppointment(
+//       customer_id,
+//       selected_date, // Pass the exact date string without modification
+//       normalizedTime, // Use normalized time
+//       services,
+//       stylist_ids
+//     );
+
+//     // 6. Clear the cart
+//     await CartModel.clearCartByCustomerId(customer_id);
+
+//     res.status(201).json({
+//       success: true,
+//       appointment_ID: result.appointment_ID,
+//       services_processed: result.servicesCount,
+//       stylists_assigned: result.stylistsAssigned
+//     });
+
+//   } catch (err) {
+//     console.error("Appointment creation error:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//       received_data: req.body
+//     });
+//   }
+// };
+
+
+// controllers/appointmentController.js
+
 const createAppointment = async (req, res) => {
   const { customer_id, selected_date, selected_time, services = [], stylist_ids = [] } = req.body;
 
@@ -110,31 +186,50 @@ const createAppointment = async (req, res) => {
       });
     }
 
-    // 4. Validate services
-    if (services.length === 0) {
+    // 4. Format cart items for processing
+    // Combine services with stylist_ids if provided separately
+    let cartItems = [];
+    
+    if (Array.isArray(services) && services.length > 0) {
+      // Create cart items from services and optional stylist IDs
+      cartItems = services.map((service, index) => {
+        // Handle different service formats (object or ID)
+        const service_id = typeof service === 'object' ? service.service_id || service.id : service;
+        
+        // Get stylist ID if available (can be null/undefined)
+        const stylist_id = stylist_ids[index] || null;
+        
+        return {
+          service_id,
+          stylist_id
+        };
+      });
+    }
+
+    // 5. Validate at least one service is required
+    if (cartItems.length === 0) {
       return res.status(400).json({
         success: false,
         message: "At least one service is required"
       });
     }
 
-    // 5. Create complete appointment with normalized time and exact date string
+    // 6. Create complete appointment with normalized time and exact date string
     const result = await appointmentModel.createCompleteAppointment(
       customer_id,
-      selected_date, // Pass the exact date string without modification
-      normalizedTime, // Use normalized time
-      services,
-      stylist_ids
+      selected_date,
+      normalizedTime,
+      cartItems
     );
 
-    // 6. Clear the cart
+    // 7. Clear the cart
     await CartModel.clearCartByCustomerId(customer_id);
 
     res.status(201).json({
       success: true,
       appointment_ID: result.appointment_ID,
-      services_processed: result.servicesCount,
-      stylists_assigned: result.stylistsAssigned
+      services_processed: result.inserted_records.length,
+      stylists_assigned: result.inserted_records.filter(r => r.stylist_ID !== null).length
     });
 
   } catch (err) {
