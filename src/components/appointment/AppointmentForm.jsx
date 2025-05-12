@@ -33,6 +33,20 @@ export default function AppointmentForm({
   selectedAppointment,
   onClose
 }) {
+
+  // Add this at the top of your AppointmentForm component
+console.log('Current form values:', {
+  services: editForm.services,
+  stylists: editForm.stylists,
+  customer_ID: editForm.customer_ID,
+  payment_amount: editForm.payment_amount
+});
+
+console.log('Available options:', {
+  services: services.map(s => s.service_name),
+  stylists: stylists.map(s => s.stylist_ID),
+  customers: customers.map(c => c.customer_ID)
+});
   // Helper to generate service price total
   const calculateTotalPrice = () => {
     if (!editForm.services.length || !services.length) return 0;
@@ -196,7 +210,7 @@ export default function AppointmentForm({
             <Select
               name="services"
               multiple
-              value={editForm.services}
+              value={editForm.services || []}
               onChange={handleMultiSelectChange}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

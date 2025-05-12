@@ -426,48 +426,152 @@ const AdminCancellationRequests = () => {
     }
   };
 
-  const handleProcessRequest = async (action) => {
-    setProcessing(true);
-    try {
-      let refundResult = null;
+//   const handleProcessRequest = async (action) => {
+//   setProcessing(true);
+//   try {
+//     let refundResult = null;
+    
+//     // Process refund only for Paid/Partially Paid statuses
+//     if (action === 'Approved' && 
+//         (selectedRequest.payment?.payment_status === 'Paid' || 
+//          selectedRequest.payment?.payment_status === 'Partially Paid')) {
+//       if (!selectedRequest.payment.stripe_payment_intent_id) {
+//         throw new Error('Missing payment reference for refund');
+//       }
       
-      if (action === 'Approved' && selectedRequest.payment?.payment_status === 'Paid') {
-        if (!selectedRequest.payment.stripe_payment_intent_id) {
-          throw new Error('Missing payment reference for refund');
-        }
-        
-        refundResult = await axios.post('http://localhost:5001/api/refund/process', {
-          payment_intent_id: selectedRequest.payment.stripe_payment_intent_id,
-          amount: refundAmount,
-          reason: refundReason
-        });
+//       refundResult = await axios.post('http://localhost:5001/api/refund/process', {
+//         payment_intent_id: selectedRequest.payment.stripe_payment_intent_id,
+//         amount: refundAmount,
+//         reason: refundReason
+//       });
+//     }
+
+//     // Process cancellation
+//     const cancelResponse = await axios.post(
+//       `http://localhost:5001/api/appointment/process-cancellation/${selectedRequest.appointment_ID}`,
+//       { action }
+//     );
+
+//     // Update local state to reflect changes
+//     setRequests(prevRequests => 
+//       prevRequests.map(request => 
+//         request.appointment_ID === selectedRequest.appointment_ID
+//           ? {
+//               ...request,
+//               cancellation_status: action,
+//               appointment_status: action === 'Approved' ? 'Cancelled' : request.appointment_status,
+//               payment: request.payment 
+//                 ? { 
+//                     ...request.payment,
+//                     payment_status: 
+//                       action === 'Approved'
+//                         ? request.payment.payment_status === 'Paid' || 
+//                           request.payment.payment_status === 'Partially Paid'
+//                           ? 'Refunded'
+//                           : 'Cancelled'
+//                         : request.payment.payment_status
+//                   } 
+//                 : null
+//             }
+//           : request
+//       )
+//     );
+
+//     setSnackbar({ 
+//       open: true, 
+//       message: `Cancellation ${action.toLowerCase()} successfully` + 
+//         (refundResult ? ` and $${refundAmount} refunded` : ''),
+//       severity: 'success'
+//     });
+    
+//     setDialogOpen(false);
+//   } catch (err) {
+//     console.error('Processing error:', err);
+//     setSnackbar({
+//       open: true,
+//       message: err.response?.data?.message || err.message || 'Failed to process request',
+//       severity: 'error'
+//     });
+//   } finally {
+//     setProcessing(false);
+//   }
+// };
+
+
+
+
+const handleProcessRequest = async (action) => {
+  setProcessing(true);
+  try {
+    let refundResult = null;
+    
+    // Process refund only for Paid/Partially Paid statuses
+    if (action === 'Approved' && 
+        (selectedRequest.payment?.payment_status === 'Paid' || 
+         selectedRequest.payment?.payment_status === 'Partially Paid')) {
+      if (!selectedRequest.payment.stripe_payment_intent_id) {
+        throw new Error('Missing payment reference for refund');
       }
-
-      const cancelResponse = await axios.post(
-        `http://localhost:5001/api/appointment/process-cancellation/${selectedRequest.appointment_ID}`,
-        { action }
-      );
-
-      setSnackbar({ 
-        open: true, 
-        message: `Cancellation ${action.toLowerCase()} successfully` + 
-          (refundResult ? ` and $${refundAmount} refunded` : ''),
-        severity: 'success'
-      });
       
-      setDialogOpen(false);
-      fetchRequests();
-    } catch (err) {
-      console.error('Processing error:', err);
-      setSnackbar({
-        open: true,
-        message: err.response?.data?.message || err.message || 'Failed to process request',
-        severity: 'error'
+      refundResult = await axios.post('http://localhost:5001/api/refund/process', {
+        payment_intent_id: selectedRequest.payment.stripe_payment_intent_id,
+        amount: refundAmount,
+        reason: refundReason
       });
-    } finally {
-      setProcessing(false);
     }
-  };
+
+    // Process cancellation
+    const cancelResponse = await axios.post(
+      `http://localhost:5001/api/appointment/process-cancellation/${selectedRequest.appointment_ID}`,
+      { action }
+    );
+
+    // Update the request in state with new status
+    setRequests(prevRequests => 
+      prevRequests.map(request => 
+        request.appointment_ID === selectedRequest.appointment_ID
+          ? {
+              ...request,
+              cancellation_status: action,
+              appointment_status: action === 'Approved' ? 'Cancelled' : request.appointment_status,
+              payment: request.payment 
+                ? { 
+                    ...request.payment,
+                    payment_status: 
+                      action === 'Approved'
+                        ? request.payment.payment_status === 'Paid' || 
+                          request.payment.payment_status === 'Partially Paid'
+                          ? 'Refunded'
+                          : request.payment.payment_status === 'Pending'
+                            ? 'Cancelled'
+                            : request.payment.payment_status
+                        : request.payment.payment_status
+                  } 
+                : null
+            }
+          : request
+      )
+    );
+
+    setSnackbar({ 
+      open: true, 
+      message: `Cancellation ${action.toLowerCase()} successfully` + 
+        (refundResult ? ` and $${refundAmount} refunded` : ''),
+      severity: 'success'
+    });
+    
+    setDialogOpen(false);
+  } catch (err) {
+    console.error('Processing error:', err);
+    setSnackbar({
+      open: true,
+      message: err.response?.data?.message || err.message || 'Failed to process request',
+      severity: 'error'
+    });
+  } finally {
+    setProcessing(false);
+  }
+};
 
   useEffect(() => {
     if (selectedRequest?.payment) {
@@ -645,7 +749,7 @@ const AdminCancellationRequests = () => {
         PaperProps={{
           sx: {
             borderRadius: '8px',
-            background: 'linear-gradient(to right, rgba(190, 175, 155, 0.1), rgba(255, 255, 255, 0.9))',
+            background: 'linear-gradient(to right, rgba(190, 175, 155, 0.9), rgba(255, 255, 255, 0.9))',
           }
         }}
       >

@@ -234,154 +234,843 @@
 
 
 
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Box, Typography, Paper, Divider, Grid, Button, CircularProgress,
+//   Chip, Snackbar, Alert, Table, TableBody, TableCell, TableContainer,
+//   TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions,
+//   TextField, MenuItem, FormControl, InputLabel, Select, InputAdornment
+// } from '@mui/material';
+// import {
+//   Save as SaveIcon,
+//   Person as PersonIcon,
+//   CalendarToday as CalendarIcon,
+//   Spa as SpaIcon,
+//   People as PeopleIcon,
+//   Description as DescriptionIcon,
+//   Email as EmailIcon,
+//   Phone as PhoneIcon
+// } from "@mui/icons-material";
+// import axios from '../utils/axiosWithAuth';
+
+// const AdminSpecialRequests = () => {
+//   const [requests, setRequests] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+//   const [selectedRequest, setSelectedRequest] = useState(null);
+//   const [dialogOpen, setDialogOpen] = useState(false);
+//   const [newStatus, setNewStatus] = useState('pending');
+//   const [processing, setProcessing] = useState(false);
+
+//   const fetchRequests = async () => {
+//     try {
+//       const res = await axios.get('http://localhost:5001/api/specialRequest/admin/all-requests');
+//       setRequests(res.data.requests);
+//     } catch (err) {
+//       console.error('Error fetching special requests:', err);
+//       setSnackbar({ open: true, message: 'Failed to fetch special requests', severity: 'error' });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleUpdateStatus = async () => {
+//     setProcessing(true);
+//     try {
+//       await axios.put('http://localhost:5001/api/specialRequest/admin/update-status', {
+//         requestId: selectedRequest.id,
+//         status: newStatus
+//       });
+
+//       setSnackbar({ 
+//         open: true, 
+//         message: `Request status updated to ${newStatus} successfully`,
+//         severity: 'success'
+//       });
+      
+//       setDialogOpen(false);
+//       fetchRequests();
+//     } catch (err) {
+//       console.error('Status update error:', err);
+//       setSnackbar({
+//         open: true,
+//         message: err.response?.data?.message || err.message || 'Failed to update request status',
+//         severity: 'error'
+//       });
+//     } finally {
+//       setProcessing(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchRequests();
+//   }, []);
+
+//   useEffect(() => {
+//     if (selectedRequest) {
+//       setNewStatus(selectedRequest.status);
+//     }
+//   }, [selectedRequest]);
+
+//   if (loading) return <Box textAlign="center"><CircularProgress /></Box>;
+
+//   const getStatusColor = (status) => {
+//     switch(status) {
+//       case 'pending': return 'warning';
+//       case 'approved': return 'success';
+//       case 'rejected': return 'error';
+//       case 'completed': return 'info';
+//       default: return 'default';
+//     }
+//   };
+
+//   const formatDate = (dateString) => {
+//     if (!dateString) return 'N/A';
+//     return new Date(dateString).toLocaleDateString();
+//   };
+
+//   const formatTime = (dateString) => {
+//     if (!dateString) return 'N/A';
+//     return new Date(dateString).toLocaleTimeString();
+//   };
+
+//   // Format date for input field (YYYY-MM-DD)
+//   const formatDateForInput = (dateString) => {
+//     if (!dateString) return '';
+//     const date = new Date(dateString);
+//     return date.toISOString().split('T')[0];
+//   };
+
+//   return (
+//     <Box p={4}>
+//       <Typography variant="h4" gutterBottom>Special Requests</Typography>
+      
+//       {requests.length === 0 ? (
+//         <Typography>No special requests found</Typography>
+//       ) : (
+//         <TableContainer component={Paper} sx={{ maxHeight: '70vh' }}>
+//           <Table stickyHeader>
+//             <TableHead>
+//               <TableRow>
+//                 <TableCell>ID</TableCell>
+//                 <TableCell>Customer</TableCell>
+//                 <TableCell>Contact Info</TableCell>
+//                 <TableCell>Service Type</TableCell>
+//                 <TableCell>Date</TableCell>
+//                 <TableCell>Time</TableCell>
+//                 <TableCell>Request Details</TableCell>
+//                 <TableCell>Status</TableCell>
+//                 <TableCell>Actions</TableCell>
+//               </TableRow>
+//             </TableHead>
+//             <TableBody>
+//               {requests.map((request) => (
+//                 <TableRow key={request.id}>
+//                   <TableCell>{request.id}</TableCell>
+//                   <TableCell>
+//                     {request.first_name} {request.last_name}
+//                   </TableCell>
+//                   <TableCell>
+//                     <Typography variant="body2">{request.email}</Typography>
+//                     <Typography variant="body2">{request.phone_number}</Typography>
+//                   </TableCell>
+//                   <TableCell>
+//                     {request.service_type || 'Not specified'}
+//                   </TableCell>
+//                   <TableCell>
+//                     {formatDate(request.created_at)}
+//                   </TableCell>
+//                   <TableCell>
+//                     {formatTime(request.created_at)}
+//                   </TableCell>
+//                   <TableCell>
+//                     <Typography noWrap sx={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+//                       {request.request_details}
+//                     </Typography>
+//                   </TableCell>
+//                   <TableCell>
+//                     <Chip 
+//                       label={request.status} 
+//                       color={getStatusColor(request.status)} 
+//                     />
+//                   </TableCell>
+//                   <TableCell>
+//                     <Button 
+//                       variant="outlined" 
+//                       color="primary"
+//                       onClick={() => {
+//                         setSelectedRequest(request);
+//                         setDialogOpen(true);
+//                       }}
+//                     >
+//                       Review
+//                     </Button>
+//                   </TableCell>
+//                 </TableRow>
+//               ))}
+//             </TableBody>
+//           </Table>
+//         </TableContainer>
+//       )}
+
+//       {/* Review Dialog with Appointment Form Style */}
+//       <Dialog 
+//         open={dialogOpen} 
+//         onClose={() => setDialogOpen(false)} 
+//         maxWidth="md" 
+//         fullWidth
+//         PaperProps={{
+//           sx: {
+//             borderRadius: "12px",
+//             background: "linear-gradient(to right bottom, #F7F4F0, #FFFFFF)"
+//           }
+//         }}
+//       >
+//         <DialogTitle sx={{ 
+//           color: "#453C33",
+//           fontFamily: "'Poppins', 'Roboto', sans-serif",
+//           fontWeight: 500,
+//           borderBottom: "1px dashed rgba(190, 175, 155, 0.3)",
+//           pb: 2
+//         }}>
+//           Special Request Review
+//         </DialogTitle>
+        
+//         <DialogContent dividers sx={{ p: 3 }}>
+//           {selectedRequest && (
+//             <Box component="form">
+//               {/* Form title */}
+//               <Box sx={{ mb: 3 }}>
+//                 <Typography 
+//                   variant="h5" 
+//                   component="h2"
+//                   sx={{ 
+//                     color: "#453C33",
+//                     fontFamily: "'Poppins', 'Roboto', sans-serif",
+//                     fontWeight: 500,
+//                     mb: 1
+//                   }}
+//                 >
+//                   Special Request #{selectedRequest.id}
+//                 </Typography>
+//                 <Typography 
+//                   variant="body2" 
+//                   sx={{ 
+//                     color: "text.secondary",
+//                     fontFamily: "'Poppins', 'Roboto', sans-serif",
+//                   }}
+//                 >
+//                   Review the request details and update the status if needed
+//                 </Typography>
+//               </Box>
+
+//               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+//                 {/* Customer Details section */}
+//                 <Paper 
+//                   elevation={0} 
+//                   sx={{ 
+//                     p: 2.5, 
+//                     borderRadius: "8px",
+//                     border: "1px solid rgba(190, 175, 155, 0.3)",
+//                     background: "linear-gradient(to right bottom, rgba(249, 245, 240, 0.5), rgba(255, 255, 255, 0.8))"
+//                   }}
+//                 >
+//                   <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+//                     <PersonIcon sx={{ color: "#BEAF9B", mr: 1.5 }} />
+//                     <Typography 
+//                       variant="subtitle1" 
+//                       sx={{ 
+//                         fontWeight: 600, 
+//                         color: "#453C33",
+//                         fontFamily: "'Poppins', 'Roboto', sans-serif",
+//                       }}
+//                     >
+//                       Customer Details
+//                     </Typography>
+//                   </Box>
+//                   <TextField
+//                     label="Full Name"
+//                     value={`${selectedRequest.first_name} ${selectedRequest.last_name}`}
+//                     fullWidth
+//                     margin="normal"
+//                     InputProps={{
+//                       readOnly: true,
+//                       startAdornment: (
+//                         <InputAdornment position="start">
+//                           <PersonIcon sx={{ color: "#BEAF9B" }} />
+//                         </InputAdornment>
+//                       ),
+//                     }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                   <TextField
+//                     label="Email"
+//                     value={selectedRequest.email}
+//                     fullWidth
+//                     margin="normal"
+//                     InputProps={{
+//                       readOnly: true,
+//                       startAdornment: (
+//                         <InputAdornment position="start">
+//                           <EmailIcon sx={{ color: "#BEAF9B" }} />
+//                         </InputAdornment>
+//                       ),
+//                     }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                   <TextField
+//                     label="Phone Number"
+//                     value={selectedRequest.phone_number}
+//                     fullWidth
+//                     margin="normal"
+//                     InputProps={{
+//                       readOnly: true,
+//                       startAdornment: (
+//                         <InputAdornment position="start">
+//                           <PhoneIcon sx={{ color: "#BEAF9B" }} />
+//                         </InputAdornment>
+//                       ),
+//                     }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                 </Paper>
+
+//                 {/* Request Details section */}
+//                 <Paper 
+//                   elevation={0} 
+//                   sx={{ 
+//                     p: 2.5, 
+//                     borderRadius: "8px",
+//                     border: "1px solid rgba(190, 175, 155, 0.3)",
+//                     background: "linear-gradient(to right bottom, rgba(249, 245, 240, 0.5), rgba(255, 255, 255, 0.8))"
+//                   }}
+//                 >
+//                   <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+//                     <SpaIcon sx={{ color: "#BEAF9B", mr: 1.5 }} />
+//                     <Typography 
+//                       variant="subtitle1" 
+//                       sx={{ 
+//                         fontWeight: 600, 
+//                         color: "#453C33",
+//                         fontFamily: "'Poppins', 'Roboto', sans-serif",
+//                       }}
+//                     >
+//                       Request Information
+//                     </Typography>
+//                   </Box>
+//                   <TextField
+//                     label="Service Type"
+//                     value={selectedRequest.service_type || 'Not specified'}
+//                     fullWidth
+//                     margin="normal"
+//                     InputProps={{
+//                       readOnly: true,
+//                       startAdornment: (
+//                         <InputAdornment position="start">
+//                           <SpaIcon sx={{ color: "#BEAF9B" }} />
+//                         </InputAdornment>
+//                       ),
+//                     }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                   <TextField
+//                     label="Date Submitted"
+//                     value={formatDateForInput(selectedRequest.created_at)}
+//                     type="date"
+//                     fullWidth
+//                     margin="normal"
+//                     InputProps={{
+//                       readOnly: true,
+//                       startAdornment: (
+//                         <InputAdornment position="start">
+//                           <CalendarIcon sx={{ color: "#BEAF9B" }} />
+//                         </InputAdornment>
+//                       ),
+//                     }}
+//                     InputLabelProps={{ shrink: true }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                   <TextField
+//                     label="Time Submitted"
+//                     value={formatTime(selectedRequest.created_at)}
+//                     fullWidth
+//                     margin="normal"
+//                     InputProps={{
+//                       readOnly: true,
+//                       startAdornment: (
+//                         <InputAdornment position="start">
+//                           <CalendarIcon sx={{ color: "#BEAF9B" }} />
+//                         </InputAdornment>
+//                       ),
+//                     }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                 </Paper>
+
+//                 {/* Request Details section */}
+//                 <Paper 
+//                   elevation={0} 
+//                   sx={{ 
+//                     p: 2.5, 
+//                     borderRadius: "8px",
+//                     border: "1px solid rgba(190, 175, 155, 0.3)",
+//                     background: "linear-gradient(to right bottom, rgba(249, 245, 240, 0.5), rgba(255, 255, 255, 0.8))",
+//                     gridColumn: '1 / -1'
+//                   }}
+//                 >
+//                   <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+//                     <DescriptionIcon sx={{ color: "#BEAF9B", mr: 1.5 }} />
+//                     <Typography 
+//                       variant="subtitle1" 
+//                       sx={{ 
+//                         fontWeight: 600, 
+//                         color: "#453C33",
+//                         fontFamily: "'Poppins', 'Roboto', sans-serif",
+//                       }}
+//                     >
+//                       Request Details
+//                     </Typography>
+//                   </Box>
+//                   <TextField
+//                     label="Request Details"
+//                     value={selectedRequest.request_details}
+//                     fullWidth
+//                     margin="normal"
+//                     multiline
+//                     rows={4}
+//                     InputProps={{
+//                       readOnly: true,
+//                     }}
+//                     sx={{
+//                       '& .MuiOutlinedInput-root': {
+//                         '& fieldset': { borderColor: 'rgba(190, 175, 155, 0.3)' },
+//                         '&:hover fieldset': { borderColor: 'rgba(190, 175, 155, 0.5)' },
+//                         '&.Mui-focused fieldset': { borderColor: '#BEAF9B' },
+//                       },
+//                       '& .Mui-focused': { color: '#BEAF9B' },
+//                       '& .Mui-disabled, & .Mui-readOnly': {
+//                         backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                         WebkitTextFillColor: '#453C33',
+//                       }
+//                     }}
+//                   />
+//                 </Paper>
+
+//                 {/* Status Update section */}
+//                 <Paper 
+//                   elevation={0} 
+//                   sx={{ 
+//                     p: 2.5, 
+//                     borderRadius: "8px",
+//                     border: "1px solid rgba(190, 175, 155, 0.3)",
+//                     background: "linear-gradient(to right bottom, rgba(249, 245, 240, 0.5), rgba(255, 255, 255, 0.8))",
+//                     gridColumn: '1 / -1'
+//                   }}
+//                 >
+//                   <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+//                     <PeopleIcon sx={{ color: "#BEAF9B", mr: 1.5 }} />
+//                     <Typography 
+//                       variant="subtitle1" 
+//                       sx={{ 
+//                         fontWeight: 600, 
+//                         color: "#453C33",
+//                         fontFamily: "'Poppins', 'Roboto', sans-serif",
+//                       }}
+//                     >
+//                       Update Status
+//                     </Typography>
+//                   </Box>
+//                   <FormControl fullWidth margin="normal">
+//                     <InputLabel sx={{ '&.Mui-focused': { color: '#BEAF9B' } }}>
+//                       Request Status
+//                     </InputLabel>
+//                     <Select
+//                       value={newStatus}
+//                       onChange={(e) => setNewStatus(e.target.value)}
+//                       sx={{
+//                         '& .MuiOutlinedInput-notchedOutline': {
+//                           borderColor: 'rgba(190, 175, 155, 0.3)',
+//                         },
+//                         '&:hover .MuiOutlinedInput-notchedOutline': {
+//                           borderColor: 'rgba(190, 175, 155, 0.5)',
+//                         },
+//                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+//                           borderColor: '#BEAF9B',
+//                         },
+//                       }}
+//                     >
+//                       <MenuItem value="pending">
+//                         <Chip 
+//                           label="Pending" 
+//                           size="small" 
+//                           sx={{ 
+//                             backgroundColor: "#ff9800",
+//                             color: 'white',
+//                             minWidth: '80px',
+//                             justifyContent: 'center'
+//                           }} 
+//                         />
+//                       </MenuItem>
+//                       <MenuItem value="approved">
+//                         <Chip 
+//                           label="Approved" 
+//                           size="small" 
+//                           sx={{ 
+//                             backgroundColor: "#4caf50",
+//                             color: 'white',
+//                             minWidth: '80px',
+//                             justifyContent: 'center'
+//                           }} 
+//                         />
+//                       </MenuItem>
+//                       <MenuItem value="rejected">
+//                         <Chip 
+//                           label="Rejected" 
+//                           size="small" 
+//                           sx={{ 
+//                             backgroundColor: "#f44336",
+//                             color: 'white',
+//                             minWidth: '80px',
+//                             justifyContent: 'center'
+//                           }} 
+//                         />
+//                       </MenuItem>
+//                       <MenuItem value="completed">
+//                         <Chip 
+//                           label="Completed" 
+//                           size="small" 
+//                           sx={{ 
+//                             backgroundColor: "#2196f3",
+//                             color: 'white',
+//                             minWidth: '80px',
+//                             justifyContent: 'center'
+//                           }} 
+//                         />
+//                       </MenuItem>
+//                     </Select>
+//                   </FormControl>
+//                 </Paper>
+//               </Box>
+//             </Box>
+//           )}
+//         </DialogContent>
+        
+//         <DialogActions sx={{ 
+//           padding: "20px",
+//           borderTop: "1px dashed rgba(190, 175, 155, 0.3)"
+//         }}>
+//           <Button 
+//             onClick={handleUpdateStatus} 
+//             variant="contained"
+//             startIcon={<SaveIcon />}
+//             disabled={processing || (selectedRequest && selectedRequest.status === newStatus)}
+//             sx={{ 
+//               backgroundColor: "#BEAF9B", 
+//               color: "white", 
+//               fontFamily: "'Poppins', 'Roboto', sans-serif",
+//               fontWeight: 500,
+//               boxShadow: "0 2px 6px rgba(190, 175, 155, 0.3)",
+//               transition: "transform 0.3s ease, box-shadow 0.3s ease",
+//               px: 3,
+//               '&:hover': { 
+//                 backgroundColor: "#A89583",
+//                 transform: "translateY(-2px)",
+//                 boxShadow: "0 4px 10px rgba(190, 175, 155, 0.4)"
+//               }
+//             }}
+//           >
+//             {processing ? <CircularProgress size={24} color="inherit" /> : 'Update Status'}
+//           </Button>
+//           <Button 
+//             onClick={() => setDialogOpen(false)} 
+//             disabled={processing}
+//             sx={{ 
+//               color: "#453C33", 
+//               fontFamily: "'Poppins', 'Roboto', sans-serif",
+//               fontWeight: 500,
+//               '&:hover': { 
+//                 backgroundColor: "rgba(190, 175, 155, 0.1)" 
+//               } 
+//             }}
+//           >
+//             Cancel
+//           </Button>
+//         </DialogActions>
+//       </Dialog>
+
+//       {/* Snackbar */}
+//       <Snackbar
+//         open={snackbar.open}
+//         autoHideDuration={6000}
+//         onClose={() => setSnackbar({ ...snackbar, open: false })}
+//         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+//       >
+//         <Alert 
+//           severity={snackbar.severity}
+//           sx={{ width: '100%' }}
+//           onClose={() => setSnackbar({ ...snackbar, open: false })}
+//         >
+//           {snackbar.message}
+//         </Alert>
+//       </Snackbar>
+//     </Box>
+//   );
+// };
+
+// export default AdminSpecialRequests;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import { Box, Typography, CircularProgress, Snackbar, Alert } from '@mui/material';
+// import SpecialRequestsTable from '../components/specialReq/SpecialRequestsTable';
+// import SpecialRequestForm from '../components/specialReq/SpecialRequestForm';
+// import axios from '../utils/axiosWithAuth';
+
+// const AdminSpecialRequests = () => {
+//   const [requests, setRequests] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+//   const [selectedRequest, setSelectedRequest] = useState(null);
+//   const [dialogOpen, setDialogOpen] = useState(false);
+//   const [processing, setProcessing] = useState(false);
+
+//   const fetchRequests = async () => {
+//     try {
+//       const res = await axios.get('http://localhost:5001/api/specialRequest/admin/all-requests');
+//       setRequests(res.data.requests);
+//     } catch (err) {
+//       console.error('Error fetching special requests:', err);
+//       setSnackbar({ open: true, message: 'Failed to fetch special requests', severity: 'error' });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleUpdateStatus = async (requestId, newStatus) => {
+//     setProcessing(true);
+//     try {
+//       await axios.put('http://localhost:5001/api/specialRequest/admin/update-status', {
+//         requestId,
+//         status: newStatus
+//       });
+
+//       setSnackbar({ 
+//         open: true, 
+//         message: `Request status updated to ${newStatus} successfully`,
+//         severity: 'success'
+//       });
+      
+//       setDialogOpen(false);
+//       fetchRequests();
+//     } catch (err) {
+//       console.error('Status update error:', err);
+//       setSnackbar({
+//         open: true,
+//         message: err.response?.data?.message || err.message || 'Failed to update request status',
+//         severity: 'error'
+//       });
+//     } finally {
+//       setProcessing(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchRequests();
+//   }, []);
+
+//   const handleOpenDialog = (request) => {
+//     setSelectedRequest(request);
+//     setDialogOpen(true);
+//   };
+
+//   const handleCloseDialog = () => {
+//     setDialogOpen(false);
+//   };
+
+//   if (loading) return <Box textAlign="center"><CircularProgress /></Box>;
+
+//   return (
+//     <Box p={4}>
+//       <Typography variant="h4" gutterBottom>Special Requests</Typography>
+      
+//       {requests.length === 0 ? (
+//         <Typography>No special requests found</Typography>
+//       ) : (
+//         <SpecialRequestsTable 
+//           requests={requests} 
+//           onReviewRequest={handleOpenDialog}
+//         />
+//       )}
+
+//       {/* Form Dialog */}
+//       {selectedRequest && (
+//         <SpecialRequestForm
+//           open={dialogOpen}
+//           onClose={handleCloseDialog}
+//           request={selectedRequest}
+//           onUpdateStatus={handleUpdateStatus}
+//           processing={processing}
+//         />
+//       )}
+
+//       {/* Snackbar */}
+//       <Snackbar
+//         open={snackbar.open}
+//         autoHideDuration={6000}
+//         onClose={() => setSnackbar({ ...snackbar, open: false })}
+//         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+//       >
+//         <Alert 
+//           severity={snackbar.severity}
+//           sx={{ width: '100%' }}
+//           onClose={() => setSnackbar({ ...snackbar, open: false })}
+//         >
+//           {snackbar.message}
+//         </Alert>
+//       </Snackbar>
+//     </Box>
+//   );
+// };
+
+// export default AdminSpecialRequests;
+
+
+
+
+
+
+
+
 
 
 
 
 import React, { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Divider, 
-  Grid, 
-  Button, 
-  CircularProgress,
-  Chip, 
-  Snackbar, 
-  Alert, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer,
-  TableHead, 
-  TableRow, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  TextField, 
-  MenuItem, 
-  Container,
-  useMediaQuery,
-  useTheme,
-  IconButton,
-  Tooltip
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Button,Typography, CircularProgress, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Paper } from '@mui/material';
+import { CheckCircle as CheckCircleIcon } from '@mui/icons-material';
+import SpecialRequestsTable from '../components/specialReq/SpecialRequestsTable';
+import SpecialRequestForm from '../components/specialReq/SpecialRequestForm';
+import AppointmentDetailsModal from '../components/specialReq/AppointmentDetailsModal';
 import axios from '../utils/axiosWithAuth';
-import { jwtDecode } from 'jwt-decode';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import PendingIcon from '@mui/icons-material/Pending';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-
-// Styled components to match ServiceManagement aesthetic
-const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  borderRadius: '8px',
-  overflow: 'hidden',
-  border: '1px solid rgba(190, 175, 155, 0.2)',
-  boxShadow: 'none',
-}));
-
-const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  backgroundColor: 'rgba(190, 175, 155, 0.1)',
-  '& .MuiTableCell-head': {
-    color: '#453C33',
-    fontWeight: 600,
-    fontSize: '0.9rem',
-    fontFamily: "'Poppins', 'Roboto', sans-serif",
-    padding: theme.spacing(2),
-  }
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: 'rgba(190, 175, 155, 0.03)',
-  },
-  '&:hover': {
-    backgroundColor: 'rgba(190, 175, 155, 0.1)',
-  },
-  transition: 'background-color 0.2s',
-}));
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  fontFamily: "'Poppins', 'Roboto', sans-serif",
-  borderBottom: '1px solid rgba(190, 175, 155, 0.2)',
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  textTransform: 'none',
-  fontFamily: "'Poppins', 'Roboto', sans-serif",
-  fontWeight: 600,
-  borderRadius: '6px',
-  boxShadow: 'none',
-  padding: '8px 16px',
-  '&:hover': {
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  }
-}));
-
-const StyledChip = styled(Chip)(({ theme, color }) => ({
-  fontFamily: "'Poppins', 'Roboto', sans-serif",
-  fontWeight: 500,
-  borderRadius: '6px',
-}));
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: '8px',
-  overflow: 'hidden',
-  border: '1px solid rgba(190, 175, 155, 0.2)',
-  boxShadow: 'none',
-}));
-
-const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  backgroundColor: 'rgba(190, 175, 155, 0.1)',
-  color: '#453C33',
-  fontFamily: "'Poppins', 'Roboto', sans-serif",
-  fontWeight: 600,
-  padding: theme.spacing(2, 3),
-}));
 
 const AdminSpecialRequests = () => {
   const [requests, setRequests] = useState([]);
+   const [stylists, setStylists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newStatus, setNewStatus] = useState('pending');
   const [processing, setProcessing] = useState(false);
-  const [adminName, setAdminName] = useState('');
-  
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  useEffect(() => {
-    // Get admin info from JWT token
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setAdminName(decodedToken.name || decodedToken.username || 'Admin');
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-    }
-    
-    fetchRequests();
-  }, []);
-
-  useEffect(() => {
-    if (selectedRequest) {
-      setNewStatus(selectedRequest.status);
-    }
-  }, [selectedRequest]);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [successRequest, setSuccessRequest] = useState(null);
+  const [viewAppointmentModalOpen, setViewAppointmentModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const fetchRequests = async () => {
-    setRefreshing(true);
     try {
       const res = await axios.get('http://localhost:5001/api/specialRequest/admin/all-requests');
       setRequests(res.data.requests);
@@ -390,15 +1079,17 @@ const AdminSpecialRequests = () => {
       setSnackbar({ open: true, message: 'Failed to fetch special requests', severity: 'error' });
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
-  const handleUpdateStatus = async () => {
+  
+
+
+  const handleUpdateStatus = async (requestId, newStatus) => {
     setProcessing(true);
     try {
       await axios.put('http://localhost:5001/api/specialRequest/admin/update-status', {
-        requestId: selectedRequest.id,
+        requestId,
         status: newStatus
       });
 
@@ -422,415 +1113,204 @@ const AdminSpecialRequests = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'pending': return 'warning';
-      case 'approved': return 'success';
-      case 'rejected': return 'error';
-      case 'completed': return 'info';
-      default: return 'default';
-    }
+  const handleViewSuccess = (request) => {
+    console.log('Original request:', request);
+  
+  // Explicitly use appointment_ID from the API response
+  const appointmentId = request.appointment_ID;
+  
+  const processedRequest = {
+    ...request,
+    appointment_ID: appointmentId
   };
-
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'pending': return <PendingIcon fontSize="small" />;
-      case 'approved': return <CheckCircleIcon fontSize="small" />;
-      case 'rejected': return <CancelIcon fontSize="small" />;
-      case 'completed': return <DoneAllIcon fontSize="small" />;
-      default: return null;
-    }
+  
+  console.log('Processed request with appointment_ID:', processedRequest);
+    setSuccessRequest(request);
+    setSuccessDialogOpen(true);
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleString();
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
-  // Get current time to display greeting
-  const getCurrentTimeGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+
+  const handleViewAppointment = (request) => {
+  setSelectedAppointment({
+    id: request.appointment_id,
+    customer: {
+      first_name: request.first_name,
+      last_name: request.last_name,
+      email: request.email,
+      phone_number: request.phone_number
+    }
+  });
+  setViewAppointmentModalOpen(true);
+};
+
+  const formatTime = (timeString) => {
+    if (!timeString) return 'N/A';
+    if (typeof timeString === 'string') {
+      const [hours, minutes] = timeString.split(':');
+      const time = new Date();
+      time.setHours(hours, minutes);
+      return time.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    return new Date(timeString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
-  if (loading) {
-    return (
-      <Container maxWidth="xl" sx={{ mt: { xs: 2, md: 4 }, display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress sx={{ color: '#BEAF9B' }} />
-      </Container>
-    );
-  }
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const handleOpenDialog = (request) => {
+    setSelectedRequest(request);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  if (loading) return <Box textAlign="center"><CircularProgress /></Box>;
 
   return (
-    <Container maxWidth="xl" sx={{ mt: { xs: 2, md: 4 } }}>
-      <StyledPaper
-        sx={{ 
-          mb: 4,
-          background: 'linear-gradient(to right, rgba(190, 175, 155, 0.1), rgba(255, 255, 255, 0.8))',
-        }}
-      >
-        <Box sx={{ p: { xs: 2, md: 3 }, borderBottom: '1px solid rgba(190, 175, 155, 0.2)' }}>
-          <Typography 
-            variant={isMobile ? "h5" : "h4"} 
-            component="h1" 
-            sx={{ 
-              fontFamily: "'Poppins', 'Roboto', sans-serif",
-              fontWeight: 600,
-              color: '#453C33',
-              mb: 1
-            }}
-          >
-            Special Requests
-          </Typography>
-          
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              fontFamily: "'Poppins', 'Roboto', sans-serif",
-              color: '#666',
-              mb: 1
-            }}
-          >
-            {getCurrentTimeGreeting()}, {adminName}. Manage customer special requests here.
-          </Typography>
-        </Box>
+    <Box p={4}>
+      <Typography variant="h4" gutterBottom>Special Requests</Typography>
+      
+      {requests.length === 0 ? (
+        <Typography>No special requests found</Typography>
+      ) : (
+        <SpecialRequestsTable 
+          requests={requests} 
+          onReviewRequest={handleOpenDialog}
+          onViewSuccess={handleViewSuccess}
+          onViewAppointment={handleViewAppointment}
+        />
+      )}
 
-        <Box sx={{ p: { xs: 2, md: 3 } }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <StyledButton
-              variant="outlined"
-              startIcon={<RefreshIcon />}
-              onClick={fetchRequests}
-              disabled={refreshing}
-              sx={{ 
-                color: '#BEAF9B', 
-                borderColor: '#BEAF9B',
-                '&:hover': {
-                  borderColor: '#453C33',
-                  backgroundColor: 'rgba(190, 175, 155, 0.1)',
-                }
-              }}
-            >
-              {refreshing ? 'Refreshing...' : 'Refresh'}
-            </StyledButton>
-          </Box>
-          
-          {requests.length === 0 ? (
+
+      {viewAppointmentModalOpen && (
+  <AppointmentDetailsModal
+    open={viewAppointmentModalOpen}
+    onClose={() => setViewAppointmentModalOpen(false)}
+    appointmentId={selectedAppointment?.id}
+    customer={selectedAppointment?.customer}
+    stylists={stylists} // Make sure you have stylists data available
+  />
+)}
+
+
+      {/* Form Dialog */}
+      {selectedRequest && (
+        <SpecialRequestForm
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          request={selectedRequest}
+          onUpdateStatus={handleUpdateStatus}
+          processing={processing}
+          onViewSuccess={handleViewSuccess} 
+        />
+      )}
+
+      {/* Success Dialog */}
+      <Dialog 
+        open={successDialogOpen} 
+        onClose={() => setSuccessDialogOpen(false)}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ bgcolor: '#4caf50', color: 'white' }}>
+          Appointment Created Successfully
+        </DialogTitle>
+        
+        <DialogContent dividers>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center',
+            py: 3 
+          }}>
             <Box 
               sx={{ 
-                p: 4, 
-                textAlign: 'center', 
-                backgroundColor: 'rgba(190, 175, 155, 0.05)', 
-                borderRadius: '8px' 
+                width: 70, 
+                height: 70, 
+                borderRadius: '50%', 
+                bgcolor: '#e8f5e9', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                mb: 2
               }}
             >
-              <Typography 
-                variant="h6" 
+              <CheckCircleIcon sx={{ color: '#4caf50', fontSize: 40 }} />
+            </Box>
+            
+            <Typography variant="h6" gutterBottom>
+              Success!
+            </Typography>
+            
+            <Typography variant="body1" align="center" paragraph>
+              Appointment #{successRequest?.appointment_ID} was created successfully!
+            </Typography>
+            
+            {successRequest && (
+              <Paper 
+                elevation={1} 
                 sx={{ 
-                  fontFamily: "'Poppins', 'Roboto', sans-serif",
-                  color: '#666'
+                  p: 2, 
+                  width: '100%', 
+                  mb: 2,
+                  bgcolor: '#f5f5f5',
+                  border: '1px solid #e0e0e0'
                 }}
               >
-                No special requests found
-              </Typography>
-            </Box>
-          ) : (
-            <StyledTableContainer>
-              <Table>
-                <StyledTableHead>
-                  <TableRow>
-                    <StyledTableCell>ID</StyledTableCell>
-                    <StyledTableCell>Customer</StyledTableCell>
-                    <StyledTableCell>Contact Info</StyledTableCell>
-                    <StyledTableCell>Request Details</StyledTableCell>
-                    <StyledTableCell>Created At</StyledTableCell>
-                    <StyledTableCell>Status</StyledTableCell>
-                    <StyledTableCell align="center">Actions</StyledTableCell>
-                  </TableRow>
-                </StyledTableHead>
-                <TableBody>
-                  {requests.map((request) => (
-                    <StyledTableRow key={request.id}>
-                      <StyledTableCell>{request.id}</StyledTableCell>
-                      <StyledTableCell>
-                        {request.first_name} {request.last_name}
-                      </StyledTableCell>
-                      <StyledTableCell>
-                        <Typography variant="body2" sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
-                          {request.email}
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
-                          {request.phone_number}
-                        </Typography>
-                      </StyledTableCell>
-                      <StyledTableCell>
-                        <Typography 
-                          noWrap 
-                          sx={{ 
-                            maxWidth: 200, 
-                            overflow: 'hidden', 
-                            textOverflow: 'ellipsis',
-                            fontFamily: "'Poppins', 'Roboto', sans-serif" 
-                          }}
-                        >
-                          {request.request_details}
-                        </Typography>
-                      </StyledTableCell>
-                      <StyledTableCell sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
-                        {formatDate(request.created_at)}
-                      </StyledTableCell>
-                      <StyledTableCell>
-                        <StyledChip 
-                          label={request.status}
-                          color={getStatusColor(request.status)}
-                          icon={getStatusIcon(request.status)}
-                          size="small"
-                          sx={{ textTransform: 'capitalize' }}
-                        />
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <Tooltip title="Review Request">
-                          <IconButton
-                            onClick={() => {
-                              setSelectedRequest(request);
-                              setDialogOpen(true);
-                            }}
-                            sx={{ 
-                              color: '#BEAF9B',
-                              '&:hover': {
-                                color: '#453C33',
-                                backgroundColor: 'rgba(190, 175, 155, 0.1)',
-                              }
-                            }}
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </StyledTableContainer>
-          )}
-        </Box>
-      </StyledPaper>
-
-      {/* Review Dialog */}
-      <Dialog 
-        open={dialogOpen} 
-        onClose={() => setDialogOpen(false)} 
-        maxWidth="md" 
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: '8px',
-            overflow: 'hidden',
-          }
-        }}
-      >
-        <StyledDialogTitle>Review Special Request</StyledDialogTitle>
-        <DialogContent dividers sx={{ p: 3 }}>
-          {selectedRequest && (
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontFamily: "'Poppins', 'Roboto', sans-serif",
-                    fontWeight: 600,
-                    color: '#453C33',
-                  }}
-                >
-                  Customer Details
+                <Typography variant="subtitle2" gutterBottom>
+                  Appointment Details:
                 </Typography>
-                <Divider sx={{ my: 1, borderColor: 'rgba(190, 175, 155, 0.3)' }} />
-                
-                <Box sx={{ mt: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Typography sx={{ fontWeight: 600, color: '#666' }}>ID:</Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography>{selectedRequest.id}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                      <Typography sx={{ fontWeight: 600, color: '#666' }}>Name:</Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography>{selectedRequest.first_name} {selectedRequest.last_name}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                      <Typography sx={{ fontWeight: 600, color: '#666' }}>Email:</Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography>{selectedRequest.email}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                      <Typography sx={{ fontWeight: 600, color: '#666' }}>Phone:</Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography>{selectedRequest.phone_number}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                      <Typography sx={{ fontWeight: 600, color: '#666' }}>Customer ID:</Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography>{selectedRequest.customer_id}</Typography>
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                      <Typography sx={{ fontWeight: 600, color: '#666' }}>Created:</Typography>
-                    </Grid>
-                    <Grid item xs={8}>
-                      <Typography>{formatDate(selectedRequest.created_at)}</Typography>
-                    </Grid>
-                  </Grid>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Appointment ID:</Typography>
+                  <Typography variant="body2" fontWeight="bold">#{successRequest.appointment}</Typography>
                 </Box>
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontFamily: "'Poppins', 'Roboto', sans-serif",
-                    fontWeight: 600,
-                    color: '#453C33',
-                  }}
-                >
-                  Request Details
-                </Typography>
-                <Divider sx={{ my: 1, borderColor: 'rgba(190, 175, 155, 0.3)' }} />
-                
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
-                    mt: 2, 
-                    maxHeight: 200, 
-                    overflow: 'auto',
-                    border: '1px solid rgba(190, 175, 155, 0.2)',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(190, 175, 155, 0.03)'
-                  }}
-                >
-                  <Typography 
-                    style={{ whiteSpace: 'pre-wrap' }}
-                    sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}
-                  >
-                    {selectedRequest.request_details}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Customer:</Typography>
+                  <Typography variant="body2">{`${successRequest.first_name} ${successRequest.last_name}`}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Date & Time:</Typography>
+                  <Typography variant="body2">
+                    {formatDate(successRequest.preferred_date)} at {formatTime(successRequest.preferred_time)}
                   </Typography>
-                </Paper>
-                
-                <Divider sx={{ my: 3, borderColor: 'rgba(190, 175, 155, 0.3)' }} />
-                
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontFamily: "'Poppins', 'Roboto', sans-serif",
-                    fontWeight: 600,
-                    color: '#453C33',
-                  }}
-                >
-                  Update Status
-                </Typography>
-                
-                <TextField
-                  select
-                  label="Request Status"
-                  fullWidth
-                  margin="normal"
-                  value={newStatus}
-                  onChange={(e) => setNewStatus(e.target.value)}
-                  variant="outlined"
-                  sx={{
-                    mt: 2,
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'rgba(190, 175, 155, 0.3)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#BEAF9B',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#BEAF9B',
-                      },
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: '#453C33',
-                    },
-                  }}
-                >
-                  <MenuItem value="pending">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PendingIcon fontSize="small" color="warning" />
-                      <span>Pending</span>
-                    </Box>
-                  </MenuItem>
-                  <MenuItem value="approved">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CheckCircleIcon fontSize="small" color="success" />
-                      <span>Approved</span>
-                    </Box>
-                  </MenuItem>
-                  <MenuItem value="rejected">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CancelIcon fontSize="small" color="error" />
-                      <span>Rejected</span>
-                    </Box>
-                  </MenuItem>
-                  <MenuItem value="completed">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <DoneAllIcon fontSize="small" color="info" />
-                      <span>Completed</span>
-                    </Box>
-                  </MenuItem>
-                </TextField>
-              </Grid>
-            </Grid>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ p: 2, backgroundColor: 'rgba(190, 175, 155, 0.03)' }}>
-          <StyledButton 
-            onClick={() => setDialogOpen(false)} 
-            disabled={processing}
-            sx={{ 
-              color: '#666',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              }
-            }}
-          >
-            Cancel
-          </StyledButton>
-          <StyledButton 
-            onClick={handleUpdateStatus} 
-            variant="contained"
-            disabled={processing || (selectedRequest && selectedRequest.status === newStatus)}
-            sx={{ 
-              backgroundColor: '#BEAF9B',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#453C33',
-              },
-              '&.Mui-disabled': {
-                backgroundColor: 'rgba(190, 175, 155, 0.3)',
-                color: 'rgba(255, 255, 255, 0.7)',
-              }
-            }}
-          >
-            {processing ? (
-              <CircularProgress size={24} sx={{ color: 'white' }} />
-            ) : (
-              'Update Status'
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2">Service:</Typography>
+                  <Typography variant="body2">{successRequest.service_name || 'Not specified'}</Typography>
+                </Box>
+              </Paper>
             )}
-          </StyledButton>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions>
+          <Button 
+            onClick={() => setSuccessDialogOpen(false)} 
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -843,18 +1323,13 @@ const AdminSpecialRequests = () => {
       >
         <Alert 
           severity={snackbar.severity}
-          sx={{ 
-            width: '100%',
-            fontFamily: "'Poppins', 'Roboto', sans-serif",
-            boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.1)',
-            borderRadius: '6px',
-          }}
+          sx={{ width: '100%' }}
           onClose={() => setSnackbar({ ...snackbar, open: false })}
         >
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 
