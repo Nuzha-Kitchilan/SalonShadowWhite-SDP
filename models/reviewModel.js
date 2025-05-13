@@ -120,7 +120,23 @@ const ReviewModel = {
      LIMIT ${limitValue}`
   );
   return rows;
+},
+
+getReviewsByStylist: async (stylist_ID) => {
+  const [rows] = await db.execute(
+    `SELECT 
+      r.*, 
+      CONCAT(c.firstname, ' ', c.lastname) AS customer_name
+     FROM Review r 
+     JOIN Customer c ON r.customer_ID = c.customer_ID
+     WHERE r.is_approved = TRUE AND r.stylist_ID = ?
+     ORDER BY r.created_at DESC`,
+    [stylist_ID]
+  );
+  return rows;
 }
+
+
 };
 
 module.exports = ReviewModel;

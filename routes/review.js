@@ -15,6 +15,7 @@ router.get('/approved', authenticateAdmin, ReviewController.listApprovedReviews)
 router.get('/average-ratings', ReviewController.getAverageRatings);
 router.get('/random', ReviewController.getRandomReviews);
 router.post('/random/refresh', authenticateAdmin, ReviewController.forceRefreshCache);
+router.get('/by-stylist/:stylistId', ReviewController.getReviewsByStylist);
 
 module.exports = router;
 

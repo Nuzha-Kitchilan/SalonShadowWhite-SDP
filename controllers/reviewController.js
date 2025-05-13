@@ -167,8 +167,20 @@ const ReviewController = {
     console.error('Force refresh error:', err);
     res.status(500).json({ error: 'Failed to refresh cache' });
   }
-}
+},
 
+getReviewsByStylist: async (req, res) => {
+  try {
+    const reviews = await ReviewModel.getReviewsByStylist(req.params.stylistId);
+    res.json(reviews);
+  } catch (err) {
+    console.error('Fetch stylist reviews error:', err);
+    res.status(500).json({ 
+      error: 'Failed to fetch stylist reviews',
+      details: err.message 
+    });
+  }
+}
 
 
 };
