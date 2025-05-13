@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Typography, Container, CircularProgress } from '@mui/material';
 import ReviewCard from '../components/ReviewCard';
+import BeautyServicesNav from '../components/ServiceNavbar'; // Import BeautyServicesNav
 
 const Home = () => {
   const [reviews, setReviews] = useState([]);
@@ -20,28 +21,33 @@ const Home = () => {
   }, []);
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h2" sx={{ my: 4, textAlign: 'center' }}>
-        What Our Customers Say
-      </Typography>
+    <>
+      {/* Add BeautyServicesNav at the top of the page */}
+      <BeautyServicesNav />
       
-      {loading ? (
-        <Box display="flex" justifyContent="center" my={4}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Box 
-          display="flex" 
-          flexDirection="row" 
-          flexWrap="wrap" 
-          justifyContent="center"
-        >
-          {reviews.map((review) => (
-            <ReviewCard key={review.review_ID} review={review} />
-          ))}
-        </Box>
-      )}
-    </Container>
+      <Container maxWidth="lg">
+        <Typography variant="h4" component="h2" sx={{ my: 4, textAlign: 'center' }}>
+          What Our Customers Say
+        </Typography>
+        
+        {loading ? (
+          <Box display="flex" justifyContent="center" my={4}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box 
+            display="flex" 
+            flexDirection="row" 
+            flexWrap="wrap" 
+            justifyContent="center"
+          >
+            {reviews.map((review) => (
+              <ReviewCard key={review.review_ID} review={review} />
+            ))}
+          </Box>
+        )}
+      </Container>
+    </>
   );
 };
 
