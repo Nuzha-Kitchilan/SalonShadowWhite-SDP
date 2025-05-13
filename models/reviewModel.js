@@ -85,7 +85,42 @@ const ReviewModel = {
       [appointment_ID, customer_ID]
     );
     return rows.length > 0;
-  }
+  },
+
+  // Added the getAverageRatings method inside the ReviewModel object
+  getAverageRatings: async () => {
+    const [rows] = await db.execute(
+      `SELECT 
+        stylist_ID, 
+        AVG(rating) as averageRating,
+        COUNT(*) as reviewCount
+       FROM Review 
+       WHERE is_approved = TRUE AND stylist_ID IS NOT NULL
+       GROUP BY stylist_ID`
+    );
+    return rows;
+  },
+
+
+   getRandomApprovedReviews: async (limit = 5) => {
+  // Convert limit to a number and ensure it's safe
+  const limitValue = Math.max(1, Math.min(parseInt(limit, 10), 100));
+  
+  // Use a number directly in the SQL query instead of a parameter
+  const [rows] = await db.execute(
+    `SELECT 
+      r.*, 
+      CONCAT(c.firstname, ' ', c.lastname) AS customer_name,
+      CONCAT(s.firstname, ' ', s.lastname) AS stylist_name
+     FROM Review r 
+     JOIN Customer c ON r.customer_ID = c.customer_ID
+     LEFT JOIN Stylists s ON r.stylist_ID = s.stylist_ID
+     WHERE r.is_approved = TRUE
+     ORDER BY RAND() 
+     LIMIT ${limitValue}`
+  );
+  return rows;
+}
 };
 
 module.exports = ReviewModel;
