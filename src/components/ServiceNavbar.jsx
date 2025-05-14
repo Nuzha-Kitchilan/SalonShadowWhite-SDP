@@ -66,13 +66,44 @@ const ServiceNavbar = () => {
     display: 'block',
   };
 
+  const sectionContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+  };
+
+  const titleContainerStyle = {
+    textAlign: 'center',
+    padding: '2rem 0',
+    backgroundColor: '#f8f8f8',
+  };
+
+  const titleStyle = {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    color: '#333',
+    margin: '0',
+  };
+
+  const subtitleStyle = {
+    fontSize: '1.2rem',
+    color: '#666',
+    marginTop: '0.5rem',
+  };
+
   return (
-    <div ref={containerRef} style={containerStyle}>
-      {[...services, ...services].map((service, index) => (
-        <a key={index} href={service.link} style={linkStyle}>
-          <img src={service.image} alt={service.name} style={imageStyle} />
-        </a>
-      ))}
+    <div style={sectionContainerStyle}>
+      <div style={titleContainerStyle}>
+        <h2 style={titleStyle}>Discover Our Premium Services</h2>
+        <p style={subtitleStyle}>Indulge in a complete beauty experience crafted just for you</p>
+      </div>
+      <div ref={containerRef} style={containerStyle}>
+        {[...services, ...services].map((service, index) => (
+          <a key={index} href={service.link} style={linkStyle}>
+            <img src={service.image} alt={service.name} style={imageStyle} />
+          </a>
+        ))}
+      </div>
     </div>
   );
 };

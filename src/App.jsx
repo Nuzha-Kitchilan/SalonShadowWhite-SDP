@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register"; 
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import HairServices from "./pages/HairServices";
 
 
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="careers" element={<Careers />} />
           <Route path="book" element={<Book />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="services/hair" element={<HairServices />} />
         </Route>
         <Route path="/login" element={<Login />} /> 
         <Route path="/register" element={<Register />} />
