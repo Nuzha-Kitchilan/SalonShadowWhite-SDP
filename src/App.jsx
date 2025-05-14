@@ -16,7 +16,7 @@ import HairServices from "./pages/HairServices";
 import NailServices from "./pages/NailServices";
 import FacialServicesPage from "./pages/FaceService";
 import BodyService from "./pages/BodyService";
-
+import MakeupService from "./pages/MakeUpService";
 
 
 function App() {
@@ -36,6 +36,7 @@ function App() {
           <Route path="services/nails" element={<NailServices />} />
           <Route path="services/face" element={<FacialServicesPage />} />
           <Route path="services/body" element={<BodyService />} />
+          <Route path="services/makeup" element={<MakeupService />} />
         </Route>
         <Route path="/login" element={<Login />} /> 
         <Route path="/register" element={<Register />} />
