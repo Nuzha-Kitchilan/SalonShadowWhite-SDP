@@ -13,6 +13,9 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import HairServices from "./pages/HairServices";
+import NailServices from "./pages/NailServices";
+import FacialServicesPage from "./pages/FaceService";
+import BodyService from "./pages/BodyService";
 
 
 
@@ -30,6 +33,9 @@ function App() {
           <Route path="book" element={<Book />} />
           <Route path="profile" element={<Profile />} />
           <Route path="services/hair" element={<HairServices />} />
+          <Route path="services/nails" element={<NailServices />} />
+          <Route path="services/face" element={<FacialServicesPage />} />
+          <Route path="services/body" element={<BodyService />} />
         </Route>
         <Route path="/login" element={<Login />} /> 
         <Route path="/register" element={<Register />} />
