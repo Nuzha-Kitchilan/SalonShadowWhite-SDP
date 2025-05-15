@@ -1,4 +1,3 @@
-// TopCustomersCard.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -16,7 +15,7 @@ import {
   Grid,
   Tooltip
 } from '@mui/material';
-import { CalendarToday, AttachMoney } from '@mui/icons-material';
+import { CalendarToday} from '@mui/icons-material';
 
 const TopCustomersCard = () => {
   const [data, setData] = useState([]);
@@ -187,7 +186,7 @@ const TopCustomersCard = () => {
                     </Typography>
                   </Box>
                   <Box display="flex" alignItems="center">
-                    <AttachMoney sx={{ fontSize: 16, mr: 0.5, color: '#BEAF9B' }} />
+
                     <Typography 
                       variant="caption"
                       sx={{ 
@@ -195,7 +194,7 @@ const TopCustomersCard = () => {
                         color: '#666666'
                       }}
                     >
-                      ${c.total_spent.toFixed(2)}
+                      Rs.{c.total_spent.toFixed(2)}
                     </Typography>
                   </Box>
                 </Box>

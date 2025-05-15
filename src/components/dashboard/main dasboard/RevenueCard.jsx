@@ -84,7 +84,7 @@ const RevenueCard = () => {
             color: '#453C33'
           }}
         >
-          {loading ? '...' : `$${revenue.toFixed(2)}`}
+          {loading ? '...' : `Rs.${revenue.toFixed(2)}`}
         </Typography>
       </CardContent>
     </Card>
