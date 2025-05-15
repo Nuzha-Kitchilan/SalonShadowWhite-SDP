@@ -442,7 +442,7 @@ const TimeHeatmap = () => {
               }}
             >
               {peakData.maxAppointments} appointments • 
-              Avg Revenue: ${peakData.averageRevenue.toFixed(2)}
+              Avg Revenue: Rs.{peakData.averageRevenue.toFixed(2)}
             </Typography>
           </Stack>
         </Box>
@@ -563,7 +563,7 @@ const TimeHeatmap = () => {
                   )}
                 </Typography>
                 <Typography sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif", color: '#666666' }}>
-                  Revenue: ${cell.data.revenue.toFixed(2)}
+                  Revenue: Rs.{cell.data.revenue.toFixed(2)}
                 </Typography>
                 {cell.data.isPeak && (
                   <Typography 
