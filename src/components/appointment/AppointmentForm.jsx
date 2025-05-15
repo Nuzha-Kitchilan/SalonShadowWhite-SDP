@@ -263,7 +263,7 @@ console.log('Available options:', {
             </Select>
             {editForm.services.length > 0 && (
               <FormHelperText sx={{ textAlign: 'right', fontWeight: '500', color: '#453C33' }}>
-                Total: ${calculateTotalPrice()}
+                Total: Rs.{calculateTotalPrice()}
               </FormHelperText>
             )}
           </FormControl>
@@ -409,7 +409,7 @@ console.log('Available options:', {
                 value={editForm.payment_amount || calculateTotalPrice()}
                 onChange={handleInputChange}
                 InputProps={{ 
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
                   readOnly: editForm.services.length > 0
                 }}
                 helperText={editForm.services.length > 0 ? "Auto-calculated from services" : ""}

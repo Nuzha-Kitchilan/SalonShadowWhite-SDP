@@ -84,7 +84,7 @@ const RevenueTrend = () => {
         },
         callbacks: {
           label: function(context) {
-            return `Revenue: $${context.parsed.y.toFixed(2)}`;
+            return `Revenue: Rs.${context.parsed.y.toFixed(2)}`;
           }
         }
       },
@@ -101,7 +101,7 @@ const RevenueTrend = () => {
           },
           color: '#666666',
           callback: function(value) {
-            return '$' + value;
+            return 'Rs.' + value;
           }
         }
       },

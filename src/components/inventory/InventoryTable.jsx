@@ -111,13 +111,13 @@ const InventoryTable = ({ inventory, onEdit, onDelete, tableSx, buttonSx }) => {
     }).format(new Date(dateString));
   };
 
-  const formatCurrency = (price) => {
-    if (!price) return "$0.00";
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  };
+const formatCurrency = (price) => {
+  if (price === undefined || price === null) return "Rs. 0.00";
+  return `Rs. ${new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(price)}`;
+};
 
   const isExpiringSoon = (expireDate) => {
     if (!expireDate) return false;

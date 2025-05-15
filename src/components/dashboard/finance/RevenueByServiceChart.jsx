@@ -131,7 +131,7 @@ const RevenueByServiceChart = () => {
               color="#453C33"
               sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}
             >
-              Total: ${totalRevenue.toFixed(2)} • {period.charAt(0).toUpperCase() + period.slice(1)}
+              Total: Rs.{totalRevenue.toFixed(2)} • {period.charAt(0).toUpperCase() + period.slice(1)}
             </Typography>
           </Box>
           <Select
@@ -181,7 +181,7 @@ const RevenueByServiceChart = () => {
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value) => [`$${value.toFixed(2)}`, 'Revenue']}
+                formatter={(value) => [`Rs.${value.toFixed(2)}`, 'Revenue']}
                 labelFormatter={(label) => `Service: ${label}`}
               />
               <Legend />
@@ -234,7 +234,7 @@ const RevenueByServiceChart = () => {
                     color: '#453C33'
                   }}
                 >
-                  ${item.revenue.toFixed(2)} ({item.service_count} services)
+                  Rs.{item.revenue.toFixed(2)} ({item.service_count} services)
                 </Typography>
               </Box>
             ))}

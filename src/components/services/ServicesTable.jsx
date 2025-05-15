@@ -119,13 +119,14 @@ const ServicesTable = ({ categories, setCategories, adminId, tableSx, buttonSx }
     page * rowsPerPage + rowsPerPage
   );
 
-  const formatCurrency = (price) => {
-    if (price === undefined || price === null) return "$0.00";
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  };
+ const formatCurrency = (price) => {
+  if (price === undefined || price === null) return "Rs. 0.00";
+  return `Rs. ${new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(price)}`;
+};
+
 
   const getDurationClass = (duration) => {
     if (!duration) return "medium";

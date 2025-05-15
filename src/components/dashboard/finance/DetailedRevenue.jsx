@@ -237,7 +237,7 @@ const DetailedRevenueCard = () => {
               <StatBox
                 icon={<AttachMoney />}
                 title="Total Revenue"
-                value={`$${(data.total_revenue ?? 0).toFixed(2)}`}
+                value={`Rs.${(data.total_revenue ?? 0).toFixed(2)}`}
                 color="primary"
               />
             </Grid>
@@ -246,7 +246,7 @@ const DetailedRevenueCard = () => {
               <StatBox
                 icon={<CheckCircle />}
                 title="Paid Amount"
-                value={`$${(data.paid_amount ?? 0).toFixed(2)}`}
+                value={`Rs.${(data.paid_amount ?? 0).toFixed(2)}`}
                 color="success"
               />
             </Grid>
@@ -255,7 +255,7 @@ const DetailedRevenueCard = () => {
               <StatBox
                 icon={<HourglassEmpty />}
                 title="Pending Payment"
-                value={`$${(data.pending_amount ?? 0).toFixed(2)}`}
+                value={`Rs.${(data.pending_amount ?? 0).toFixed(2)}`}
                 color="warning"
               />
             </Grid>
@@ -267,7 +267,7 @@ const DetailedRevenueCard = () => {
                   <StatBox
                     icon={<CreditCard />}
                     title="Online Payments"
-                    value={`$${(data.online_payments ?? 0).toFixed(2)}`}
+                    value={`Rs.${(data.online_payments ?? 0).toFixed(2)}`}
                     color="primary"
                   />
                 </Grid>
@@ -276,7 +276,7 @@ const DetailedRevenueCard = () => {
                   <StatBox
                     icon={<PointOfSale />}
                     title="In-Salon Payments"
-                    value={`$${(data.onsite_payments ?? 0).toFixed(2)}`}
+                    value={`Rs.${(data.onsite_payments ?? 0).toFixed(2)}`}
                     color="primary"
                   />
                 </Grid>
@@ -288,7 +288,7 @@ const DetailedRevenueCard = () => {
               <StatBox
                 icon={<Payment />}
                 title="Avg. Transaction"
-                value={`$${(data.average_transaction ?? 0).toFixed(2)}`}
+                value={`Rs.${(data.average_transaction ?? 0).toFixed(2)}`}
                 color="primary"
               />
             </Grid>

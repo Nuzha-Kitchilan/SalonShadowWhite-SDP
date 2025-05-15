@@ -71,7 +71,7 @@ const StylistRevenueChart = () => {
                 mr: 1
               }}
             />
-            Revenue: ${payload[0].value.toFixed(2)}
+            Revenue: Rs.{payload[0].value.toFixed(2)}
           </Typography>
         </Box>
       );
@@ -171,7 +171,7 @@ const StylistRevenueChart = () => {
             >
               <XAxis 
                 type="number" 
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `Rs.${value}`}
                 tick={{ 
                   fontSize: 12, 
                   fontFamily: "'Poppins', 'Roboto', sans-serif",

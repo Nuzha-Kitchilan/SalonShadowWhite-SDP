@@ -106,7 +106,7 @@ const AverageTicketCard = () => {
                 color: '#453C33'
               }}
             >
-              ${data.average.toFixed(2)}
+              Rs.{data.average.toFixed(2)}
             </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
@@ -131,7 +131,7 @@ const AverageTicketCard = () => {
                   color: '#666666'
                 }}
               >
-                ${data.total.toFixed(2)} total
+                Rs.{data.total.toFixed(2)} total
               </Typography>
             </Box>
           </Box>

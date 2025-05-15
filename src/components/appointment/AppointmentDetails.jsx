@@ -284,7 +284,7 @@ export default function AppointmentDetailsModal({
                     Total Amount
                   </Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600, color: "#453C33", fontSize: "1.1rem" }}>
-                    ${selectedAppointment.payment_amount || '0'}
+                    Rs.{selectedAppointment.payment_amount || '0'}
                   </Typography>
                 </Box>
                 <Chip 
@@ -303,7 +303,7 @@ export default function AppointmentDetailsModal({
                   Amount Paid
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500, color: "#453C33" }}>
-                  ${selectedAppointment.amount_paid || '0'}
+                  Rs.{selectedAppointment.amount_paid || '0'}
                   {selectedAppointment.is_partial && (
                     <Chip 
                       label="Partial" 

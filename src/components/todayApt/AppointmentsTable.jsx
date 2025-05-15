@@ -181,7 +181,6 @@
 
 
 
-
 import React from 'react';
 import {
   Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
@@ -193,47 +192,33 @@ export default function AppointmentsTable({
   appointments,
   loading,
   handleViewAppointment,
-  handleEditClick,  // Changed to use handleEditClick directly
+  handleEditClick,
   handleDeleteAppointment,
   formatTime,
-  formatCurrency,
   getStatusColor,
   getPaymentStatusColor,
   getRemainingAmount
 }) {
-  // Enhanced helper function to handle different data formats
+  // Format currency as Rs.
+  const formatCurrency = (price) => {
+    if (price === undefined || price === null) return "Rs. 0.00";
+    return `Rs. ${new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(price)}`;
+  };
+
   const renderServicesAndStylists = (data) => {
-    // Handle null/undefined cases first
     if (!data) return <Typography variant="body2" color="textSecondary">N/A</Typography>;
-    
-    // If data is already an array, use it directly
+
     if (Array.isArray(data)) {
       return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
           {data.map((item, index) => (
-            <Chip 
-              key={index} 
-              label={typeof item === 'object' ? item.service_name || item.name : item} 
-              size="small" 
-              sx={{ backgroundColor: 'rgba(190, 175, 155, 0.15)', color: '#453C33' }}
-            />
-          ))}
-        </Box>
-      );
-    }
-    
-    // If data is a string, split by comma
-    if (typeof data === 'string') {
-      const items = data.split(',').map(item => item.trim()).filter(item => item);
-      if (items.length === 0) return <Typography variant="body2" color="textSecondary">N/A</Typography>;
-      
-      return (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {items.map((item, index) => (
-            <Chip 
-              key={index} 
-              label={item} 
-              size="small" 
+            <Chip
+              key={index}
+              label={typeof item === 'object' ? item.service_name || item.name : item}
+              size="small"
               sx={{ backgroundColor: 'rgba(190, 175, 155, 0.15)', color: '#453C33' }}
             />
           ))}
@@ -241,18 +226,34 @@ export default function AppointmentsTable({
       );
     }
 
-    // Handle object case (might be single service/stylist object)
+    if (typeof data === 'string') {
+      const items = data.split(',').map(item => item.trim()).filter(item => item);
+      if (items.length === 0) return <Typography variant="body2" color="textSecondary">N/A</Typography>;
+
+      return (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {items.map((item, index) => (
+            <Chip
+              key={index}
+              label={item}
+              size="small"
+              sx={{ backgroundColor: 'rgba(190, 175, 155, 0.15)', color: '#453C33' }}
+            />
+          ))}
+        </Box>
+      );
+    }
+
     if (typeof data === 'object') {
       return (
-        <Chip 
-          label={data.service_name || data.name || data.firstname + ' ' + data.lastname || 'N/A'} 
-          size="small" 
+        <Chip
+          label={data.service_name || data.name || `${data.firstname} ${data.lastname}` || 'N/A'}
+          size="small"
           sx={{ backgroundColor: 'rgba(190, 175, 155, 0.15)', color: '#453C33' }}
         />
       );
     }
 
-    // Fallback
     return <Typography variant="body2" color="textSecondary">N/A</Typography>;
   };
 
@@ -301,7 +302,7 @@ export default function AppointmentsTable({
                   {renderServicesAndStylists(appointment.stylists)}
                 </TableCell>
                 <TableCell>
-                  <Chip 
+                  <Chip
                     label={appointment.appointment_status || 'N/A'}
                     color={getStatusColor(appointment.appointment_status)}
                     size="small"
@@ -358,8 +359,6 @@ export default function AppointmentsTable({
     </TableContainer>
   );
 }
-
-
 
 
 

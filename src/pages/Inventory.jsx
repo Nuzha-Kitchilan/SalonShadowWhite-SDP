@@ -908,7 +908,7 @@ const Inventory = () => {
           </Box>
         </Paper>
         
-        <Paper 
+        {/* <Paper 
           elevation={0} 
           sx={{ 
             p: 1.5, 
@@ -922,15 +922,15 @@ const Inventory = () => {
             flex: 1
           }}
         >
-          <Box sx={{ 
+          {/* <Box sx={{ 
             bgcolor: "rgba(255, 107, 107, 0.1)", 
             borderRadius: "50%", 
             p: 1, 
             display: "flex"
           }}>
             <PriorityHighIcon sx={{ color: "#ff6b6b" }} />
-          </Box>
-          <Box>
+          </Box> */}
+          {/* <Box>
             <Typography 
               variant="body2" 
               sx={{ 
@@ -950,8 +950,8 @@ const Inventory = () => {
             >
               {inventory.filter(item => item.quantity <= 5).length}
             </Typography>
-          </Box>
-        </Paper>
+          </Box> 
+        </Paper> */}
         
         <Paper 
           elevation={0} 
