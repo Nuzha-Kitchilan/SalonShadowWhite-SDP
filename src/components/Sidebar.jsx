@@ -159,6 +159,7 @@ const Sidebar = () => {
         { text: "Cancel Requests", path: "/cancelreq" },
         { text: "Working Hours", path: "/workinghours" },
         { text: "Special Requests", path: "/specialreq" },
+        { text: "Bridal Appointments", path: "/bridalapt" },
       ],
     },
     { 
@@ -195,6 +196,13 @@ const Sidebar = () => {
       text: "Applications", 
       icon: <WorkIcon />, 
       path: "/applications",
+      selectedColor: primaryColor
+    },
+
+    { 
+      text: "Customers", 
+      icon: <PeopleIcon />, 
+      path: "/customer",
       selectedColor: primaryColor
     },
     { 

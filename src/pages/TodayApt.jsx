@@ -1491,7 +1491,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Button, Paper, Snackbar, Alert, CircularProgress, Typography
+  Box, Button, Paper, Snackbar, Alert, Typography, Container, useMediaQuery, useTheme, styled
 } from "@mui/material";
 import { Add as AddIcon, PersonAdd as PersonAddIcon } from "@mui/icons-material";
 import axios from "axios";
@@ -1510,6 +1510,43 @@ import {
   statusOptions, paymentStatusOptions, paymentTypeOptions,
   formatDate, formatTime, getStatusColor, getPaymentColor
 } from '../components/appointment/utils';
+
+const StyledPaper = styled(Paper)({
+  borderRadius: '8px',
+  overflow: 'hidden',
+  border: '1px solid rgba(190, 175, 155, 0.2)',
+  background: 'linear-gradient(to right, rgba(190, 175, 155, 0.1), rgba(255, 255, 255, 0.8))',
+});
+
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  textTransform: 'none',
+  fontWeight: 600,
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  padding: theme.spacing(1, 2),
+  transition: 'all 0.2s',
+  '&:hover': {
+    backgroundColor: 'rgba(190, 175, 155, 0.1)',
+  },
+}));
+
+
+const PrimaryButton = styled(StyledButton)({
+  backgroundColor: '#BEAF9B',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#9E8F7B',
+  },
+});
+
+const SecondaryButton = styled(StyledButton)({
+  backgroundColor: '#BEAF9B',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#9E8F7B',
+  },
+  border: '1px solid rgba(190, 175, 155, 0.5)',
+});
 
 const api = axios.create({
   baseURL: 'http://localhost:5001/api',
@@ -1537,6 +1574,10 @@ export default function TodayAppointments() {
     date: format(new Date(), 'yyyy-MM-dd'),
     stylistId: ''
   });
+
+
+const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Form state
   const [editForm, setEditForm] = useState({
@@ -1811,63 +1852,59 @@ export default function TodayAppointments() {
     }
   };
 
-  // const handleCreateAppointment = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await api.post('/admin/appointments', editForm);
-  //     if (response.data.success) {
-  //       showSnackbar('Appointment created successfully');
-  //       fetchData();
-  //       setShowCreateModal(false);
-  //     }
-  //   } catch (error) {
-  //     showSnackbar('Error creating appointment', 'error');
-  //   }
-  // };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Modified handleCreateAppointment function
+// Fixed handleCreateAppointment function
 const handleCreateAppointment = async (e) => {
   e.preventDefault();
   try {
-    // Create serviceStylists array from selected services and stylists
+    // Create serviceStylists array from service_stylist_assignments
     const serviceStylists = [];
     
-    for (const serviceName of editForm.services) {
-      const service = services.find(s => s.service_name === serviceName);
-      
-      if (!service) {
-        showSnackbar(`Service "${serviceName}" not found. Please refresh the page.`, 'error');
-        return;
-      }
-      
-      const serviceId = service.service_id || service.service_ID;
-      
-      if (!serviceId) {
-        showSnackbar(`Service ID not found for "${serviceName}"`, 'error');
-        return;
-      }
-
-      for (const stylistId of editForm.stylists) {
-        serviceStylists.push({
-          service_ID: serviceId,
-          stylist_ID: stylistId
+    // Use the service_stylist_assignments from editForm if available
+    if (editForm.service_stylist_assignments && editForm.service_stylist_assignments.length > 0) {
+      editForm.service_stylist_assignments.forEach(assignment => {
+        // Make sure we have both service ID and stylist ID
+        const serviceId = assignment.service_id || assignment.service_ID;
+        const stylistId = assignment.stylist_id;
+        
+        if (serviceId && stylistId) {
+          serviceStylists.push({
+            service_ID: serviceId,
+            stylist_ID: stylistId
+          });
+        }
+      });
+    }
+    // Fallback to old method if no assignments
+    else if (editForm.services && editForm.services.length && editForm.stylists && editForm.stylists.length) {
+      for (const serviceId of editForm.services) {
+        // Find the actual service object to get the correct ID format
+        const service = services.find(s => {
+          // Check both service_id and service_ID and handle string/number comparison
+          const sId = s.service_id || s.service_ID;
+          return sId == serviceId; // Use == to handle type coercion
         });
+        
+        // If service not found, log and continue to next
+        if (!service) {
+          console.error(`Service ID ${serviceId} not found in services array`);
+          continue;
+        }
+        
+        const serviceIdToUse = service.service_id || service.service_ID;
+        
+        for (const stylistId of editForm.stylists) {
+          serviceStylists.push({
+            service_ID: serviceIdToUse,
+            stylist_ID: stylistId
+          });
+        }
       }
+    }
+
+    // Make sure we have at least one service-stylist pair
+    if (serviceStylists.length === 0) {
+      throw new Error('No service-stylist assignments found. Please assign at least one stylist to a service.');
     }
 
     // Create appointment data with serviceStylists
@@ -1876,92 +1913,86 @@ const handleCreateAppointment = async (e) => {
       appointment_date: editForm.appointment_date,
       appointment_time: editForm.appointment_time + ':00',
       appointment_status: editForm.appointment_status,
-      serviceStylists,
+      serviceStylists: serviceStylists,
       payment_status: editForm.payment_status,
-      payment_amount: parseFloat(editForm.payment_amount),
+      payment_amount: parseFloat(editForm.payment_amount || 0),
       payment_type: editForm.payment_type,
       amount_paid: parseFloat(editForm.amount_paid || 0),
       is_partial: editForm.is_partial,
-      notes: editForm.notes,
-      payment_notes: editForm.payment_notes,
-      cancellation_reason: editForm.cancellation_reason
+      notes: editForm.notes || '',
+      payment_notes: editForm.payment_notes || '',
+      cancellation_reason: editForm.cancellation_reason || ''
     };
 
+    console.log('Sending appointment data:', formData);
     const response = await api.post('/admin/appointments', formData);
+    
     if (response.data.success) {
       showSnackbar('Appointment created successfully');
       fetchData();
       setShowCreateModal(false);
+    } else {
+      throw new Error(response.data.message || 'Failed to create appointment');
     }
   } catch (error) {
     console.error('Error creating appointment:', error);
-    showSnackbar('Error creating appointment', 'error');
+    showSnackbar(error.message || 'Error creating appointment', 'error');
   }
 };
 
 
-
-  // const handleEditAppointment = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await api.put(
-  //       `/admin/appointments/${selectedAppointment.appointment_ID}`,
-  //       editForm
-  //     );
-  //     if (response.data.success) {
-  //       showSnackbar('Appointment updated successfully');
-  //       fetchData();
-  //       setShowEditModal(false);
-  //     }
-  //   } catch (error) {
-  //     showSnackbar('Error updating appointment', 'error');
-  //   }
-  // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Fixed handleEditAppointment function
 const handleEditAppointment = async (e) => {
   e.preventDefault();
   try {
-    // Create serviceStylists array from selected services and stylists
+    // Create serviceStylists array from service_stylist_assignments
     const serviceStylists = [];
     
-    for (const serviceName of editForm.services) {
-      const service = services.find(s => s.service_name === serviceName);
-      
-      if (!service) {
-        showSnackbar(`Service "${serviceName}" not found. Please refresh the page.`, 'error');
-        return;
-      }
-      
-      const serviceId = service.service_id || service.service_ID;
-      
-      if (!serviceId) {
-        showSnackbar(`Service ID not found for "${serviceName}"`, 'error');
-        return;
-      }
-
-      for (const stylistId of editForm.stylists) {
-        serviceStylists.push({
-          service_ID: serviceId,
-          stylist_ID: stylistId
+    // Use the service_stylist_assignments from editForm if available
+    if (editForm.service_stylist_assignments && editForm.service_stylist_assignments.length > 0) {
+      editForm.service_stylist_assignments.forEach(assignment => {
+        // Make sure we have both service ID and stylist ID
+        const serviceId = assignment.service_id || assignment.service_ID;
+        const stylistId = assignment.stylist_id;
+        
+        if (serviceId && stylistId) {
+          serviceStylists.push({
+            service_ID: serviceId,
+            stylist_ID: stylistId
+          });
+        }
+      });
+    }
+    // Fallback to old method if no assignments
+    else if (editForm.services && editForm.services.length && editForm.stylists && editForm.stylists.length) {
+      for (const serviceId of editForm.services) {
+        // Find the actual service object to get the correct ID format
+        const service = services.find(s => {
+          // Check both service_id and service_ID and handle string/number comparison
+          const sId = s.service_id || s.service_ID;
+          return sId == serviceId; // Use == to handle type coercion
         });
+        
+        // If service not found, log and continue to next
+        if (!service) {
+          console.error(`Service ID ${serviceId} not found in services array`);
+          continue;
+        }
+        
+        const serviceIdToUse = service.service_id || service.service_ID;
+        
+        for (const stylistId of editForm.stylists) {
+          serviceStylists.push({
+            service_ID: serviceIdToUse,
+            stylist_ID: stylistId
+          });
+        }
       }
+    }
+
+    // Make sure we have at least one service-stylist pair
+    if (serviceStylists.length === 0) {
+      throw new Error('No service-stylist assignments found. Please assign at least one stylist to a service.');
     }
 
     // Create appointment data with serviceStylists
@@ -1970,17 +2001,18 @@ const handleEditAppointment = async (e) => {
       appointment_date: editForm.appointment_date,
       appointment_time: editForm.appointment_time + ':00',
       appointment_status: editForm.appointment_status,
-      serviceStylists,
+      serviceStylists: serviceStylists,
       payment_status: editForm.payment_status,
-      payment_amount: parseFloat(editForm.payment_amount),
+      payment_amount: parseFloat(editForm.payment_amount || 0),
       payment_type: editForm.payment_type,
       amount_paid: parseFloat(editForm.amount_paid || 0),
       is_partial: editForm.is_partial,
-      notes: editForm.notes,
-      payment_notes: editForm.payment_notes,
-      cancellation_reason: editForm.cancellation_reason
+      notes: editForm.notes || '',
+      payment_notes: editForm.payment_notes || '',
+      cancellation_reason: editForm.cancellation_reason || ''
     };
 
+    console.log('Sending updated appointment data:', formData);
     const response = await api.put(
       `/admin/appointments/${selectedAppointment.appointment_ID}`,
       formData
@@ -1990,18 +2022,14 @@ const handleEditAppointment = async (e) => {
       showSnackbar('Appointment updated successfully');
       fetchData();
       setShowEditModal(false);
+    } else {
+      throw new Error(response.data.message || 'Failed to update appointment');
     }
   } catch (error) {
     console.error('Error updating appointment:', error);
-    showSnackbar('Error updating appointment', 'error');
+    showSnackbar(error.message || 'Error updating appointment', 'error');
   }
 };
-
-
-
-
-
-
 
 
 
@@ -2053,186 +2081,308 @@ const handleEditAppointment = async (e) => {
     setSelectedAppointmentDetails(null);
   };
 
-  // Replace your existing handleEditClick function with this improved version
-  const handleEditClick = async (appointment) => {
-    try {
-      setLoading(true);
-      
-      // First fetch the detailed appointment data
-      const response = await api.get(`/admin/appointments/${appointment.appointment_ID}`);
-      
-      if (!response.data.success) {
-        throw new Error('Failed to fetch appointment details');
-      }
-      
-      // Get the full appointment details
-      const detailedAppointment = response.data.data;
-      setSelectedAppointment(detailedAppointment);
-      
-      console.log('Detailed appointment data:', detailedAppointment);
-      
-      // Transform services data - handle different possible formats
-      let servicesArray = [];
-      
-      if (detailedAppointment.services) {
-        if (Array.isArray(detailedAppointment.services)) {
-          // If it's already an array, use it
-          servicesArray = detailedAppointment.services.map(s => 
-            typeof s === 'object' ? s.service_name : s
-          );
-        } else if (typeof detailedAppointment.services === 'string') {
-          // If it's a comma-separated string
-          servicesArray = detailedAppointment.services.split(',').map(s => s.trim());
-        }
-      }
-      
-      // Transform stylists data - handle different possible formats
-      let stylistsArray = [];
-      
-      if (detailedAppointment.stylists_IDs) {
-        // If we have explicit IDs
-        stylistsArray = detailedAppointment.stylists_IDs.split(',')
-          .map(id => parseInt(id.trim()))
-          .filter(id => !isNaN(id));
-      } else if (detailedAppointment.stylist_ID) {
-        // If there's a single stylist ID
-        stylistsArray = [parseInt(detailedAppointment.stylist_ID)];
-      } else if (detailedAppointment.stylists) {
-        // If we have stylist names, try to match them to IDs
-        const stylistNames = typeof detailedAppointment.stylists === 'string' 
-          ? detailedAppointment.stylists.split(',').map(s => s.trim())
-          : Array.isArray(detailedAppointment.stylists) 
-            ? detailedAppointment.stylists.map(s => typeof s === 'object' ? `${s.firstname} ${s.lastname}` : s)
-            : [];
-        
-        stylistsArray = stylists
-          .filter(stylist => 
-            stylistNames.includes(`${stylist.firstname} ${stylist.lastname}`))
-          .map(stylist => parseInt(stylist.stylist_ID));
-      }
-      
-      // Ensure the appointment date is in the correct format
-      const appointmentDate = detailedAppointment.appointment_date 
-        ? detailedAppointment.appointment_date.includes('T') 
-          ? detailedAppointment.appointment_date.split('T')[0] 
-          : detailedAppointment.appointment_date
-        : format(new Date(), 'yyyy-MM-dd');
-      
-      // Format the time properly
-      const appointmentTime = detailedAppointment.appointment_time 
-        ? detailedAppointment.appointment_time.includes(':') 
-          ? detailedAppointment.appointment_time.substring(0, 5) 
-          : detailedAppointment.appointment_time
-        : '';
-      
-      // Create a complete form object with all required fields
-      const initialForm = {
-        customer_ID: detailedAppointment.customer_ID?.toString() || '',
-        appointment_date: appointmentDate,
-        appointment_time: appointmentTime,
-        appointment_status: detailedAppointment.appointment_status || 'Scheduled',
-        services: servicesArray,
-        stylists: stylistsArray,
-        payment_status: detailedAppointment.payment_status || 'Pending',
-        payment_amount: (detailedAppointment.payment_amount || '0').toString(),
-        payment_type: detailedAppointment.payment_type || 'Pay at Salon',
-        amount_paid: (detailedAppointment.amount_paid || '0').toString(),
-        is_partial: detailedAppointment.is_partial || false,
-        notes: detailedAppointment.notes || '',
-        payment_notes: detailedAppointment.payment_notes || '',
-        cancellation_reason: detailedAppointment.cancellation_reason || ''
-      };
-      
-      console.log('Setting edit form with:', initialForm);
-      setEditForm(initialForm);
-      setShowEditModal(true);
-      
-      // Fetch available time slots if we have the necessary data
-      if (initialForm.appointment_date && initialForm.stylists.length > 0 && initialForm.services.length > 0) {
-        await fetchAvailableTimeSlots(
-          initialForm.appointment_date,
-          initialForm.stylists,
-          initialForm.services
-        );
-      }
-    } catch (error) {
-      console.error('Error preparing appointment for edit:', error);
-      showSnackbar('Error loading appointment data for editing', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+// const handleEditClick = async (appointment) => {
+//   try {
+//     setLoading(true);
+    
+//     // 1. Fetch detailed appointment data
+//     const response = await api.get(`/admin/appointments/${appointment.appointment_ID}`);
+//     if (!response.data.success) {
+//       throw new Error('Failed to fetch appointment details');
+//     }
 
-  const getRemainingAmount = (total, paid) => {
+//     const detailedAppointment = response.data.data;
+//     console.log('Original appointment data:', detailedAppointment);
+//     setSelectedAppointment(detailedAppointment);
+
+//     // 2. Initialize variables
+//     let serviceObjects = [];
+//     let serviceIds = [];
+//     let serviceStylistAssignments = [];
+//     let stylistIds = [];
+
+//     // 3. Extract services from the appointment
+//     if (detailedAppointment.services && typeof detailedAppointment.services === 'string') {
+//       const serviceNames = detailedAppointment.services.split(',').map(s => s.trim());
+      
+//       // Find matching service objects from the full services list
+//       serviceObjects = services.filter(service => 
+//         serviceNames.includes(service.service_name)
+//       );
+      
+//       // Get the IDs of the matched services
+//       serviceIds = serviceObjects.map(s => s.service_ID || s.service_id);
+//     }
+
+//     // 4. Extract stylists from the appointment
+//     if (detailedAppointment.stylists && typeof detailedAppointment.stylists === 'string') {
+//       const stylistNames = detailedAppointment.stylists.split(',').map(s => s.trim());
+      
+//       // Find matching stylist objects from the full stylists list
+//       const stylistObjects = stylists.filter(stylist => 
+//         stylistNames.includes(`${stylist.firstname} ${stylist.lastname}`)
+//       );
+      
+//       // Get the IDs of the matched stylists
+//       stylistIds = stylistObjects.map(s => s.stylist_ID);
+//     }
+
+//     // 5. Create service-stylist assignments (simplified - assumes first stylist for each service)
+//     if (serviceIds.length > 0 && stylistIds.length > 0) {
+//       serviceStylistAssignments = serviceIds.map(serviceId => {
+//         const service = serviceObjects.find(s => 
+//           (s.service_ID || s.service_id) === serviceId
+//         );
+//         return {
+//           service_id: serviceId,
+//           service_ID: serviceId,
+//           service_name: service?.service_name || `Service ${serviceId}`,
+//           stylist_id: stylistIds[0] // Assign first stylist to all services
+//         };
+//       });
+//     }
+
+//     // 6. Prepare initial form state
+//     const initialForm = {
+//       customer_ID: detailedAppointment.customer_ID?.toString() || '',
+//       appointment_date: detailedAppointment.appointment_date || format(new Date(), 'yyyy-MM-dd'),
+//       appointment_time: detailedAppointment.appointment_time?.substring(0, 5) || '',
+//       appointment_status: detailedAppointment.appointment_status || 'Scheduled',
+//       services: serviceIds,
+//       service_objects: serviceObjects, // This is crucial for the Autocomplete
+//       service_stylist_assignments: serviceStylistAssignments,
+//       stylists: stylistIds,
+//       payment_status: detailedAppointment.payment_status || 'Pending',
+//       payment_amount: detailedAppointment.payment_amount || '0.00',
+//       payment_type: detailedAppointment.payment_type || 'Pay at Salon',
+//       amount_paid: detailedAppointment.amount_paid || '0.00',
+//       is_partial: detailedAppointment.is_partial || false,
+//       notes: detailedAppointment.notes || '',
+//       payment_notes: detailedAppointment.payment_notes || '',
+//       cancellation_reason: detailedAppointment.cancellation_reason || ''
+//     };
+
+//     console.log('Setting edit form with:', initialForm);
+//     setEditForm(initialForm);
+//     setShowEditModal(true);
+
+//     // 7. Fetch available time slots
+//     if (initialForm.appointment_date && stylistIds.length > 0 && serviceIds.length > 0) {
+//       await fetchAvailableTimeSlots(
+//         initialForm.appointment_date,
+//         stylistIds,
+//         serviceIds
+//       );
+//     }
+
+//   } catch (error) {
+//     console.error('Error preparing appointment for edit:', error);
+//     showSnackbar(error.message || 'Error loading appointment data', 'error');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+  
+
+
+
+const handleEditClick = async (appointment) => {
+  try {
+    setLoading(true);
+    
+    // Fetch detailed appointment data
+    const response = await api.get(`/admin/appointments/${appointment.appointment_ID}`);
+    if (!response.data.success) {
+      throw new Error('Failed to fetch appointment details');
+    }
+
+    const detailedAppointment = response.data.data;
+    console.log('API Response:', detailedAppointment);
+    setSelectedAppointment(detailedAppointment);
+
+    // Extract services
+    const serviceNames = detailedAppointment.services?.split(',').map(s => s.trim()) || [];
+    const serviceObjects = services.filter(service => 
+      serviceNames.includes(service.service_name)
+    );
+    const serviceIds = serviceObjects.map(s => s.service_ID || s.service_id);
+
+    // Extract stylist names and IDs
+    const stylistNames = detailedAppointment.stylists?.split(',').map(s => s.trim()) || [];
+    const stylistNameToIdMap = {};
+    stylists.forEach(stylist => {
+      const fullName = `${stylist.firstname} ${stylist.lastname}`;
+      stylistNameToIdMap[fullName] = stylist.stylist_ID;
+    });
+
+    // Create assignments - match services to stylists by position
+    const assignments = serviceNames.map((serviceName, index) => {
+      const service = services.find(s => s.service_name === serviceName);
+      const stylistName = stylistNames[index] || stylistNames[0]; // Fallback to first stylist
+      const stylistId = stylistNameToIdMap[stylistName];
+
+      return {
+        service_id: service?.service_ID || service?.service_id || '',
+        service_ID: service?.service_ID || service?.service_id || '',
+        service_name: serviceName,
+        stylist_id: stylistId || ''
+      };
+    });
+
+    // Get unique stylist IDs
+    const stylistIds = [...new Set(assignments.map(a => a.stylist_id))].filter(Boolean);
+
+    // Prepare initial form state
+    const initialForm = {
+      customer_ID: detailedAppointment.customer_ID?.toString() || '',
+      appointment_date: detailedAppointment.appointment_date || format(new Date(), 'yyyy-MM-dd'),
+      appointment_time: detailedAppointment.appointment_time?.substring(0, 5) || '',
+      appointment_status: detailedAppointment.appointment_status || 'Scheduled',
+      services: serviceIds,
+      service_objects: serviceObjects,
+      service_stylist_assignments: assignments,
+      stylists: stylistIds,
+      payment_status: detailedAppointment.payment_status || 'Pending',
+      payment_amount: detailedAppointment.payment_amount || '0.00',
+      payment_type: detailedAppointment.payment_type || 'Pay at Salon',
+      amount_paid: detailedAppointment.amount_paid || '0.00',
+      is_partial: detailedAppointment.is_partial || false,
+      notes: detailedAppointment.notes || '',
+      payment_notes: detailedAppointment.payment_notes || '',
+      cancellation_reason: detailedAppointment.cancellation_reason || ''
+    };
+
+    console.log('Initial Form State:', initialForm);
+    setEditForm(initialForm);
+    setShowEditModal(true);
+
+    // Fetch available time slots
+    if (initialForm.appointment_date && stylistIds.length > 0 && serviceIds.length > 0) {
+      await fetchAvailableTimeSlots(
+        initialForm.appointment_date,
+        stylistIds,
+        serviceIds
+      );
+    }
+
+  } catch (error) {
+    console.error('Error preparing appointment for edit:', error);
+    showSnackbar(error.message || 'Error loading appointment data', 'error');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+const getRemainingAmount = (total, paid) => {
     if (total === null || paid === null) return 0;
     const remaining = parseFloat(total) - parseFloat(paid);
     return remaining > 0 ? remaining : 0;
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Today's Appointments</Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="contained"
-            startIcon={<PersonAddIcon />}
-            onClick={() => setShowCustomerModal(true)}
-            sx={{ backgroundColor: '#FE8DA1', '&:hover': { backgroundColor: '#fe6a9f' } }}
-          >
-            Walk-In
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setEditForm({
-                customer_ID: selectedCustomerId || '',
-                appointment_date: format(new Date(), 'yyyy-MM-dd'),
-                appointment_time: '',
-                appointment_status: 'Scheduled',
-                services: [],
-                stylists: [],
-                payment_status: 'Pending',
-                payment_amount: '0',
-                payment_type: 'Pay at Salon',
-                amount_paid: '0',
-                is_partial: false,
-                notes: '',
-                payment_notes: '',
-                cancellation_reason: ''
-              });
-              setShowCreateModal(true);
-            }}
-          >
-            New Appointment
-          </Button>
+    <Container maxWidth="xl" sx={{ mt: { xs: 2, md: 4 } }}>
+      <StyledPaper elevation={0}>
+        {/* Header Section with Title and Buttons */}
+        <Box sx={{ 
+          p: { xs: 2, md: 3 }, 
+          borderBottom: '1px solid rgba(190, 175, 155, 0.2)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2
+        }}>
+           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography 
+              variant={isMobile ? "h5" : "h4"} 
+              component="h1" 
+              sx={{ 
+                fontFamily: "'Poppins', 'Roboto', sans-serif",
+                fontWeight: 600,
+                color: '#453C33',
+                my: 1
+              }}
+            >
+              Today's Appointments
+            </Typography>
+
+          <Box sx={{ display: 'flex', gap: 2 }}>
+              <SecondaryButton
+                startIcon={<PersonAddIcon />}
+                onClick={() => setShowCustomerModal(true)}
+              >
+                Walk-In
+              </SecondaryButton>
+                            <PrimaryButton
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setEditForm({
+                    customer_ID: selectedCustomerId || '',
+                    appointment_date: format(new Date(), 'yyyy-MM-dd'),
+                    appointment_time: '',
+                    appointment_status: 'Scheduled',
+                    services: [],
+                    stylists: [],
+                    payment_status: 'Pending',
+                    payment_amount: '0',
+                    payment_type: 'Pay at Salon',
+                    amount_paid: '0',
+                    is_partial: false,
+                    notes: '',
+                    payment_notes: '',
+                    cancellation_reason: ''
+                  });
+                  setShowCreateModal(true);
+                }}
+              >
+                New Appointment
+              </PrimaryButton>
+            </Box>
+          </Box>
         </Box>
-      </Box>
 
-      <Box sx={{ mb: 3, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-        <FilterBar 
-          filters={filters} 
-          handleFilterChange={handleFilterChange} 
-          stylists={stylists} 
-        />
-      </Box>
+         <Box sx={{ p: { xs: 2, md: 3 }, pt: 0 }}>
+          <FilterBar 
+            filters={filters} 
+            handleFilterChange={handleFilterChange} 
+            stylists={stylists} 
+          />
+        </Box>
 
-      <AppointmentsTable
-        appointments={appointments}
-        loading={loading}
-        handleViewAppointment={handleViewAppointment}
-        setSelectedAppointment={setSelectedAppointment}
-        setShowEditModal={setShowEditModal}
-        handleEditClick={handleEditClick}
-        handleDeleteAppointment={handleDeleteAppointment}
-        formatTime={formatTime}
-        formatCurrency={(amount) => `$${parseFloat(amount || 0).toFixed(2)}`}
-        getStatusColor={getStatusColor}
-        getPaymentStatusColor={getPaymentColor}
-        getRemainingAmount={getRemainingAmount}
-      />
+        <Box sx={{ p:0 }}>
+          <AppointmentsTable
+            appointments={appointments}
+            loading={loading}
+            handleViewAppointment={handleViewAppointment}
+            setSelectedAppointment={setSelectedAppointment}
+            setShowEditModal={setShowEditModal}
+            handleEditClick={handleEditClick}
+            handleDeleteAppointment={handleDeleteAppointment}
+            formatTime={formatTime}
+            formatCurrency={(amount) => `$${parseFloat(amount || 0).toFixed(2)}`}
+            getStatusColor={getStatusColor}
+            getPaymentStatusColor={getPaymentColor}
+            getRemainingAmount={getRemainingAmount}
+            sx={{
+              '& .MuiTableCell-root': {
+                fontFamily: "'Poppins', 'Roboto', sans-serif",
+              }
+            }}
+          />
+        </Box>
+      </StyledPaper>
 
+      {/* Modals remain unchanged */}
       <AppointmentDetailsModal
         showDetailsModal={showDetailsModal}
         setShowDetailsModal={setShowDetailsModal}
@@ -2293,10 +2443,16 @@ const handleEditAppointment = async (e) => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          sx={{
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+          }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </Container>
   );
 }

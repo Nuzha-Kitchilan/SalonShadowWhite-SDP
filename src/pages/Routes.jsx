@@ -113,6 +113,8 @@ import Register from "../auth/Register";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import SpecialReq from "./SpecialReq";
 import Profile from "./Profile";
+import BridalApt from "./BridalApt";
+import CustomerManagement from "./Customer";
 import Unauthorized from "../auth/Unauthorized";
 
 
@@ -148,6 +150,9 @@ const AppRoutes = () => {
           <Route path="/cancelreq" element={<CancelReq />} />
           <Route path="/workinghours" element={<WorkingHours />} />
           <Route path="/specialreq" element={<SpecialReq />} />
+          <Route path="/bridalapt" element={<BridalApt />} />
+          <Route path="/customer" element={<CustomerManagement />} />
+          {/* Add other admin routes here */}
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>

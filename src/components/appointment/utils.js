@@ -2,7 +2,7 @@ import { format, parseISO } from 'date-fns';
 
 export const statusOptions = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled', 'No-show'];
 export const paymentStatusOptions = ['Pending', 'Paid', 'Refunded', 'Failed'];
-export const paymentTypeOptions = ['Online', 'Pay at Salon'];
+export const paymentTypeOptions = ['Online', 'Pay at Salon', 'Bridal Pacakge'];
 
 export const formatDate = (dateString) => {
   if (!dateString) return "N/A";

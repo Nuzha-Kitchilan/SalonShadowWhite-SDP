@@ -45,7 +45,7 @@ const Layout = () => {
         sx={{
           marginLeft: "240px",
           marginTop: `${headerHeight}px`,
-          padding: "20px",
+          padding: "5px",
           flexGrow: 1,
           height: "calc(100vh - 64px)",
           overflowY: "auto",
