@@ -307,7 +307,7 @@ const ContactPage = () => {
                       Phone
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#555' }}>
-                      0768102223
+                      +94 77 744 5657
                     </Typography>
                   </Box>
                 </Box>
@@ -340,7 +340,7 @@ const ContactPage = () => {
                       Address
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#555' }}>
-                      218 Ranimadama, Wattala
+                      13A Ranimadama, Enderamulla
                     </Typography>
                   </Box>
                 </Box>
@@ -354,7 +354,7 @@ const ContactPage = () => {
                     transition: 'transform 0.3s ease'
                   }
                 }}>
-                  <Box sx={{ 
+                  {/* <Box sx={{ 
                     mr: 2, 
                     bgcolor: 'rgba(0,0,0,0.03)', 
                     color: '#000', 
@@ -367,17 +367,17 @@ const ContactPage = () => {
                     boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
                   }}>
                     <AccessTimeIcon fontSize="small" />
-                  </Box>
-                  <Box>
+                  </Box> */}
+                  {/* <Box>
                     <Typography variant="h6" sx={{ fontWeight: "500", mb: 0.5 }}>
                       Hours
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#555' }}>
-                      Monday - Friday: 9:00 AM - 7:00 PM<br />
+                      Monday - Friday: 8:00 AM - 6:00 PM<br />
                       Saturday: 9:00 AM - 6:00 PM<br />
                       Sunday: 10:00 AM - 4:00 PM
                     </Typography>
-                  </Box>
+                  </Box> */}
                 </Box>
               </Grid>
             </Grid>

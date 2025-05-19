@@ -162,15 +162,15 @@ const Footer = () => {
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LocationOn sx={{ color: "#BEAF9B", mr: 0.5, fontSize: "16px" }} />
-            <span>123 Beauty Lane</span>
+            <span>13A Ranimadama, Enderamulla</span>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Phone sx={{ color: "#BEAF9B", mr: 0.5, fontSize: "16px" }} />
-            <span>+123 456 789</span>
+            <span>=94 77 744 5657</span>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Email sx={{ color: "#BEAF9B", mr: 0.5, fontSize: "16px" }} />
-            <span>info@salon.com</span>
+            <span>salonshadowwhite98@gmail.com</span>
           </Box>
         </Box>
 

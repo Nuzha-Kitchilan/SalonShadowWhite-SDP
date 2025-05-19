@@ -22,17 +22,17 @@ const ServiceNavbar = () => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Clone the content for seamless looping
     const totalScrollWidth = container.scrollWidth;
     const halfScrollWidth = totalScrollWidth / 2;
 
     let animationFrame;
+    const scrollSpeed = 0.3; // Slower scroll speed
 
     const scroll = () => {
       if (container.scrollLeft >= halfScrollWidth) {
         container.scrollLeft = 0;
       } else {
-        container.scrollLeft += 1;
+        container.scrollLeft += scrollSpeed;
       }
       animationFrame = requestAnimationFrame(scroll);
     };
@@ -83,12 +83,14 @@ const ServiceNavbar = () => {
     fontWeight: 'bold',
     color: '#333',
     margin: '0',
+    fontFamily: `'Poppins', 'Roboto', sans-serif`,
   };
 
   const subtitleStyle = {
     fontSize: '1.2rem',
     color: '#666',
     marginTop: '0.5rem',
+    fontFamily: `'Poppins', 'Roboto', sans-serif`,
   };
 
   return (

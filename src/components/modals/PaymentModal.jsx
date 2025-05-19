@@ -1108,7 +1108,7 @@ const PaymentModal = ({
             fontFamily: "'Poppins', 'Roboto', sans-serif"
           }}
         >
-          We've sent a confirmation to your email. See you soon!
+          Your appointment was successfully created. See you soon!
         </Typography>
         
         <Button
