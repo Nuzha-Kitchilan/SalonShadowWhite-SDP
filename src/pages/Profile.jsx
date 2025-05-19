@@ -1607,14 +1607,31 @@ const CustomerProfile = () => {
   };
 
   const handleCancelRequest = async (appointmentId) => {
-    try {
-      await axios.post(`http://localhost:5001/api/appointment/cancel-request/${appointmentId}`);
-      setSnackbar({ open: true, message: 'Cancellation request sent.', severity: 'success' });
-      if (profile) await fetchAppointmentsWithPayments(profile.customer_ID);
-    } catch {
-      setSnackbar({ open: true, message: 'Failed to send cancel request.', severity: 'error' });
+  try {
+    await axios.post(`http://localhost:5001/api/appointment/cancel-request/${appointmentId}`);
+    
+    setSnackbar({
+      open: true,
+      message: 'Cancellation request sent.',
+      severity: 'success',
+    });
+
+    if (profile) {
+      await fetchAppointmentsWithPayments(profile.customer_ID);
     }
-  };
+
+  } catch (error) {
+    // Extract meaningful message from backend if available
+    const backendMessage = error?.response?.data?.message;
+
+    setSnackbar({
+      open: true,
+      message: backendMessage || 'An unexpected error occurred while sending the cancellation request.',
+      severity: 'error',
+    });
+  }
+};
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
