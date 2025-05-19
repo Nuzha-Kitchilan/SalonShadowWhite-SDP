@@ -327,8 +327,22 @@ const CancellationRateChart = () => {
   const theme = useTheme();
 
   const calculateMetrics = (dataArray) => {
-    const latestPeriod = dataArray[dataArray.length - 1] || {};
+    //const latestPeriod = dataArray[dataArray.length - 1] || {};
     
+    const getCurrentISOYearWeek = () => {
+  const date = new Date();
+  const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = tempDate.getUTCDay() || 7;
+  tempDate.setUTCDate(tempDate.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((tempDate - yearStart) / 86400000) + 1) / 7);
+  return `${tempDate.getUTCFullYear()}${weekNo < 10 ? '0' + weekNo : weekNo}`;
+};
+
+const currentWeek = getCurrentISOYearWeek();
+const latestPeriod = dataArray.find(d => d.period.toString() === currentWeek) || {};
+
+
     const totalCancelled = Number(latestPeriod.cancelled) || 0;
     const totalBooked = Number(latestPeriod.booked) || 0;
     const cancellationRate = Number(latestPeriod.cancellation_rate) || 0;
