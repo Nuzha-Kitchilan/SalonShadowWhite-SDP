@@ -42,7 +42,7 @@ const getServicePopularity = async (period = 'monthly') => {
       AND a.appointment_status IN ('Completed', 'Scheduled')
       GROUP BY s.service_ID, s.service_name
       ORDER BY count DESC
-      LIMIT 10
+      LIMIT 5
     `);
 
     return rows;

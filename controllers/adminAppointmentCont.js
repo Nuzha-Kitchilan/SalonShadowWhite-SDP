@@ -1,151 +1,3 @@
-// const adminModel = require('../models/adminAppointmentModel');
-
-// // Appointments
-// const getAppointments = async (req, res) => {
-//   try {
-//     const { appointments } = await adminModel.getAppointmentsList();
-//     res.json({ 
-//       success: true, 
-//       data: appointments // Send just the appointments array
-//     });
-//   } catch (error) {
-//     console.error('Error getting appointments:', error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: 'Failed to get appointments' 
-//     });
-//   }
-// };
-
-// const getAppointment = async (req, res) => {
-//   try {
-//     const appointment = await adminModel.getAppointmentDetails(req.params.id);
-//     if (!appointment) {
-//       return res.status(404).json({ 
-//         success: false, 
-//         message: 'Appointment not found' 
-//       });
-//     }
-//     res.json({ 
-//       success: true, 
-//       data: appointment 
-//     });
-//   } catch (error) {
-//     console.error('Error getting appointment details:', error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: 'Failed to get appointment details' 
-//     });
-//   }
-// };
-
-// const updateAppointment = async (req, res) => {
-//   try {
-//     await adminModel.updateAppointment(req.params.id, req.body);
-//     res.json({ 
-//       success: true, 
-//       message: 'Appointment updated successfully' 
-//     });
-//   } catch (error) {
-//     console.error('Error updating appointment:', error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: 'Failed to update appointment' 
-//     });
-//   }
-// };
-
-// // Add delete appointment function
-// const deleteAppointment = async (req, res) => {
-//   try {
-//     const result = await adminModel.deleteAppointment(req.params.id);
-//     if (result) {
-//       res.json({
-//         success: true,
-//         message: 'Appointment deleted successfully'
-//       });
-//     } else {
-//       res.status(404).json({
-//         success: false,
-//         message: 'Appointment not found or already deleted'
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error deleting appointment:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to delete appointment'
-//     });
-//   }
-// };
-
-// // Payments
-// const getPayments = async (req, res) => {
-//   try {
-//     const { payments } = await adminModel.getPaymentsList();
-//     res.json({ 
-//       success: true, 
-//       data: payments 
-//     });
-//   } catch (error) {
-//     console.error('Error getting payments:', error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: 'Failed to get payments' 
-//     });
-//   }
-// };
-
-// const getPayment = async (req, res) => {
-//   try {
-//     const payment = await adminModel.getPaymentDetails(req.params.id);
-//     if (!payment) {
-//       return res.status(404).json({ 
-//         success: false, 
-//         message: 'Payment not found' 
-//       });
-//     }
-//     res.json({ 
-//       success: true, 
-//       data: payment 
-//     });
-//   } catch (error) {
-//     console.error('Error getting payment details:', error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: 'Failed to get payment details' 
-//     });
-//   }
-// };
-
-// const updatePayment = async (req, res) => {
-//   try {
-//     await adminModel.updatePayment(req.params.id, req.body);
-//     res.json({ 
-//       success: true, 
-//       message: 'Payment updated successfully' 
-//     });
-//   } catch (error) {
-//     console.error('Error updating payment:', error);
-//     res.status(500).json({ 
-//       success: false, 
-//       message: 'Failed to update payment' 
-//     });
-//   }
-// };
-
-// module.exports = {
-//   getAppointments,
-//   getAppointment,
-//   updateAppointment,
-//   deleteAppointment, // Export the new function
-//   getPayments,
-//   getPayment,
-//   updatePayment
-// };
-
-
-
 
 const adminModel = require('../models/adminAppointmentModel');
 const { create } = require('../models/SpecialRequestModel');
@@ -237,38 +89,7 @@ const createAppointment = async (req, res) => {
   }
 };
 
-// const updateAppointment = async (req, res) => {
-//   try {
-//     const success = await adminModel.updateAppointment(req.params.id, req.body);
-//     if (success) {
-//       res.json({
-//         success: true,
-//         message: 'Appointment updated successfully'
-//       });
-//     } else {
-//       res.status(404).json({
-//         success: false,
-//         message: 'Appointment not found'
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error updating appointment:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to update appointment'
-//     });
-//   }
-// };
-
-
-
-
-
-
-
-
-
-
+//working one
 
 const updateAppointment = async (req, res) => {
   try {
@@ -350,9 +171,6 @@ const updateAppointment = async (req, res) => {
     });
   }
 };
-
-
-
 
 
 const deleteAppointment = async (req, res) => {
@@ -494,54 +312,6 @@ const createBridalAppointment = async (req, res) => {
 };
 
 
-// const updateBridalAppointment = async (req, res) => {
-//   try {
-//     console.log('Updating bridal appointment:', req.params.id, req.body);
-    
-//     // Validate required fields
-//     if (!req.body.customer_ID || !req.body.appointment_date || !req.body.appointment_time) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Missing required fields: customer_ID, appointment_date, appointment_time'
-//       });
-//     }
-
-//     // Validate services and stylists
-//     if (!req.body.services || !Array.isArray(req.body.services) || req.body.services.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'At least one service must be selected'
-//       });
-//     }
-
-//     if (!req.body.stylists || !Array.isArray(req.body.stylists) || req.body.stylists.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'At least one stylist must be selected'
-//       });
-//     }
-
-//     const success = await adminModel.updateBridalAppointment(req.params.id, req.body);
-    
-//     if (success) {
-//       res.json({
-//         success: true,
-//         message: 'Bridal appointment updated successfully'
-//       });
-//     } else {
-//       res.status(404).json({
-//         success: false,
-//         message: 'Bridal appointment not found'
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error updating bridal appointment:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message || 'Failed to update bridal appointment'
-//     });
-//   }
-// };
 
 const deleteBridalAppointment = async (req, res) => {
   try {

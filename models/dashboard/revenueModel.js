@@ -33,27 +33,28 @@ module.exports = {
 
 
   getRevenueByService: async (range) => {
-    let interval = '7 DAY';
-    if (range === 'monthly') interval = '1 MONTH';
-    else if (range === 'yearly') interval = '1 YEAR';
-  
-    const query = `
-      SELECT 
-        s.service_name AS category,
-        SUM(p.amount_paid) AS revenue,
-        COUNT(DISTINCT ass.appointment_ID, ass.service_ID) AS service_count
-      FROM Payment p
-      JOIN Appointment_Service_Stylist ass ON p.appointment_id = ass.appointment_ID
-      JOIN Service s ON ass.service_ID = s.service_id
-      WHERE p.payment_status = 'Paid'
-      AND p.payment_date >= DATE_SUB(NOW(), INTERVAL ${interval})
-      GROUP BY s.service_name
-      ORDER BY revenue DESC;
-    `;
-  
-    const [rows] = await db.query(query);
-    return rows;
-  },
+  let interval = '7 DAY';
+  if (range === 'monthly') interval = '1 MONTH';
+  else if (range === 'yearly') interval = '1 YEAR';
+
+  const query = `
+    SELECT 
+      s.service_name AS category,
+      SUM(p.amount_paid) AS revenue,
+      COUNT(DISTINCT ass.appointment_ID, ass.service_ID) AS service_count
+    FROM Payment p
+    JOIN Appointment_Service_Stylist ass ON p.appointment_id = ass.appointment_ID
+    JOIN Service s ON ass.service_ID = s.service_id
+    WHERE p.payment_status = 'Paid'
+    AND p.payment_date >= DATE_SUB(NOW(), INTERVAL ${interval})
+    GROUP BY s.service_name
+    ORDER BY revenue DESC
+    LIMIT 5;
+  `;
+
+  const [rows] = await db.query(query);
+  return rows;
+},
   
 
 
