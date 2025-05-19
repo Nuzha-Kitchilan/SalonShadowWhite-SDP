@@ -85,13 +85,13 @@ const Footer = () => {
 
           {/* Social Icons */}
           <Box sx={{ display: "flex", gap: 0.5, mt: { xs: 1, sm: 0 } }}>
-            <IconButton size="small" component="a" href="https://www.facebook.com" target="_blank">
+            <IconButton size="small" component="a" href="https://www.facebook.com/share/1YQGdgk1nC/" target="_blank">
               <Facebook fontSize="small" sx={{ color: "#453C33" }} />
             </IconButton>
-            <IconButton size="small" component="a" href="https://www.instagram.com" target="_blank">
+            <IconButton size="small" component="a" href="https://www.instagram.com/salon_shadow_white/" target="_blank">
               <Instagram fontSize="small" sx={{ color: "#453C33" }} />
             </IconButton>
-            <IconButton size="small" component="a" href="https://tiktok.com" target="_blank">
+            <IconButton size="small" component="a" href="https://www.tiktok.com/@_salon_shadow_white_" target="_blank">
               <FaTiktok style={{ fontSize: "14px", color: "#453C33" }} />
             </IconButton>
           </Box>

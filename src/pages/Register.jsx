@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   TextField, 
   Button, 
@@ -10,7 +10,11 @@ import {
   Paper,
   InputAdornment,
   useMediaQuery,
-  useTheme
+  useTheme,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -21,7 +25,9 @@ import {
   Email,
   Phone, 
   Lock,
-  PersonOutline
+  PersonOutline,
+  Check,
+  Close
 } from "@mui/icons-material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -39,6 +45,26 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Password validation states
+  const [passwordValidation, setPasswordValidation] = useState({
+    minLength: false,
+    hasUppercase: false,
+    hasLowercase: false,
+    hasNumber: false,
+    hasSpecial: false
+  });
+
+  useEffect(() => {
+    // Check password requirements
+    setPasswordValidation({
+      minLength: password.length >= 8,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumber: /[0-9]/.test(password),
+      hasSpecial: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
+    });
+  }, [password]);
 
   const handlePhoneChange = (index, value) => {
     const newPhoneNumbers = [...phoneNumbers];
@@ -62,6 +88,17 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    // Check if password validation requirements are met
+    const isPasswordValid = passwordValidation.minLength && 
+                           passwordValidation.hasUppercase && 
+                           passwordValidation.hasLowercase && 
+                           passwordValidation.hasNumber;
+
+    if (!isPasswordValid) {
+      setError("Please ensure your password meets all requirements");
+      return;
+    }
 
     // Filter out empty phone numbers
     const filteredPhoneNumbers = phoneNumbers.filter(phone => phone.trim() !== "");
@@ -110,6 +147,15 @@ const RegisterPage = () => {
       padding: "14px 14px 14px 4px",
       fontFamily: "'Poppins', 'Roboto', sans-serif",
     },
+  };
+
+  // Get validation status icon
+  const getValidationIcon = (isValid) => {
+    return isValid ? (
+      <Check fontSize="small" sx={{ color: "#4caf50" }} />
+    ) : (
+      <Close fontSize="small" sx={{ color: "#d32f2f" }} />
+    );
   };
 
   return (
@@ -366,6 +412,99 @@ const RegisterPage = () => {
                 sx={textFieldSx}
               />
             </Grid>
+
+            {/* Password requirements checklist */}
+            {password.length > 0 && (
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    p: 2,
+                    backgroundColor: "rgba(190, 175, 155, 0.1)",
+                    borderRadius: "8px",
+                    mt: 1,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      color: "#453C33",
+                      fontWeight: 500,
+                      mb: 1,
+                      fontFamily: "'Poppins', 'Roboto', sans-serif",
+                    }}
+                  >
+                    Password Requirements:
+                  </Typography>
+                  <List dense disablePadding>
+                    <ListItem disableGutters sx={{ py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        {getValidationIcon(passwordValidation.minLength)}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="At least 6 characters" 
+                        primaryTypographyProps={{
+                          fontSize: "0.875rem",
+                          fontFamily: "'Poppins', 'Roboto', sans-serif",
+                          color: passwordValidation.minLength ? "#4caf50" : "#666",
+                        }}
+                      />
+                    </ListItem>
+                    <ListItem disableGutters sx={{ py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        {getValidationIcon(passwordValidation.hasUppercase)}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="At least one uppercase letter" 
+                        primaryTypographyProps={{
+                          fontSize: "0.875rem",
+                          fontFamily: "'Poppins', 'Roboto', sans-serif",
+                          color: passwordValidation.hasUppercase ? "#4caf50" : "#666",
+                        }}
+                      />
+                    </ListItem>
+                    <ListItem disableGutters sx={{ py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        {getValidationIcon(passwordValidation.hasLowercase)}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="At least one lowercase letter" 
+                        primaryTypographyProps={{
+                          fontSize: "0.875rem",
+                          fontFamily: "'Poppins', 'Roboto', sans-serif",
+                          color: passwordValidation.hasLowercase ? "#4caf50" : "#666",
+                        }}
+                      />
+                    </ListItem>
+                    <ListItem disableGutters sx={{ py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        {getValidationIcon(passwordValidation.hasNumber)}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="At least one number" 
+                        primaryTypographyProps={{
+                          fontSize: "0.875rem",
+                          fontFamily: "'Poppins', 'Roboto', sans-serif",
+                          color: passwordValidation.hasNumber ? "#4caf50" : "#666",
+                        }}
+                      />
+                    </ListItem>
+                    <ListItem disableGutters sx={{ py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 30 }}>
+                        {getValidationIcon(passwordValidation.hasSpecial)}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary="Special character (recommended)" 
+                        primaryTypographyProps={{
+                          fontSize: "0.875rem",
+                          fontFamily: "'Poppins', 'Roboto', sans-serif",
+                          color: passwordValidation.hasSpecial ? "#4caf50" : "#666",
+                        }}
+                      />
+                    </ListItem>
+                  </List>
+                </Box>
+              </Grid>
+            )}
 
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Button

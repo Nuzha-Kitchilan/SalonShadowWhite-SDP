@@ -1,7 +1,5 @@
-
-
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Typography, Box, Grid, Container } from '@mui/material';
+import { TextField, Button, Typography, Box, Grid, Container, Snackbar, Alert } from '@mui/material';
 import contactPic from '../assets/contact2.png';
 import "leaflet/dist/leaflet.css";
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -10,6 +8,17 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const ContactPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -28,6 +37,83 @@ const ContactPage = () => {
       document.documentElement.style.padding = "";
     };
   }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Form validation
+    if (!formData.name || !formData.email || !formData.message) {
+      setSnackbar({
+        open: true,
+        message: 'Please fill in all fields',
+        severity: 'error'
+      });
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSnackbar({
+        open: true,
+        message: 'Please enter a valid email address',
+        severity: 'error'
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('http://localhost:5001/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSnackbar({
+          open: true,
+          message: 'Message sent successfully! We will get back to you soon.',
+          severity: 'success'
+        });
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          message: ''
+        });
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send message');
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Error: ${error.message || 'Something went wrong. Please try again.'}`,
+        severity: 'error'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
 
   return (
     <Box sx={{ 
@@ -119,58 +205,71 @@ const ContactPage = () => {
                   Send Us a Message
                 </Typography>
                 
-                <TextField 
-                  label="Name" 
-                  fullWidth 
-                  variant="outlined" 
-                  margin="normal"
-                  InputProps={{
-                    sx: { borderRadius: '8px' }
-                  }}
-                />
-                <TextField 
-                  label="Email Address" 
-                  fullWidth 
-                  variant="outlined" 
-                  margin="normal"
-                  InputProps={{
-                    sx: { borderRadius: '8px' }
-                  }}
-                />
-                <TextField 
-                  label="Message" 
-                  fullWidth 
-                  variant="outlined" 
-                  margin="normal" 
-                  multiline 
-                  rows={4}
-                  InputProps={{
-                    sx: { borderRadius: '8px' }
-                  }}
-                />
-
-                <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      mt: 3,
-                      px: 4,
-                      py: 1.2,
-                      backgroundColor: '#000',
-                      color: '#fff',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                      transition: 'all 0.3s ease',
-                      '&:hover': { 
-                        backgroundColor: '#333',
-                        boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
-                        transform: 'translateY(-2px)'
-                      },
+                <form onSubmit={handleSubmit}>
+                  <TextField 
+                    label="Name" 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    fullWidth 
+                    variant="outlined" 
+                    margin="normal"
+                    InputProps={{
+                      sx: { borderRadius: '8px' }
                     }}
-                  >
-                    Submit
-                  </Button>
-                </Box>
+                  />
+                  <TextField 
+                    label="Email Address" 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    fullWidth 
+                    variant="outlined" 
+                    margin="normal"
+                    InputProps={{
+                      sx: { borderRadius: '8px' }
+                    }}
+                  />
+                  <TextField 
+                    label="Message" 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    fullWidth 
+                    variant="outlined" 
+                    margin="normal" 
+                    multiline 
+                    rows={4}
+                    InputProps={{
+                      sx: { borderRadius: '8px' }
+                    }}
+                  />
+
+                  <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={isSubmitting}
+                      sx={{
+                        mt: 3,
+                        px: 4,
+                        py: 1.2,
+                        backgroundColor: '#000',
+                        color: '#fff',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': { 
+                          backgroundColor: '#333',
+                          boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                          transform: 'translateY(-2px)'
+                        },
+                      }}
+                    >
+                      {isSubmitting ? 'Sending...' : 'Submit'}
+                    </Button>
+                  </Box>
+                </form>
               </Grid>
 
               <Grid item xs={12} md={6} sx={{ 
@@ -313,6 +412,22 @@ const ContactPage = () => {
           </Box>
         </Container>
       </Box>
+
+      {/* Snackbar for notifications */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
 
       {/* Global Styles */}
       <style jsx global>{`

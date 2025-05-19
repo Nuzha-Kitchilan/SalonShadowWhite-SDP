@@ -590,7 +590,6 @@
 
 
 
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -606,7 +605,6 @@ import {
   Paper,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import EventNoteIcon from "@mui/icons-material/EventNote";
@@ -711,10 +709,6 @@ const CartModal = ({ onBack, onClose, customerId, onAddMore }) => {
     setCartItems([]);
     onClose();
   };
-
-  // const handleAddMore = () => {
-  //   onClose();
-  // };
 
   const formatTimeForDisplay = (timeString) => {
     try {
@@ -1084,7 +1078,7 @@ const CartModal = ({ onBack, onClose, customerId, onAddMore }) => {
                   bgcolor: "#fff",
                   borderTop: "1px solid rgba(0, 0, 0, 0.08)",
                   display: "flex",
-                  justifyContent: "space-between",
+                  justifyContent: "flex-end",
                   position: "sticky",
                   bottom: 0,
                   left: 0,
@@ -1093,25 +1087,6 @@ const CartModal = ({ onBack, onClose, customerId, onAddMore }) => {
                   boxShadow: "0 -2px 8px rgba(0,0,0,0.08)"
                 }}
               >
-                <Button
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  onClick={onAddMore}
-                  sx={{
-                    borderColor: "rgba(190, 175, 155, 0.5)",
-                    color: "#BEAF9B",
-                    px: 3,
-                    fontFamily: "'Poppins', 'Roboto', sans-serif",
-                    textTransform: "none",
-                    '&:hover': {
-                      borderColor: "#BEAF9B",
-                      backgroundColor: "rgba(190, 175, 155, 0.05)",
-                    }
-                  }}
-                >
-                  Add More
-                </Button>
-                
                 <Button
                   variant="contained"
                   disabled={cartItems.length === 0}
