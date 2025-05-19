@@ -163,6 +163,19 @@ const deleteCategory = async (id) => {
 };
 
 
+const getServiceIdByName = async (serviceName) => {
+  try {
+    const trimmedName = serviceName.trim();  // 👈 fixes trailing space issues
+    const [results] = await db.execute(
+      'SELECT service_id FROM Service WHERE service_name = ?',
+      [trimmedName]
+    );
+    return results[0]?.service_id || null;
+  } catch (error) {
+    console.error('Error finding service by name:', error);
+    throw error;
+  }
+};
 
 
 module.exports = {
@@ -175,5 +188,6 @@ module.exports = {
     getServicesByCategoryId,
     addCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+    getServiceIdByName
 };

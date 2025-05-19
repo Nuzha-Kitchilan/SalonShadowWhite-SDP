@@ -1,54 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const adminController = require('../controllers/adminAppointmentCont.js');
-
-// // Appointments
-// router.get('/appointments', adminController.getAppointments); // List view
-// router.get('/appointments/:id', adminController.getAppointment); // Detailed view
-// router.put('/appointments/:id', adminController.updateAppointment); // Update
-// router.delete('/appointments/:id', adminController.deleteAppointment); // Delete
-
-// // Payments
-// router.get('/payments', adminController.getPayments); // List view
-// router.get('/payments/:id', adminController.getPayment); // Detailed view
-// router.put('/payments/:id', adminController.updatePayment); // Update
-
-// module.exports = router;
-
-
-
-// const express = require('express');
-// const router = express.Router();
-// const adminController = require('../controllers/adminAppointmentCont');
-// const customerController = require('../controllers/customerController');
-
-// // Appointments CRUD
-// router.get('/appointments', adminController.getAppointments);
-// router.post('/appointments', adminController.createAppointment);
-// router.get('/appointments/:id', adminController.getAppointment);
-// router.put('/appointments/:id', adminController.updateAppointment);
-// router.delete('/appointments/:id', adminController.deleteAppointment);
-
-// router.get('/appointments/today', adminController.getTodayAppointments);
-
-// router.post('/customers/walkin', customerController.createWalkInCustomer);
-
-// // Additional data
-// router.get('/services', adminController.getServices);
-// router.get('/stylists', adminController.getStylists);
-// router.get('/customers', adminController.getCustomers);
-
-
-// router.get('/test-today', (req, res) => {
-//     res.send('✅ adminAppointment route is working');
-//   });
-
-  
-// module.exports = router;
-
-
-
-
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminAppointmentCont');
@@ -65,6 +14,19 @@ router.put('/appointments/:id', adminController.updateAppointment);
 router.delete('/appointments/:id', adminController.deleteAppointment);
 
 router.post('/customers/walkin', customerController.createWalkInCustomer);
+
+// Bridal appointments
+router.post('/appointments/bridal', adminController.createBridalAppointment);
+//router.put('/bridal-update/:id', adminController.updateBridalAppointment);
+
+router.put('/bridal-appointments/:id', adminController.updateBridalAppointment);
+router.delete('/appointments/bridal/:id', adminController.deleteBridalAppointment);
+//router.get('/appointments/bridal', adminController.getAllBridalAppointments);
+router.get('/appointments/bridal/:id', adminController.getBridalAppointmentById);
+router.get('/bridal-appointments', adminController.getAllBridalAppointments);
+
+
+
 
 // Additional data
 router.get('/services', adminController.getServices);

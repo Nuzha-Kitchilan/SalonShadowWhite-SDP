@@ -36,6 +36,7 @@ const customerPopularityRoutes = require('./routes/dashboard/customer');
 const performanceRoutes = require('./routes/dashboard/performance');
 const reportRoutes = require('./routes/report');
 const reviewRoutes = require('./routes/review');
+const contactRoutes = require('./routes/contact')
 const app = express();
 
 app.use(cors({
@@ -49,6 +50,13 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app._router.stack
+  .filter(r => r.route)
+  .forEach(r => {
+    console.log(`${Object.keys(r.route.methods)[0].toUpperCase()} ${r.route.path}`);
+  });
+
 
 app.use('/api/auth', authRoutes);  // Ensure you're passing the router here
 
@@ -74,6 +82,7 @@ app.use('/api/dashboard/customer', customerPopularityRoutes);
 app.use('/api/dashboard/performance', performanceRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/review', reviewRoutes);
+app.use('/api/contact', contactRoutes);
 
 
 app.get('/', (req, res) => {
