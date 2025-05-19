@@ -44,4 +44,15 @@ router.get('/cancellation-requests',
   );
 
 
+  // Get all approved cancellation requests (admin only)
+router.get('/approved-cancellations', 
+  appointmentController.getApprovedCancellationRequests
+);
+
+// Get all rejected cancellation requests (admin only)
+router.get('/rejected-cancellations', 
+  appointmentController.getRejectedCancellationRequests
+);
+
+
 module.exports = router;

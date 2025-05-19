@@ -795,22 +795,73 @@ const checkIfFirstTimeCustomer = async (customer_id) => {
 };
 
 // 3. Customer requests cancellation
+// const sendCancelRequest = async (appointmentId) => {
+//   const connection = await db.getConnection();
+//   try {
+//     const [result] = await connection.query(
+//       `UPDATE Appointment
+//        SET cancellation_status = 'Requested', cancel_request_time = NOW()
+//        WHERE appointment_ID = ? AND appointment_status != 'Cancelled'`,
+//       [appointmentId]
+//     );
+//     return result;
+//   } catch (err) {
+//     throw new Error('Error updating cancellation request: ' + err.message);
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+
+
+
+
 const sendCancelRequest = async (appointmentId) => {
   const connection = await db.getConnection();
   try {
+    // 1. Check the current appointment status and cancellation status
+    const [rows] = await connection.query(
+      `SELECT appointment_status, cancellation_status
+       FROM Appointment
+       WHERE appointment_ID = ?`,
+      [appointmentId]
+    );
+
+    if (rows.length === 0) {
+      throw new Error('Appointment not found');
+    }
+
+    const { appointment_status, cancellation_status } = rows[0];
+
+    // 2. Validate status
+    if (appointment_status !== 'Scheduled') {
+      throw new Error(`Cannot cancel an appointment with status '${appointment_status}'`);
+    }
+
+    if (cancellation_status !== 'None') {
+      throw new Error(`Cancellation request already submitted or processed`);
+    }
+
+    // 3. Proceed to update if valid
     const [result] = await connection.query(
       `UPDATE Appointment
        SET cancellation_status = 'Requested', cancel_request_time = NOW()
-       WHERE appointment_ID = ? AND appointment_status != 'Cancelled'`,
+       WHERE appointment_ID = ?`,
       [appointmentId]
     );
+
     return result;
   } catch (err) {
-    throw new Error('Error updating cancellation request: ' + err.message);
+    throw new Error('Error sending cancellation request: ' + err.message);
   } finally {
     connection.release();
   }
 };
+
+
+
+
+
 
 // 4. Get all appointments for a customer
 // const getAppointmentsByCustomer = async (customerId) => {
@@ -983,6 +1034,81 @@ const getPendingCancellationRequests = async () => {
 };
 
 
+// const processCancellationRequest = async (appointmentId, action) => {
+//   const connection = await db.getConnection();
+//   try {
+//     await connection.beginTransaction();
+
+//     // 1. First update the appointment status
+//     const [appointmentResult] = await connection.query(
+//       `UPDATE Appointment
+//        SET cancellation_status = ?, 
+//            appointment_status = IF(? = 'Approved', 'Cancelled', appointment_status)
+//        WHERE appointment_ID = ? AND cancellation_status = 'Requested'`,
+//       [action, action, appointmentId]
+//     );
+
+//     if (appointmentResult.affectedRows === 0) {
+//       throw new Error('No pending cancellation request found for this appointment');
+//     }
+
+//     let paymentUpdateResult = null;
+
+//     // 2. Only process payment updates for approved cancellations
+//     if (action === 'Approved') {
+//       // Get current payment status
+//       const [payment] = await connection.query(
+//         `SELECT payment_status FROM Payment WHERE appointment_ID = ?`,
+//         [appointmentId]
+//       );
+
+//       if (payment.length > 0) {
+//         const currentStatus = payment[0].payment_status;
+//         let newStatus = currentStatus;
+
+//         // Determine new status based on current status
+//         if (currentStatus === 'Paid' || currentStatus === 'Partially Paid') {
+//           newStatus = 'Refunded';
+//         } else if (currentStatus === 'Pending') {
+//           newStatus = 'Cancelled';
+//         }
+//         // For other statuses, we won't change them
+
+//         // Only update if status needs to change
+//         if (newStatus !== currentStatus) {
+//           [paymentUpdateResult] = await connection.query(
+//             `UPDATE Payment 
+//              SET payment_status = ?
+//              WHERE appointment_ID = ?`,
+//             [newStatus, appointmentId]
+//           );
+//         }
+//       }
+//     }
+
+//     await connection.commit();
+    
+//     return { 
+//       success: true, 
+//       message: `Cancellation ${action.toLowerCase()} successfully`,
+//       data: {
+//         action,
+//         paymentUpdated: paymentUpdateResult ? paymentUpdateResult.affectedRows > 0 : false
+//       }
+//     };
+//   } catch (err) {
+//     await connection.rollback();
+//     console.error("Error processing cancellation:", err);
+//     throw err;
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+
+
+
+
 const processCancellationRequest = async (appointmentId, action) => {
   const connection = await db.getConnection();
   try {
@@ -1003,9 +1129,16 @@ const processCancellationRequest = async (appointmentId, action) => {
 
     let paymentUpdateResult = null;
 
-    // 2. Only process payment updates for approved cancellations
+    // 2. Update appointment service-stylist mapping statuses
     if (action === 'Approved') {
-      // Get current payment status
+      await connection.query(
+        `UPDATE Appointment_Service_Stylist
+         SET status = 'Cancelled'
+         WHERE appointment_ID = ?`,
+        [appointmentId]
+      );
+
+      // 3. Get current payment status
       const [payment] = await connection.query(
         `SELECT payment_status FROM Payment WHERE appointment_ID = ?`,
         [appointmentId]
@@ -1015,15 +1148,14 @@ const processCancellationRequest = async (appointmentId, action) => {
         const currentStatus = payment[0].payment_status;
         let newStatus = currentStatus;
 
-        // Determine new status based on current status
+        // Determine new status
         if (currentStatus === 'Paid' || currentStatus === 'Partially Paid') {
           newStatus = 'Refunded';
         } else if (currentStatus === 'Pending') {
           newStatus = 'Cancelled';
         }
-        // For other statuses, we won't change them
 
-        // Only update if status needs to change
+        // Update only if needed
         if (newStatus !== currentStatus) {
           [paymentUpdateResult] = await connection.query(
             `UPDATE Payment 
@@ -1036,7 +1168,7 @@ const processCancellationRequest = async (appointmentId, action) => {
     }
 
     await connection.commit();
-    
+
     return { 
       success: true, 
       message: `Cancellation ${action.toLowerCase()} successfully`,
@@ -1055,6 +1187,86 @@ const processCancellationRequest = async (appointmentId, action) => {
 };
 
 
+const getCancellationRequestsByStatus = async (status) => {
+  const connection = await db.getConnection();
+  try {
+    const [appointments] = await connection.query(
+      `SELECT 
+        a.appointment_ID,
+        a.customer_id,
+        a.appointment_date,
+        a.appointment_time,
+        a.cancel_request_time,
+        a.cancellation_status,
+        c.firstname,
+        c.lastname,
+        c.email,
+        p.payment_ID,
+        p.payment_amount,
+        p.amount_paid,
+        p.payment_status,
+        p.payment_type,
+        p.stripe_payment_intent_id,
+        p.payment_date
+      FROM Appointment a
+      JOIN Customer c ON a.customer_id = c.customer_ID
+      LEFT JOIN Payment p ON a.appointment_ID = p.appointment_ID
+      WHERE a.cancellation_status = ?
+      ORDER BY a.cancel_request_time DESC`,
+      [status]
+    );
+
+    const requestsWithDetails = await Promise.all(
+      appointments.map(async (appt) => {
+        const [services] = await connection.query(
+          `SELECT GROUP_CONCAT(DISTINCT s.service_name) AS services
+           FROM Appointment_Service_Stylist ass
+           JOIN Service s ON ass.service_ID = s.service_ID
+           WHERE ass.appointment_ID = ?
+           GROUP BY ass.appointment_ID`,
+          [appt.appointment_ID]
+        );
+
+        const [stylists] = await connection.query(
+          `SELECT GROUP_CONCAT(DISTINCT CONCAT(st.firstname, ' ', st.lastname)) AS stylists
+           FROM Appointment_Service_Stylist ass
+           JOIN Stylists st ON ass.stylist_ID = st.stylist_ID
+           WHERE ass.appointment_ID = ?
+           GROUP BY ass.appointment_ID`,
+          [appt.appointment_ID]
+        );
+
+        const [phones] = await connection.query(
+          `SELECT phone_num FROM Customer_Phone_Num
+           WHERE customer_ID = ?`,
+          [appt.customer_id]
+        );
+
+        return {
+          ...appt,
+          services: services[0]?.services || null,
+          stylists: stylists[0]?.stylists || null,
+          phones: phones.map(p => p.phone_num),
+          primary_phone: phones[0]?.phone_num || null,
+          payment: appt.payment_ID ? {
+            payment_ID: appt.payment_ID,
+            payment_amount: appt.payment_amount,
+            amount_paid: appt.amount_paid,
+            payment_status: appt.payment_status,
+            payment_type: appt.payment_type,
+            stripe_payment_intent_id: appt.stripe_payment_intent_id,
+            payment_date: appt.payment_date
+          } : null
+        };
+      })
+    );
+
+    return requestsWithDetails;
+  } finally {
+    connection.release();
+  }
+};
+
 // Export all
 module.exports = {
   createCompleteAppointment,
@@ -1062,5 +1274,6 @@ module.exports = {
   sendCancelRequest,
   getAppointmentsByCustomer,
   getPendingCancellationRequests,
-  processCancellationRequest
+  processCancellationRequest,
+  getCancellationRequestsByStatus
 };

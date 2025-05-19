@@ -257,6 +257,31 @@ const checkIfFirstTimeCustomer = async (req, res) => {
 };
 
 // NEW: Customer requests cancellation
+// const requestCancelAppointment = async (req, res) => {
+//   const appointmentId = req.params.id;
+
+//   try {
+//     const result = await appointmentModel.sendCancelRequest(appointmentId);
+
+//     if (!result || result.affectedRows === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Appointment not found or already cancelled"
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Cancellation request submitted"
+//     });
+//   } catch (err) {
+//     console.error("Error sending cancel request:", err);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+
+
 const requestCancelAppointment = async (req, res) => {
   const appointmentId = req.params.id;
 
@@ -264,21 +289,27 @@ const requestCancelAppointment = async (req, res) => {
     const result = await appointmentModel.sendCancelRequest(appointmentId);
 
     if (!result || result.affectedRows === 0) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
-        message: "Appointment not found or already cancelled"
+        message: 'Cannot cancel a completed appointment.'
       });
     }
 
+    if (appointment_status === 'Cancelled') {
+  return res.status(400).json({ message: 'This appointment is already cancelled.' });
+}
+
+
     res.status(200).json({
       success: true,
-      message: "Cancellation request submitted"
+      message: "Cancellation request submitted successfully"
     });
   } catch (err) {
-    console.error("Error sending cancel request:", err);
-    res.status(500).json({ success: false, message: err.message });
+    console.error("Error sending cancel request:", err.message);
+    res.status(400).json({ success: false, message: err.message });
   }
 };
+
 
 
 
@@ -348,11 +379,38 @@ const processCancellationRequest = async (req, res) => {
 };
 
 
+
+
+// Get all approved cancellation requests
+const getApprovedCancellationRequests = async (req, res) => {
+  try {
+    const requests = await appointmentModel.getCancellationRequestsByStatus('Approved');
+    res.status(200).json({ success: true, data: requests });
+  } catch (err) {
+    console.error("Error fetching approved cancellations:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Get all rejected cancellation requests
+const getRejectedCancellationRequests = async (req, res) => {
+  try {
+    const requests = await appointmentModel.getCancellationRequestsByStatus('Rejected');
+    res.status(200).json({ success: true, data: requests });
+  } catch (err) {
+    console.error("Error fetching rejected cancellations:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
 module.exports = { 
   createAppointment,
   checkIfFirstTimeCustomer,
   requestCancelAppointment,
   getAppointmentsByCustomer,
   getPendingCancellationRequests,
-  processCancellationRequest
+  processCancellationRequest,
+  getApprovedCancellationRequests,
+  getRejectedCancellationRequests
 };
