@@ -2204,10 +2204,101 @@ export default function AppointmentsManagement() {
 
 
 
+// const handleEditClick = async (appointment) => {
+//   try {
+//     setLoading(true);
+    
+//     // Fetch detailed appointment data
+//     const response = await api.get(`/admin/appointments/${appointment.appointment_ID}`);
+//     if (!response.data.success) {
+//       throw new Error('Failed to fetch appointment details');
+//     }
+
+//     const detailedAppointment = response.data.data;
+//     console.log('API Response:', detailedAppointment);
+//     setSelectedAppointment(detailedAppointment);
+
+//     // Extract services
+//     const serviceNames = detailedAppointment.services?.split(',').map(s => s.trim()) || [];
+//     const serviceObjects = services.filter(service => 
+//       serviceNames.includes(service.service_name)
+//     );
+//     const serviceIds = serviceObjects.map(s => s.service_ID || s.service_id);
+
+//     // Extract stylist names and IDs
+//     const stylistNames = detailedAppointment.stylists?.split(',').map(s => s.trim()) || [];
+//     const stylistNameToIdMap = {};
+//     stylists.forEach(stylist => {
+//       const fullName = `${stylist.firstname} ${stylist.lastname}`;
+//       stylistNameToIdMap[fullName] = stylist.stylist_ID;
+//     });
+
+//     // Create assignments - match services to stylists by position
+//     const assignments = serviceNames.map((serviceName, index) => {
+//       const service = services.find(s => s.service_name === serviceName);
+//       const stylistName = stylistNames[index] || stylistNames[0]; // Fallback to first stylist
+//       const stylistId = stylistNameToIdMap[stylistName];
+
+//       return {
+//         service_id: service?.service_ID || service?.service_id || '',
+//         service_ID: service?.service_ID || service?.service_id || '',
+//         service_name: serviceName,
+//         stylist_id: stylistId || ''
+//       };
+//     });
+
+//     // Get unique stylist IDs
+//     const stylistIds = [...new Set(assignments.map(a => a.stylist_id))].filter(Boolean);
+
+//     // Prepare initial form state
+//     const initialForm = {
+//       customer_ID: detailedAppointment.customer_ID?.toString() || '',
+//       appointment_date: detailedAppointment.appointment_date || format(new Date(), 'yyyy-MM-dd'),
+//       appointment_time: detailedAppointment.appointment_time?.substring(0, 5) || '',
+//       appointment_status: detailedAppointment.appointment_status || 'Scheduled',
+//       services: serviceIds,
+//       service_objects: serviceObjects,
+//       service_stylist_assignments: assignments,
+//       stylists: stylistIds,
+//       payment_status: detailedAppointment.payment_status || 'Pending',
+//       payment_amount: detailedAppointment.payment_amount || '0.00',
+//       payment_type: detailedAppointment.payment_type || 'Pay at Salon',
+//       amount_paid: detailedAppointment.amount_paid || '0.00',
+//       is_partial: detailedAppointment.is_partial || false,
+//       notes: detailedAppointment.notes || '',
+//       payment_notes: detailedAppointment.payment_notes || '',
+//       cancellation_reason: detailedAppointment.cancellation_reason || ''
+//     };
+
+//     console.log('Initial Form State:', initialForm);
+//     setEditForm(initialForm);
+//     setShowEditModal(true);
+
+//     // Fetch available time slots
+//     if (initialForm.appointment_date && stylistIds.length > 0 && serviceIds.length > 0) {
+//       await fetchAvailableTimeSlots(
+//         initialForm.appointment_date,
+//         stylistIds,
+//         serviceIds
+//       );
+//     }
+
+//   } catch (error) {
+//     console.error('Error preparing appointment for edit:', error);
+//     showSnackbar(error.message || 'Error loading appointment data', 'error');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
+
+
+
 const handleEditClick = async (appointment) => {
   try {
     setLoading(true);
-    
+
     // Fetch detailed appointment data
     const response = await api.get(`/admin/appointments/${appointment.appointment_ID}`);
     if (!response.data.success) {
@@ -2218,39 +2309,48 @@ const handleEditClick = async (appointment) => {
     console.log('API Response:', detailedAppointment);
     setSelectedAppointment(detailedAppointment);
 
-    // Extract services
+    // Extract service names from string
     const serviceNames = detailedAppointment.services?.split(',').map(s => s.trim()) || [];
-    const serviceObjects = services.filter(service => 
-      serviceNames.includes(service.service_name)
+    const normalizedServiceNames = serviceNames.map(s => s.toLowerCase());
+
+    // Match services by name (case-insensitive, trimmed)
+    const serviceObjects = services.filter(service =>
+      normalizedServiceNames.includes(service.service_name.toLowerCase().trim())
     );
     const serviceIds = serviceObjects.map(s => s.service_ID || s.service_id);
 
-    // Extract stylist names and IDs
+    // If no services matched, show error and stop
+    if (serviceObjects.length === 0) {
+      showSnackbar('One or more services from this appointment were not found. Please reload or check your services list.', 'error');
+      return;
+    }
+
+    // Extract stylist names
     const stylistNames = detailedAppointment.stylists?.split(',').map(s => s.trim()) || [];
     const stylistNameToIdMap = {};
     stylists.forEach(stylist => {
-      const fullName = `${stylist.firstname} ${stylist.lastname}`;
-      stylistNameToIdMap[fullName] = stylist.stylist_ID;
+      const fullName = `${stylist.firstname} ${stylist.lastname}`.trim();
+      stylistNameToIdMap[fullName.toLowerCase()] = stylist.stylist_ID;
     });
 
-    // Create assignments - match services to stylists by position
+    // Create assignments matching services to stylists
     const assignments = serviceNames.map((serviceName, index) => {
-      const service = services.find(s => s.service_name === serviceName);
-      const stylistName = stylistNames[index] || stylistNames[0]; // Fallback to first stylist
-      const stylistId = stylistNameToIdMap[stylistName];
+      const service = services.find(s => s.service_name.toLowerCase().trim() === serviceName.toLowerCase().trim());
+      const stylistName = stylistNames[index] || stylistNames[0]; // fallback
+      const stylistId = stylistNameToIdMap[stylistName.toLowerCase()] || '';
 
       return {
         service_id: service?.service_ID || service?.service_id || '',
         service_ID: service?.service_ID || service?.service_id || '',
         service_name: serviceName,
-        stylist_id: stylistId || ''
+        stylist_id: stylistId
       };
     });
 
-    // Get unique stylist IDs
+    // Unique stylist IDs
     const stylistIds = [...new Set(assignments.map(a => a.stylist_id))].filter(Boolean);
 
-    // Prepare initial form state
+    // Build initial form state
     const initialForm = {
       customer_ID: detailedAppointment.customer_ID?.toString() || '',
       appointment_date: detailedAppointment.appointment_date || format(new Date(), 'yyyy-MM-dd'),
@@ -2262,8 +2362,8 @@ const handleEditClick = async (appointment) => {
       stylists: stylistIds,
       payment_status: detailedAppointment.payment_status || 'Pending',
       payment_amount: detailedAppointment.payment_amount || '0.00',
-      payment_type: detailedAppointment.payment_type || 'Pay at Salon',
       amount_paid: detailedAppointment.amount_paid || '0.00',
+      payment_type: detailedAppointment.payment_type || 'Pay at Salon',
       is_partial: detailedAppointment.is_partial || false,
       notes: detailedAppointment.notes || '',
       payment_notes: detailedAppointment.payment_notes || '',
@@ -2274,7 +2374,7 @@ const handleEditClick = async (appointment) => {
     setEditForm(initialForm);
     setShowEditModal(true);
 
-    // Fetch available time slots
+    // Load time slots
     if (initialForm.appointment_date && stylistIds.length > 0 && serviceIds.length > 0) {
       await fetchAvailableTimeSlots(
         initialForm.appointment_date,
@@ -2290,11 +2390,6 @@ const handleEditClick = async (appointment) => {
     setLoading(false);
   }
 };
-
-
-
-
-
 
 
 
@@ -2314,74 +2409,187 @@ const handleEditClick = async (appointment) => {
     setShowCreateModal(true);
   };
 
-  const handleSubmit = async (e, isEdit = true) => {
-    e.preventDefault();
+  // const handleSubmit = async (e, isEdit = true) => {
+  //   e.preventDefault();
     
-    if (!editForm.customer_ID || !editForm.appointment_date || !editForm.appointment_time || 
-        !editForm.services.length || !editForm.stylists.length) {
-      showSnackbar('Please select timeslot', 'error');
-      return;
-    }
+  //   if (!editForm.customer_ID || !editForm.appointment_date || !editForm.appointment_time || 
+  //       !editForm.services.length || !editForm.stylists.length) {
+  //     showSnackbar('Please select timeslot', 'error');
+  //     return;
+  //   }
   
-    const paymentAmount = parseFloat(editForm.payment_amount);
-    if (isNaN(paymentAmount)) {
-      showSnackbar('Please enter a valid payment amount', 'error');
-      return;
-    }
+  //   const paymentAmount = parseFloat(editForm.payment_amount);
+  //   if (isNaN(paymentAmount)) {
+  //     showSnackbar('Please enter a valid payment amount', 'error');
+  //     return;
+  //   }
   
-    try {
-      const serviceStylists = [];
+  //   try {
+  //     const serviceStylists = [];
       
-      for (const serviceName of editForm.services) {
-        const service = services.find(s => s.service_name === serviceName);
+  //     for (const serviceName of editForm.services) {
+  //       const service = services.find(s => s.service_name === serviceName);
         
-        if (!service) {
-          showSnackbar(`Service "${serviceName}" not found. Please refresh the page.`, 'error');
-          return;
-        }
+  //       if (!service) {
+  //         showSnackbar(`Service "${serviceName}" not found. Please refresh the page.`, 'error');
+  //         return;
+  //       }
         
-        const serviceId = service.service_id || service.service_ID;
+  //       const serviceId = service.service_id || service.service_ID;
         
-        if (!serviceId) {
-          showSnackbar(`Service ID not found for "${serviceName}"`, 'error');
-          return;
-        }
+  //       if (!serviceId) {
+  //         showSnackbar(`Service ID not found for "${serviceName}"`, 'error');
+  //         return;
+  //       }
   
-        for (const stylistId of editForm.stylists) {
-          serviceStylists.push({
-            service_ID: serviceId,
-            stylist_ID: stylistId
-          });
-        }
+  //       for (const stylistId of editForm.stylists) {
+  //         serviceStylists.push({
+  //           service_ID: serviceId,
+  //           stylist_ID: stylistId
+  //         });
+  //       }
+  //     }
+  
+  //     const formData = {
+  //       customer_ID: editForm.customer_ID,
+  //       appointment_date: editForm.appointment_date,
+  //       appointment_time: editForm.appointment_time + ':00',
+  //       appointment_status: editForm.appointment_status,
+  //       serviceStylists,
+  //       payment_status: editForm.payment_status,
+  //       payment_amount: paymentAmount,
+  //       payment_type: editForm.payment_type
+  //     };
+  
+  //     const url = isEdit 
+  //       ? `/admin/appointments/${selectedAppointment.appointment_ID}`
+  //       : '/admin/appointments';
+  //     const method = isEdit ? 'put' : 'post';
+  
+  //     const response = await api[method](url, formData);
+  //     if (response.data.success) {
+  //       showSnackbar(`Appointment ${isEdit ? 'updated' : 'created'} successfully`);
+  //       fetchDataRef.current();
+  //       isEdit ? setShowEditModal(false) : setShowCreateModal(false);
+  //     }
+  //   } catch (error) {
+  //     console.error(`Error ${isEdit ? 'updating' : 'creating'} appointment:`, error);
+  //     showSnackbar(error.response?.data?.message || `Error ${isEdit ? 'updating' : 'creating'} appointment`, 'error');
+  //   }
+  // };
+
+
+
+
+
+
+
+
+
+
+
+
+
+const handleSubmit = async (e, isEdit = true) => {
+  e.preventDefault();
+
+  // Basic validation
+  if (
+    !editForm.customer_ID ||
+    !editForm.appointment_date ||
+    !editForm.appointment_time ||
+    !editForm.services.length ||
+    !editForm.stylists.length
+  ) {
+    showSnackbar('Please select timeslot', 'error');
+    return;
+  }
+
+  const paymentAmount = parseFloat(editForm.payment_amount);
+  if (isNaN(paymentAmount)) {
+    showSnackbar('Please enter a valid payment amount', 'error');
+    return;
+  }
+
+  try {
+    const serviceStylists = [];
+
+    // ✅ Loop through service IDs
+    for (const serviceId of editForm.services) {
+      const service = services.find(s =>
+        s.service_ID === serviceId || s.service_id === serviceId
+      );
+
+      if (!service) {
+        showSnackbar(`Service ID ${serviceId} not found. Please refresh the page.`, 'error');
+        return;
       }
-  
-      const formData = {
-        customer_ID: editForm.customer_ID,
-        appointment_date: editForm.appointment_date,
-        appointment_time: editForm.appointment_time + ':00',
-        appointment_status: editForm.appointment_status,
-        serviceStylists,
-        payment_status: editForm.payment_status,
-        payment_amount: paymentAmount,
-        payment_type: editForm.payment_type
-      };
-  
-      const url = isEdit 
-        ? `/admin/appointments/${selectedAppointment.appointment_ID}`
-        : '/admin/appointments';
-      const method = isEdit ? 'put' : 'post';
-  
-      const response = await api[method](url, formData);
-      if (response.data.success) {
-        showSnackbar(`Appointment ${isEdit ? 'updated' : 'created'} successfully`);
-        fetchDataRef.current();
-        isEdit ? setShowEditModal(false) : setShowCreateModal(false);
+
+      const finalServiceId = service.service_ID || service.service_id;
+
+      for (const stylistId of editForm.stylists) {
+        serviceStylists.push({
+          service_ID: finalServiceId,
+          stylist_ID: stylistId
+        });
       }
-    } catch (error) {
-      console.error(`Error ${isEdit ? 'updating' : 'creating'} appointment:`, error);
-      showSnackbar(error.response?.data?.message || `Error ${isEdit ? 'updating' : 'creating'} appointment`, 'error');
     }
-  };
+
+    const formData = {
+      customer_ID: editForm.customer_ID,
+      appointment_date: editForm.appointment_date,
+      appointment_time: editForm.appointment_time + ':00', // ensure correct format
+      appointment_status: editForm.appointment_status,
+      serviceStylists,
+      payment_status: editForm.payment_status,
+      payment_amount: paymentAmount,
+      payment_type: editForm.payment_type,
+      is_partial: editForm.is_partial || false,
+      amount_paid: parseFloat(editForm.amount_paid || 0),
+      notes: editForm.notes || '',
+      payment_notes: editForm.payment_notes || '',
+      cancellation_reason: editForm.cancellation_reason || ''
+    };
+
+    const url = isEdit
+      ? `/admin/appointments/${selectedAppointment.appointment_ID}`
+      : '/admin/appointments';
+
+    const method = isEdit ? 'put' : 'post';
+
+    const response = await api[method](url, formData);
+
+    if (response.data.success) {
+      showSnackbar(`Appointment ${isEdit ? 'updated' : 'created'} successfully`);
+      fetchDataRef.current();
+
+      if (isEdit) {
+        setShowEditModal(false);
+      } else {
+        setShowCreateModal(false);
+      }
+    }
+  } catch (error) {
+    console.error(`Error ${isEdit ? 'updating' : 'creating'} appointment:`, error);
+    showSnackbar(
+      error.response?.data?.message || `Error ${isEdit ? 'updating' : 'creating'} appointment`,
+      'error'
+    );
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
