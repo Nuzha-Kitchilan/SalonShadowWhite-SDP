@@ -17,6 +17,8 @@ exports.getWorkingHours = async (date) => {
   }
 };
 
+
+
 // Get appointments (optionally filtered by stylist)
 // exports.getAppointmentsByDate = async (date, stylistId) => {
 //   try {
