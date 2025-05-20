@@ -233,7 +233,7 @@ const DetailedRevenueCard = () => {
         <Box flex={1}>
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {/* Row 1 */}
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4} >
               <StatBox
                 icon={<AttachMoney />}
                 title="Total Revenue"

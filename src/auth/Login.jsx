@@ -312,7 +312,7 @@ const Login = () => {
             </Link>
           </Typography>
           
-          <Typography 
+          {/* <Typography 
             variant="body2" 
             sx={{ 
               textAlign: 'center',
@@ -335,7 +335,7 @@ const Login = () => {
             >
               Sign Up
             </Link>
-          </Typography>
+          </Typography> */}
         </Box>
       </Box>
 

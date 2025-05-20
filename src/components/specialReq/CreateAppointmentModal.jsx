@@ -317,16 +317,148 @@
 
 
 
-
 import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Box, Typography, TextField, Button, Paper,
   FormControl, InputLabel, Select, MenuItem,
-  FormHelperText, InputAdornment, Snackbar, Alert
+  FormHelperText, InputAdornment, Snackbar, Alert,
+  styled
 } from '@mui/material';
+import {
+  Person as PersonIcon,
+  CalendarToday as CalendarIcon,
+  Spa as SpaIcon,
+  Description as DescriptionIcon,
+  AttachMoney as MoneyIcon,
+  AccessTime as TimeIcon,
+  ContentCut as StylistIcon,
+  Save as SaveIcon
+} from "@mui/icons-material";
 
-// Add the missing formatDateForInput function
+// Styled components to match the table aesthetic
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: '12px',
+    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+  }
+}));
+
+const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  backgroundColor: 'rgba(190, 175, 155, 0.1)',
+  color: '#453C33',
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  fontWeight: 600,
+  padding: '16px 24px',
+  borderBottom: '1px solid rgba(190, 175, 155, 0.3)',
+}));
+
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+  padding: '24px',
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+}));
+
+const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+  padding: '16px 24px',
+  borderTop: '1px solid rgba(190, 175, 155, 0.1)',
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  borderRadius: '8px',
+  border: '1px solid rgba(190, 175, 155, 0.2)',
+  boxShadow: 'none',
+  overflow: 'hidden',
+  height: '100%',
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '8px',
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    '& fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.3)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.5)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#BEAF9B',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    color: '#666666',
+  },
+  '& .MuiInputBase-input': {
+    color: '#453C33',
+  },
+}));
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '8px',
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    '& fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.3)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.5)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#BEAF9B',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    color: '#666666',
+  },
+  '& .MuiSelect-select': {
+    color: '#453C33',
+  },
+}));
+
+const StyledButton = styled(Button)(({ theme, color }) => ({
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  fontWeight: 600,
+  fontSize: '0.75rem',
+  borderRadius: '20px',
+  padding: '6px 16px',
+  textTransform: 'none',
+  boxShadow: 'none',
+  ...(color === 'primary' && {
+    borderColor: '#BEAF9B',
+    color: '#453C33',
+    '&:hover': {
+      backgroundColor: 'rgba(190, 175, 155, 0.1)',
+      borderColor: '#BEAF9B',
+    },
+  }),
+  ...(color === 'secondary' && {
+    backgroundColor: '#BEAF9B',
+    color: '#FFFFFF',
+    border: 'none',
+    '&:hover': {
+      backgroundColor: '#a39383',
+    },
+  }),
+}));
+
+const SectionTitle = styled(Box)(({ theme }) => ({
+  marginBottom: '16px',
+  display: 'flex',
+  alignItems: 'center',
+  '& .MuiSvgIcon-root': {
+    marginRight: '8px',
+    color: '#BEAF9B',
+  },
+  '& .MuiTypography-root': {
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    fontWeight: 600,
+    color: '#453C33',
+  },
+}));
+
+// Add the formatDateForInput function
 const formatDateForInput = (dateString) => {
   // Handle different date formats
   if (!dateString) return '';
@@ -709,145 +841,240 @@ const CreateAppointmentModal = ({
   if (!request) return null;
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create Appointment from Request</DialogTitle>
-      <DialogContent dividers>
+    <StyledDialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <StyledDialogTitle>
+        Create Appointment from Request
+      </StyledDialogTitle>
+      
+      <StyledDialogContent dividers>
         {validationError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 2, fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
             {validationError}
           </Alert>
         )}
         
         {!dataLoaded && (
-          <Alert severity="info" sx={{ mb: 2 }}>
+          <Alert severity="info" sx={{ mb: 2, fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
             Loading service data...
           </Alert>
         )}
         
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" component="h2" sx={{ 
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+            color: '#453C33',
+            fontWeight: 600,
+            fontSize: '1.25rem',
+            mb: 1
+          }}>
+            New Appointment for Request #{request.id}
+          </Typography>
+          <Typography variant="body2" sx={{ 
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+            color: '#666666'
+          }}>
+            Review the details and assign stylists to create an appointment
+          </Typography>
+        </Box>
+        
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 2 }}>
           {/* Customer Section */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>Customer Details</Typography>
-            <TextField
-              label="Customer"
-              value={`${request.first_name} ${request.last_name}`}
-              fullWidth
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-          </Paper>
-          
-          {/* Appointment Details Section */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>Appointment Details</Typography>
-            <TextField
-              label="Appointment Date"
-              type="date"
-              value={formatDateForInput(request.preferred_date)}
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
-              InputProps={{ readOnly: true }}
-            />
-            <TextField
-              label="Appointment Time"
-              value={request.preferred_time}
-              fullWidth
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-          </Paper>
-          
-          {/* Services Section */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>Services & Stylists</Typography>
-            
-            {/* Service-stylist pairing fields */}
-            {serviceStylists.map((service, index) => (
-              <Box key={service.id || index} sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                <TextField
-                  label={`Service ${index + 1}`}
-                  value={service.name}
-                  sx={{ flexGrow: 1 }}
-                  InputProps={{ readOnly: true }}
-                />
-                <FormControl sx={{ minWidth: '50%' }}>
-                  <InputLabel>{`Assign Stylist`}</InputLabel>
-                  <Select 
-                    value={service.stylistId}
-                    onChange={(e) => updateServiceStylist(index, e.target.value)}
-                  >
-                    <MenuItem value="">
-                      <em>Not assigned</em>
-                    </MenuItem>
-                    {stylists.map((stylist) => (
-                      <MenuItem key={stylist.stylist_ID} value={stylist.stylist_ID}>
-                        {stylist.firstname} {stylist.lastname}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            ))}
-            
-            <FormHelperText>
-              Assign a stylist to each service or leave unassigned for later
-            </FormHelperText>
-          </Paper>
-          
-          {/* Status & Payment Section */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>Status & Payment</Typography>
-            <TextField
-              label="Appointment Status"
-              value="Scheduled"
-              fullWidth
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-            
-            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-              <TextField
-                label="Payment Amount"
-                type="number"
-                value={paymentAmount}
+          <StyledPaper>
+            <Box sx={{ p: 2 }}>
+              <SectionTitle>
+                <PersonIcon />
+                <Typography variant="subtitle1">
+                  Customer Details
+                </Typography>
+              </SectionTitle>
+              <StyledTextField
+                label="Customer"
+                value={`${request.first_name || ''} ${request.last_name || ''}`}
                 fullWidth
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                  readOnly: true
+                margin="normal"
+                InputProps={{ 
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonIcon sx={{ color: '#BEAF9B' }} />
+                    </InputAdornment>
+                  )
                 }}
               />
-              <TextField
-                label="Payment Status"
-                value="Pending"
+            </Box>
+          </StyledPaper>
+          
+          {/* Appointment Details Section */}
+          <StyledPaper>
+            <Box sx={{ p: 2 }}>
+              <SectionTitle>
+                <CalendarIcon />
+                <Typography variant="subtitle1">
+                  Appointment Details
+                </Typography>
+              </SectionTitle>
+              <StyledTextField
+                label="Appointment Date"
+                type="date"
+                value={formatDateForInput(request.preferred_date)}
                 fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+                InputProps={{ 
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarIcon sx={{ color: '#BEAF9B' }} />
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <StyledTextField
+                label="Appointment Time"
+                value={request.preferred_time}
+                fullWidth
+                margin="normal"
+                InputProps={{ 
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <TimeIcon sx={{ color: '#BEAF9B' }} />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Box>
+          </StyledPaper>
+          
+          {/* Services Section */}
+          <StyledPaper>
+            <Box sx={{ p: 2 }}>
+              <SectionTitle>
+                <SpaIcon />
+                <Typography variant="subtitle1">
+                  Services & Stylists
+                </Typography>
+              </SectionTitle>
+              
+              {/* Service-stylist pairing fields */}
+              {serviceStylists.map((service, index) => (
+                <Box key={service.id || index} sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                  <StyledTextField
+                    label={`Service ${index + 1}`}
+                    value={service.name}
+                    sx={{ flexGrow: 1 }}
+                    InputProps={{ 
+                      readOnly: true,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SpaIcon sx={{ color: '#BEAF9B' }} />
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                  <StyledFormControl sx={{ minWidth: '50%' }}>
+                    <InputLabel>{`Assign Stylist`}</InputLabel>
+                    <Select 
+                      value={service.stylistId}
+                      onChange={(e) => updateServiceStylist(index, e.target.value)}
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <StylistIcon sx={{ color: '#BEAF9B' }} />
+                        </InputAdornment>
+                      }
+                    >
+                      <MenuItem value="">
+                        <em>Not assigned</em>
+                      </MenuItem>
+                      {stylists.map((stylist) => (
+                        <MenuItem key={stylist.stylist_ID} value={stylist.stylist_ID}>
+                          {stylist.firstname} {stylist.lastname}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </StyledFormControl>
+                </Box>
+              ))}
+              
+              <FormHelperText sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
+                Assign a stylist to each service or leave unassigned for later
+              </FormHelperText>
+            </Box>
+          </StyledPaper>
+          
+          {/* Status & Payment Section */}
+          <StyledPaper>
+            <Box sx={{ p: 2 }}>
+              <SectionTitle>
+                <MoneyIcon />
+                <Typography variant="subtitle1">
+                  Status & Payment
+                </Typography>
+              </SectionTitle>
+              <StyledTextField
+                label="Appointment Status"
+                value="Scheduled"
+                fullWidth
+                margin="normal"
+                InputProps={{ 
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <DescriptionIcon sx={{ color: '#BEAF9B' }} />
+                    </InputAdornment>
+                  )
+                }}
+              />
+              
+              <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                <StyledTextField
+                  label="Payment Amount"
+                  type="number"
+                  value={paymentAmount}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    readOnly: true
+                  }}
+                />
+                <StyledTextField
+                  label="Payment Status"
+                  value="Pending"
+                  fullWidth
+                  InputProps={{ readOnly: true }}
+                />
+              </Box>
+              
+              <StyledTextField
+                label="Payment Type"
+                value="Pay at Salon"
+                fullWidth
+                margin="normal"
                 InputProps={{ readOnly: true }}
               />
             </Box>
-            
-            <TextField
-              label="Payment Type"
-              value="Pay at Salon"
-              fullWidth
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-          </Paper>
+          </StyledPaper>
         </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button 
+      </StyledDialogContent>
+      
+      <StyledDialogActions>
+        <StyledButton 
           onClick={handleCreateAppointment} 
           variant="contained" 
-          color="primary"
+          color="secondary"
+          startIcon={<SaveIcon />}
           disabled={!!validationError || request?.has_appointment || request?.appointment_id || request?.status === 'completed'}
         >
           Create Appointment
-        </Button>
-        <Button onClick={handleClose}>
+        </StyledButton>
+        <StyledButton 
+          onClick={handleClose}
+          variant="outlined"
+          color="primary"
+        >
           Cancel
-        </Button>
-      </DialogActions>
+        </StyledButton>
+      </StyledDialogActions>
       
       {/* Error Snackbar */}
       <Snackbar
@@ -855,11 +1082,20 @@ const CreateAppointmentModal = ({
         autoHideDuration={6000}
         onClose={() => setValidationError('')}
       >
-        <Alert onClose={() => setValidationError('')} severity="error">
+        <Alert 
+          onClose={() => setValidationError('')} 
+          severity="error"
+          sx={{
+            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+            color: '#d32f2f',
+            border: '1px solid rgba(244, 67, 54, 0.3)',
+            fontFamily: "'Poppins', 'Roboto', sans-serif",
+          }}
+        >
           {validationError}
         </Alert>
       </Snackbar>
-    </Dialog>
+    </StyledDialog>
   );
 };
 
