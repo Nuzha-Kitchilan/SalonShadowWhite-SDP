@@ -389,7 +389,7 @@ const CustomerDetail = ({ customer, onResetPassword, onDeleteCustomer, loading }
             </CardContent>
           </Card>
 
-          <Card 
+          {/* <Card 
             elevation={1} 
             sx={{ 
               borderRadius: "10px",
@@ -431,7 +431,7 @@ const CustomerDetail = ({ customer, onResetPassword, onDeleteCustomer, loading }
                 </ListItem>
 
                 {/* Enhanced Debug Information - Styled to match the theme */}
-                <ListItem 
+                {/* <ListItem 
                   sx={{ 
                     py: 1.5, 
                     px: 2,
@@ -459,7 +459,7 @@ const CustomerDetail = ({ customer, onResetPassword, onDeleteCustomer, loading }
                 </ListItem>
               </List>
             </CardContent>
-          </Card>
+          </Card> */} 
         </Grid>
       </Grid>
 
