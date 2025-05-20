@@ -84,6 +84,118 @@ const findStylistByUsername = async (username) => {
 };
 
 // Create a new stylist
+// const createStylist = async (stylistData) => {
+//     const { 
+//         firstname, lastname, email, username, role, profile_url, 
+//         house_no, street, city, phone_numbers, password, bio 
+//     } = stylistData;
+
+//     const connection = await db.getConnection();
+//     await connection.beginTransaction();
+
+//     try {
+//         // Hash the password
+//         const saltRounds = 10;
+//         const hashedPassword = await bcrypt.hash(password, saltRounds);
+        
+//         const query = `
+//             INSERT INTO Stylists (firstname, lastname, email, username, role, profile_url, house_no, street, city, password, bio)
+//             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+//         `;
+        
+//         // Use null for empty profile_url and bio
+//         const profileUrlValue = profile_url && profile_url.trim() !== "" ? profile_url : null;
+//         const bioValue = bio && bio.trim() !== "" ? bio : null;
+        
+//         const [result] = await connection.query(query, [
+//             firstname, 
+//             lastname, 
+//             email, 
+//             username, 
+//             role, 
+//             profileUrlValue, 
+//             house_no, 
+//             street, 
+//             city,
+//             hashedPassword,
+//             bioValue
+//         ]);
+        
+//         const stylist_ID = result.insertId;
+
+//         // Insert phone numbers
+//         if (phone_numbers && Array.isArray(phone_numbers) && phone_numbers.length > 0) {
+//             for (const phone of phone_numbers) {
+//                 if (phone && phone.trim()) { // Skip empty phone numbers
+//                     await connection.query(
+//                         `INSERT INTO Employee_Phone_Num (stylist_ID, phone_num) VALUES (?, ?);`,
+//                         [stylist_ID, phone.trim()]
+//                     );
+//                 }
+//             }
+//         }
+
+//         // Commit the transaction
+//         await connection.commit();
+//         connection.release();
+
+//         return stylist_ID;
+//     } catch (error) {
+//         // Rollback in case of error
+//         await connection.rollback();
+//         connection.release();
+//         throw error;
+//     }
+// };
+
+
+
+
+// Password validation function
+const validatePassword = (password) => {
+    // Check if password exists
+    if (!password) {
+        return { isValid: false, message: "Password is required." };
+    }
+
+    // Check minimum length
+    if (password.length < 6) {
+        return { isValid: false, message: "Password must be at least 6 characters long." };
+    }
+
+    // Check maximum length (optional - prevents extremely long passwords)
+    if (password.length > 128) {
+        return { isValid: false, message: "Password must be no more than 128 characters long." };
+    }
+
+    // Check for at least one letter
+    if (!/[a-zA-Z]/.test(password)) {
+        return { isValid: false, message: "Password must contain at least one letter." };
+    }
+
+    // Check for at least one number
+    if (!/\d/.test(password)) {
+        return { isValid: false, message: "Password must contain at least one number." };
+    }
+
+    // Optional: Check for at least one special character
+    // if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    //     return { isValid: false, message: "Password must contain at least one special character." };
+    // }
+
+    // Optional: Check for no common passwords (you can expand this list)
+    const commonPasswords = ['123456', 'password', '123456789', '12345678', '12345', 'qwerty', 'abc123'];
+    if (commonPasswords.includes(password.toLowerCase())) {
+        return { isValid: false, message: "Password is too common. Please choose a stronger password." };
+    }
+
+    return { isValid: true, message: "Password is valid." };
+};
+
+
+
+
+
 const createStylist = async (stylistData) => {
     const { 
         firstname, lastname, email, username, role, profile_url, 
@@ -94,6 +206,12 @@ const createStylist = async (stylistData) => {
     await connection.beginTransaction();
 
     try {
+        // Validate password again at model level for extra security
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+            throw new Error(passwordValidation.message);
+        }
+
         // Hash the password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -147,6 +265,11 @@ const createStylist = async (stylistData) => {
         throw error;
     }
 };
+
+
+
+
+
 
 // Update an existing stylist
 const updateStylist = async (stylist_ID, stylistData) => {
