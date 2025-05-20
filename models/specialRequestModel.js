@@ -242,6 +242,54 @@ class SpecialRequest {
             connection.release();
         }
     }
+
+
+
+
+    static async getFilteredRequests(statusFilters = []){
+    try {
+        let query = `SELECT 
+            sr.id, 
+            sr.customer_id, 
+            sr.first_name, 
+            sr.last_name, 
+            sr.email, 
+            sr.phone_number, 
+            sr.request_details, 
+            sr.preferred_date,
+            sr.preferred_time,
+            sr.status, 
+            sr.created_at,
+            sr.updated_at,
+            GROUP_CONCAT(s.service_name SEPARATOR ', ') as services,
+            GROUP_CONCAT(s.service_id SEPARATOR ',') as service_ids
+        FROM special_requests sr
+        LEFT JOIN special_request_service srs ON sr.id = srs.special_request_id
+        LEFT JOIN service s ON srs.service_id = s.service_id`;
+        
+        // Add WHERE clause for status filtering if requested
+        if (statusFilters.length > 0) {
+            const placeholders = statusFilters.map(() => '?').join(',');
+            query += ` WHERE sr.status IN (${placeholders})`;
+        }
+        
+        query += ` GROUP BY sr.id ORDER BY sr.created_at DESC`;
+        
+        // Execute query with or without status parameters
+        const [rows] = statusFilters.length > 0 
+            ? await db.execute(query, statusFilters)
+            : await db.execute(query);
+            
+        return rows;
+    } catch (error) {
+        console.error('Database error in getFilteredRequests:', error);
+        throw new Error('Failed to retrieve filtered requests');
+    }
 }
+
+}
+
+
+
 
 module.exports = SpecialRequest;

@@ -763,3 +763,73 @@ exports.updateRequestServices = async (req, res) => {
         });
     }
 };
+
+
+// Add to specialRequestController.js
+
+exports.getFilteredRequests = async (req, res) => {
+    try {
+        // Check for admin authentication
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Authentication required' 
+            });
+        }
+
+        const token = authHeader.split(' ')[1];
+        
+        try {
+            // Decode token without verification
+            const decoded = jwt.decode(token);
+            
+            if (!decoded || decoded.role.toLowerCase() !== 'admin') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Admin access required'
+                });
+            }
+            
+            // Get status filters from query parameters
+            const { status } = req.query;
+            let statusFilters = [];
+            
+            if (status) {
+                // If status is provided as query param, convert to array
+                statusFilters = Array.isArray(status) ? status : [status];
+                
+                // Validate statuses
+                const validStatuses = ['pending', 'approved', 'rejected', 'completed'];
+                const invalidStatus = statusFilters.find(s => !validStatuses.includes(s));
+                
+                if (invalidStatus) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `Invalid status: ${invalidStatus}. Must be one of: pending, approved, rejected, completed`
+                    });
+                }
+            }
+            
+            // Fetch filtered requests
+            const requests = await SpecialRequest.getFilteredRequests(statusFilters);
+
+            return res.status(200).json({
+                success: true,
+                requests
+            });
+        } catch (jwtError) {
+            console.error('JWT decoding error:', jwtError);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token'
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching filtered special requests:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch special requests'
+        });
+    }
+};

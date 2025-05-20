@@ -30,4 +30,7 @@ router.get('/customer-requests', specialRequestController.getCustomerRequests);
 router.get('/admin/all-requests', specialRequestController.getAllRequests);
 router.put('/admin/update-status', specialRequestController.updateRequestStatus);
 
+
+router.get('/admin/filtered-requests', specialRequestController.getFilteredRequests);
+
 module.exports = router;
