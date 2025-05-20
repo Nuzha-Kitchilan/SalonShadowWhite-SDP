@@ -5,30 +5,25 @@ const db = require('../config/db');
 // -------- HELPER FUNCTIONS -------- //
 const getStylistFullName = "CONCAT(st.firstname, ' ', st.lastname)";
 
-// -------- BASIC REVENUE DATA -------- //
-// exports.getRevenueData = async (startDate, endDate) => {
-//   const query = `
-//     SELECT 
-//       DATE(a.appointment_date) AS date,
-//       s.service_name,
-//       SUM(s.price) AS revenue,
-//       COUNT(*) AS appointments
-//     FROM Appointment_Service_Stylist ass
-//     JOIN Appointment a ON ass.appointment_ID = a.appointment_ID
-//     JOIN Service s ON ass.service_ID = s.service_ID
-//     WHERE DATE(a.appointment_date) BETWEEN ? AND ?
-//     GROUP BY DATE(a.appointment_date), s.service_name
-//     ORDER BY date, revenue DESC
-//   `;
 
-//   const [rows] = await db.execute(query, [startDate, endDate]);
-//   return rows;
-// };
+exports.getTotalUniqueClients = async (startDate, endDate) => {
+  const query = `
+    SELECT COUNT(DISTINCT a.customer_ID) AS total_unique_clients
+    FROM Appointment a
+    WHERE DATE(a.appointment_date) BETWEEN ? AND ?
+    AND a.appointment_status = 'completed'
+  `;
+
+  const [rows] = await db.execute(query, [startDate, endDate]);
+  return rows[0]?.total_unique_clients || 0;
+};
 
 
 
 exports.getDetailedRevenueData = async (startDate, endDate, groupBy) => {
   let groupFields, groupBySql, orderBySql;
+
+  const getStylistFullName = `CONCAT(st.firstname, ' ', st.lastname)`;
 
   switch (groupBy) {
     case 'week':
@@ -116,6 +111,7 @@ exports.getDetailedRevenueData = async (startDate, endDate, groupBy) => {
       ${getStylistFullName} AS stylist_name,
       SUM(s.price) AS revenue,
       COUNT(*) AS appointments,
+      COUNT(DISTINCT a.customer_ID) AS unique_clients,
       IFNULL(SUM(s.price) / NULLIF(COUNT(*), 0), 0) AS avg_revenue_per_appointment
     FROM Appointment_Service_Stylist ass
     JOIN Appointment a ON ass.appointment_ID = a.appointment_ID
@@ -132,38 +128,33 @@ exports.getDetailedRevenueData = async (startDate, endDate, groupBy) => {
 
 
 
-
-
-
-
-
 exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
   let groupFields, groupBySql, orderBy;
 
   switch (groupBy) {
     case 'week':
       groupFields = `YEARWEEK(a.appointment_date, 1) AS period_key`;
-      groupBySql = `YEARWEEK(a.appointment_date, 1)`; // ✅ same expression
+      groupBySql = `YEARWEEK(a.appointment_date, 1)`;
       orderBy = `summary.period_key`;
       break;
     case 'month':
       groupFields = `DATE_FORMAT(a.appointment_date, '%Y-%m') AS period_key`;
-      groupBySql = `DATE_FORMAT(a.appointment_date, '%Y-%m')`; // ✅ same expression
-      orderBy = `summary.period_key`;
+      groupBySql = `DATE_FORMAT(a.appointment_date, '%Y-%m')`;
+      orderBy = `summary.period_key`; // Added missing orderBy for month
       break;
     case 'quarter':
       groupFields = `CONCAT(YEAR(a.appointment_date), '-Q', QUARTER(a.appointment_date)) AS period_key`;
-      groupBySql = `CONCAT(YEAR(a.appointment_date), '-Q', QUARTER(a.appointment_date))`; // ✅ FIXED
+      groupBySql = `CONCAT(YEAR(a.appointment_date), '-Q', QUARTER(a.appointment_date))`;
       orderBy = `summary.period_key`;
       break;
     case 'year':
       groupFields = `YEAR(a.appointment_date) AS period_key`;
-      groupBySql = `YEAR(a.appointment_date)`; // ✅ same expression
+      groupBySql = `YEAR(a.appointment_date)`;
       orderBy = `summary.period_key`;
       break;
     default: // day
       groupFields = `DATE(a.appointment_date) AS period_key`;
-      groupBySql = `DATE(a.appointment_date)`; // ✅ same expression
+      groupBySql = `DATE(a.appointment_date)`;
       orderBy = `summary.period_key`;
   }
 
@@ -210,7 +201,6 @@ exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
   console.log("Summary Revenue Data with names:", rows);
   return rows;
 };
-
 
 
 
@@ -287,7 +277,8 @@ exports.getPeriodComparison = async (startDate, endDate, groupBy = 'month') => {
   };
 };
 
-// -------- STYLIST PERFORMANCE REPORT -------- //
+
+
 exports.getStylistPerformance = async (startDate, endDate) => {
   const query = `
     SELECT 

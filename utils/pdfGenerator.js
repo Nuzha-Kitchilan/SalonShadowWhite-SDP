@@ -1,221 +1,3 @@
-// const PDFDocument = require('pdfkit');
-// const fs = require('fs');
-
-// exports.generateEnhancedPDF = async (data, visualizationData, options) => {
-//   return new Promise((resolve, reject) => {
-//     try {
-//       // Create a compact PDF with better layout
-//       const doc = new PDFDocument({ 
-//         margin: 50,
-//         size: 'A4',
-//         bufferPages: true, // Enable page buffering for page numbers
-//         autoFirstPage: true // automatically create the first page
-//       });
-      
-//       const buffers = [];
-//       doc.on('data', buffers.push.bind(buffers));
-//       doc.on('end', () => resolve(Buffer.concat(buffers)));
-//       doc.on('error', reject);
-
-//       // Format numbers with commas
-//       const formatCurrency = (value) => {
-//         return value.toLocaleString('en-US', {
-//           style: 'currency', 
-//           currency: 'USD',
-//           minimumFractionDigits: 2
-//         });
-//       };
-
-//       // ===== HEADER SECTION =====
-//       doc.fontSize(22).fillColor('#333333').text('Advanced Revenue Report', { align: 'center' });
-//       doc.moveDown(0.5);
-      
-//       // Report period and details
-//       doc.fontSize(12).fillColor('#555555');
-//       doc.text(`Period: ${options.startDate} to ${options.endDate}`, { align: 'center' });
-//       doc.text(`Report Type: ${options.reportType}`, { align: 'center' });
-//       doc.text(`Grouped By: ${options.groupBy}`, { align: 'center' });
-      
-//       doc.moveDown();
-//       doc.strokeColor('#999999').lineWidth(1)
-//          .moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y)
-//          .stroke();
-//       doc.moveDown();
-
-//       // ===== KEY METRICS SECTION =====
-//       doc.fontSize(16).fillColor('#333333').text('Key Metrics');
-//       doc.moveDown(0.5);
-
-//       // Ensure visualizationData and summaryStats exist and have default values
-//       const summaryStats = visualizationData?.summaryStats || {};
-//       const totalRevenue = Number(summaryStats.totalRevenue || 0);
-//       const totalAppointments = Number(summaryStats.totalAppointments || 0);
-//       const avgRevenuePerAppointment = totalAppointments > 0
-//         ? (totalRevenue / totalAppointments)
-//         : 0;
-
-//       // Create a compact metrics display with columns
-//       const metricData = [
-//         ['Total Revenue:', formatCurrency(totalRevenue)],
-//         ['Total Appointments:', totalAppointments.toLocaleString()],
-//         ['Average Revenue per Appointment:', formatCurrency(avgRevenuePerAppointment)]
-//       ];
-
-//       // Draw metrics in a table-like structure
-//       const startY = doc.y;
-//       metricData.forEach((row, i) => {
-//         doc.fontSize(11).fillColor('#555555');
-//         doc.text(row[0], 70, startY + (i * 20), { continued: false });
-//         doc.text(row[1], 250, startY + (i * 20), { continued: false });
-//       });
-      
-//       doc.moveDown(2);
-
-//       // ===== DETAILED DATA TABLE =====
-//       doc.fontSize(16).fillColor('#333333').text('Detailed Data');
-//       doc.moveDown(0.5);
-
-//       // Better table layout with compact spacing
-//       const tableTop = doc.y;
-//       const colWidths = {
-//         period: 120,    // Reduced width
-//         service: 100,   // Reduced width
-//         stylist: 120,   // Reduced width
-//         revenue: 100    // Kept the same
-//       };
-
-//       // Table Header with background
-//       const tableWidth = doc.page.width - 100;
-//       const rowHeight = 22; // Reduced height
-//       const startX = 50;
-      
-//       // Header background
-//       doc.rect(startX, doc.y, tableWidth, rowHeight)
-//          .fillColor('#eeeeee')
-//          .fill();
-      
-//       // Header text
-//       doc.fillColor('#333333').font('Helvetica-Bold').fontSize(11);
-//       const headerY = doc.y + 6;
-//       doc.text('Period', startX + 5, headerY, { width: colWidths.period, align: 'left' });
-//       doc.text('Service', startX + colWidths.period + 5, headerY, { width: colWidths.service, align: 'left' });
-//       doc.text('Stylist', startX + colWidths.period + colWidths.service + 5, headerY, { width: colWidths.stylist, align: 'left' });
-//       doc.text('Revenue', startX + colWidths.period + colWidths.service + colWidths.stylist + 5, headerY, { width: colWidths.revenue, align: 'right' });
-      
-//       doc.moveDown(1);
-
-//       // Table Rows with alternating background
-//       doc.font('Helvetica').fontSize(10); // Smaller font
-      
-//       // Ensure data is an array
-//       const dataArray = Array.isArray(data) ? data : [];
-//       let rowY = doc.y;
-//       let isAlternate = false;
-      
-//       dataArray.forEach((row, index) => {
-//         // Debugging: log the row data for inspection
-//         console.log('Row Data:', row);
-        
-//         // Convert total_revenue to a number
-//         const rowRevenue = Number(row.total_revenue || 0);  // Ensure it's a number
-//         const stylistName = row.stylist_name || 'N/A';
-//         const periodLabel = row.period_label || row.period || 'N/A';
-//         const serviceName = row.service_name || 'N/A';
-        
-//         // Debugging: check the value of revenue
-//         console.log('Row Revenue:', rowRevenue);
-
-//         // Alternate row background
-//         if (isAlternate) {
-//           doc.rect(startX, rowY, tableWidth, rowHeight)
-//              .fillColor('#f9f9f9')
-//              .fill();
-//         }
-//         isAlternate = !isAlternate;
-        
-//         // Row text (vertically centered)
-//         doc.fillColor('#444444');
-//         const textY = rowY + 6; // Vertically centered text
-//         doc.text(periodLabel, startX + 5, textY, { width: colWidths.period, align: 'left' });
-//         doc.text(serviceName, startX + colWidths.period + 5, textY, { width: colWidths.service, align: 'left' });
-//         doc.text(stylistName, startX + colWidths.period + colWidths.service + 5, textY, { width: colWidths.stylist, align: 'left' });
-//         doc.text(formatCurrency(rowRevenue), startX + colWidths.period + colWidths.service + colWidths.stylist + 5, textY, { width: colWidths.revenue, align: 'right' });
-
-//         rowY += rowHeight;
-
-//         // Only add a new page if we're near the bottom and have more rows to display
-//         if (rowY > doc.page.height - 70 && index < dataArray.length - 1) {
-//           doc.addPage();
-//           rowY = 50;
-//           isAlternate = false;
-//         }
-//       });
-      
-//       // Table borders - full border
-//       doc.rect(startX, tableTop, tableWidth, rowY - tableTop)
-//          .strokeColor('#cccccc')
-//          .lineWidth(1)
-//          .stroke();
-         
-//       // Vertical lines for columns
-//       doc.moveTo(startX + colWidths.period, tableTop).lineTo(startX + colWidths.period, rowY).stroke();
-//       doc.moveTo(startX + colWidths.period + colWidths.service, tableTop)
-//          .lineTo(startX + colWidths.period + colWidths.service, rowY).stroke();
-//       doc.moveTo(startX + colWidths.period + colWidths.service + colWidths.stylist, tableTop)
-//          .lineTo(startX + colWidths.period + colWidths.service + colWidths.stylist, rowY).stroke();
-
-//       // Get total page count
-//       const totalPages = doc.bufferedPageRange().count;
-      
-//       // Add footer to each page
-//       for (let i = 0; i < totalPages; i++) {
-//         doc.switchToPage(i);
-        
-//         // Footer line
-//         doc.strokeColor('#cccccc').lineWidth(0.5)
-//            .moveTo(50, doc.page.height - 40)
-//            .lineTo(doc.page.width - 50, doc.page.height - 40)
-//            .stroke();
-           
-//         // Footer text - single line with date and page number
-//         doc.fontSize(8).fillColor('#777777')
-//            .text(`Report generated on ${new Date().toLocaleString()} | Page ${i + 1} of ${totalPages}`, 
-//                 50, doc.page.height - 30, {
-//                   align: 'center',
-//                   width: doc.page.width - 100
-//                 });
-//       }
-
-//       doc.end();
-//     } catch (err) {
-//       reject(err);
-//     }
-//   });
-// };
-
-// // Base64 conversion for web preview
-// exports.pdfToBase64 = (buffer) => {
-//   return buffer.toString('base64');
-// };
-
-// // Optional: Save PDF to file for testing
-// exports.savePDFToFile = (buffer, filename) => {
-//   fs.writeFileSync(filename, buffer);
-//   console.log(`PDF saved as ${filename}`);
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -224,7 +6,13 @@ const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 exports.generateEnhancedPDF = async (data, visualizationData, options) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const doc = new PDFDocument({ margin: 50, size: 'A4', bufferPages: true });
+      // Create PDF with better margins for readability
+      const doc = new PDFDocument({ 
+        margin: 50, 
+        size: 'A4', 
+        bufferPages: true 
+      });
+      
       const buffers = [];
       doc.on('data', buffers.push.bind(buffers));
       doc.on('end', () => resolve(Buffer.concat(buffers)));
@@ -232,146 +20,270 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
 
       const formatCurrency = (value) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 
-      // ========== HEADER ==========
-      doc.fontSize(22).fillColor('#333').text('Advanced Revenue Report', { align: 'center' });
-      doc.fontSize(12).fillColor('#555');
+      // ========== HEADER WITH IMPROVED STYLING ==========
+      doc.font('Helvetica-Bold').fontSize(24).fillColor('#1a365d').text('Salon Shadow White', { align: 'center' });
+      doc.moveDown(0.3);
+      doc.font('Helvetica-Bold').fontSize(20).fillColor('#2c5282').text('Advanced Revenue Report', { align: 'center' });
+      doc.moveDown(0.5);
+      
+      // Add a colored header bar
+      const headerBarY = doc.y;
+      doc.rect(50, headerBarY, doc.page.width - 100, 30).fillColor('#e6f0ff').fill();
+      
+      // Header info with better vertical spacing and alignment
+      doc.fontSize(12).fillColor('#333').font('Helvetica');
       doc.text(`Period: ${options.startDate} to ${options.endDate}`, { align: 'center' });
       doc.text(`Report Type: ${options.reportType}`, { align: 'center' });
       doc.text(`Grouped By: ${options.groupBy}`, { align: 'center' });
 
       doc.moveDown();
-      doc.strokeColor('#999').moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
+      doc.strokeColor('#8daed6').lineWidth(2).moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
       doc.moveDown();
 
-      // ========== 1️⃣ INSIGHTS ==========
+      // ========== INSIGHTS WITH IMPROVED STYLING ==========
       const stats = visualizationData.summaryStats || {};
+      
+      // Section heading with background
+      const insightHeaderY = doc.y;
+      doc.rect(50, insightHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
+      doc.fontSize(16).fillColor('#1a365d').font('Helvetica-Bold')
+         .text('Insights & Highlights:', 60, insightHeaderY + 5);
+      doc.moveDown(1.5);
+      
       const insights = [
-        `✔ Top Stylist: ${stats.top_stylist || 'N/A'} (${formatCurrency(stats.top_stylist_revenue || 0)})`,
-        `✔ Best Service: ${stats.top_service || 'N/A'} (${formatCurrency(stats.top_service_revenue || 0)})`,
-        `✔ Revenue Change vs Last Period: ${(stats.revenue_growth_rate ?? 0).toFixed(1)}%`,
-        `✔ Avg Revenue per Appointment: ${formatCurrency(stats.avgRevenuePerAppointment || 0)}`,
-        `✔ Unique Clients: ${stats.uniqueClients || 0}`
+        `★ Top Stylist: ${stats.top_stylist || 'N/A'} (${formatCurrency(stats.top_stylist_revenue || 0)})`,
+        `★ Best Service: ${stats.top_service || 'N/A'} (${formatCurrency(stats.top_service_revenue || 0)})`,
+        `${(stats.revenue_growth_rate ?? 0) >= 0 ? '▲' : '▼'} Revenue Change vs Last Period: ${(stats.revenue_growth_rate ?? 0).toFixed(1)}%`,
+        `$ Avg Revenue per Appointment: ${formatCurrency(stats.avgRevenuePerAppointment || 0)}`,
+        `• Unique Clients: ${stats.uniqueClients || 0}`
       ];
-      doc.fontSize(14).fillColor('#333').text('Insights & Highlights:');
-      insights.forEach(line => doc.fontSize(11).fillColor('#444').text(line, { indent: 20 }));
-      doc.moveDown();
-
-      // ========== 2️⃣ CHART ==========
-      const chartCanvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
-      const chartBuffer = await chartCanvas.renderToBuffer({
-        type: 'bar',
-        data: visualizationData.chartData, // assumes visualizationData.chartData is prebuilt
-        options: { plugins: { legend: { position: 'bottom' } }, responsive: false }
+      
+      insights.forEach(line => {
+        doc.fontSize(11).fillColor('#444').font('Helvetica')
+           .text(line, { indent: 20 });
+        doc.moveDown(0.5);
       });
-      doc.image(chartBuffer, { fit: [500, 300], align: 'center' });
       doc.moveDown();
 
-      // ========== KEY METRICS ==========
+      // ========== CHART WITH BETTER POSITIONING ==========
+      if (visualizationData.chartData) {
+        const chartCanvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
+        const chartBuffer = await chartCanvas.renderToBuffer({
+          type: 'bar',
+          data: visualizationData.chartData,
+          options: { 
+            plugins: { 
+              legend: { position: 'bottom' },
+              title: {
+                display: true,
+                text: 'Revenue Distribution',
+                font: { size: 16 }
+              }
+            }, 
+            responsive: false,
+            backgroundColor: '#ffffff',
+            borderColor: '#2c5282',
+            borderWidth: 1
+          }
+        });
+        doc.image(chartBuffer, { fit: [500, 300], align: 'center' });
+        doc.moveDown();
+      }
+
+      // ========== KEY METRICS WITH IMPROVED STYLING AND FIXED SPACING ==========
+      const metricsHeaderY = doc.y;
+      doc.rect(50, metricsHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
+      doc.fontSize(16).fillColor('#1a365d').font('Helvetica-Bold')
+         .text('Key Metrics:', 60, metricsHeaderY + 5);
+      doc.moveDown(1.5);
+      
       const totalRevenue = Number(stats.totalRevenue || 0);
       const totalAppointments = Number(stats.totalAppointments || 0);
       const avgRevenuePerAppointment = totalAppointments > 0 ? (totalRevenue / totalAppointments) : 0;
-      const metricData = [
-        ['Total Revenue:', formatCurrency(totalRevenue)],
-        ['Total Appointments:', totalAppointments.toLocaleString()],
-        ['Avg Revenue per Appointment:', formatCurrency(avgRevenuePerAppointment)]
-      ];
-      const startY = doc.y;
-      metricData.forEach((row, i) => {
-        doc.fontSize(11).fillColor('#555');
-        doc.text(row[0], 70, startY + (i * 18), { continued: false });
-        doc.text(row[1], 250, startY + (i * 18), { continued: false });
-      });
-      doc.moveDown(2);
+      
+      // Create a metrics box with border
+      const metricsY = doc.y;
+      const metricsHeight = 80;
+      doc.roundedRect(70, metricsY, doc.page.width - 140, metricsHeight, 5)
+         .fillColor('#f9fafc').fill()
+         .strokeColor('#ccd9ea').lineWidth(1).stroke();
+      
+      // FIXED: Improved spacing by creating a proper table-like layout with fixed positions
+      // Set fixed positions for labels and values
+      const labelX = 90;  // X position for labels
+      const valueX = 300; // X position for values (increased from 250 to 300)
+      const spacing = 25; // Spacing between rows
+      
+      // Add metrics in a more organized layout with fixed positions
+      doc.fontSize(12).fillColor('#333').font('Helvetica-Bold')
+         .text('Total Revenue:', labelX, metricsY + 15);
+      doc.fontSize(14).fillColor('#2c5282').font('Helvetica-Bold')
+         .text(formatCurrency(totalRevenue), valueX, metricsY + 15);
+         
+      doc.fontSize(12).fillColor('#333').font('Helvetica-Bold')
+         .text('Total Appointments:', labelX, metricsY + 15 + spacing);
+      doc.fontSize(14).fillColor('#2c5282').font('Helvetica-Bold')
+         .text(totalAppointments.toLocaleString(), valueX, metricsY + 15 + spacing);
+         
+      doc.fontSize(12).fillColor('#333').font('Helvetica-Bold')
+         .text('Avg Revenue per Appointment:', labelX, metricsY + 15 + (spacing * 2));
+      doc.fontSize(14).fillColor('#2c5282').font('Helvetica-Bold')
+         .text(formatCurrency(avgRevenuePerAppointment), valueX, metricsY + 15 + (spacing * 2));
+         
+      doc.moveDown(4.5);
 
-      // ========== 3️⃣ COMPARISON / % CHANGE ==========
+      // ========== COMPARISON / % CHANGE WITH BETTER STYLING ==========
       if (stats.previous_total !== undefined) {
+        const comparisonHeaderY = doc.y;
+        doc.rect(50, comparisonHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
+        doc.fontSize(16).fillColor('#1a365d').font('Helvetica-Bold')
+           .text('Period Comparison:', 60, comparisonHeaderY + 5);
+        doc.moveDown(1.5);
+        
         const revenueGrowth = stats.previous_total !== 0
           ? ((totalRevenue - stats.previous_total) / stats.previous_total) * 100
           : 0;
         const yoyGrowth = stats.yoy_total !== 0
           ? ((totalRevenue - stats.yoy_total) / stats.yoy_total) * 100
           : 0;
-        doc.fontSize(12).fillColor('#333').text('Comparison:');
-        doc.fillColor(revenueGrowth >= 0 ? 'green' : 'red')
-           .text(`✔ Revenue Change vs Previous Period: ${revenueGrowth.toFixed(1)}%`);
-        doc.fillColor(yoyGrowth >= 0 ? 'green' : 'red')
-           .text(`✔ Year-over-Year Growth: ${yoyGrowth.toFixed(1)}%`);
-        doc.moveDown();
+          
+        doc.fontSize(12).fillColor(revenueGrowth >= 0 ? '#2f855a' : '#c53030').font('Helvetica')
+           .text(`${revenueGrowth >= 0 ? '▲' : '▼'} Revenue Change vs Previous Period: ${revenueGrowth.toFixed(1)}%`, { indent: 20 });
+        doc.moveDown(0.5);
+        
+        doc.fontSize(12).fillColor(yoyGrowth >= 0 ? '#2f855a' : '#c53030').font('Helvetica')
+           .text(`${yoyGrowth >= 0 ? '▲' : '▼'} Year-over-Year Growth: ${yoyGrowth.toFixed(1)}%`, { indent: 20 });
+        doc.moveDown(1.5);
       }
 
-      // ========== 4️⃣ & 5️⃣ TABLE WITH HIGHLIGHT + CONTRIBUTION % ==========
-      doc.fontSize(14).fillColor('#333').text('Detailed Data');
-      doc.moveDown(0.5);
+      // ========== TABLE WITHOUT BORDERS ==========
+      const tableHeaderY = doc.y;
+      doc.rect(50, tableHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
+      doc.fontSize(16).fillColor('#1a365d').font('Helvetica-Bold')
+         .text('Detailed Data', 60, tableHeaderY + 5);
+      doc.moveDown(1.5);
 
       const tableTop = doc.y;
-      const colWidths = { period: 110, service: 90, stylist: 110, revenue: 110 };
+      // Adjust column widths to better accommodate content
+      const colWidths = { 
+        period: 80, 
+        service: 180,  // Increased for services with long names
+        stylist: 150,  // Increased for multiple stylist names
+        revenue: 115   // Increased from 95 to 115 to better fit revenue values and percentages
+      };
       const tableWidth = doc.page.width - 100;
-      const rowHeight = 22;
+      // Set appropriate row height for single-line content
+      const rowHeight = 35;  // Reduced to 35 for better fitting
       const startX = 50;
 
-      // Table header background
-      doc.rect(startX, doc.y, tableWidth, rowHeight).fillColor('#eee').fill();
-      const headerY = doc.y + 6;
-      doc.fillColor('#333').font('Helvetica-Bold').fontSize(11);
+      // Table header with better styling
+      doc.rect(startX, doc.y, tableWidth, 30).fillColor('#2c5282').fill();
+      const headerY = doc.y + 10;
+      doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(12);
       doc.text('Period', startX + 5, headerY, { width: colWidths.period });
       doc.text('Service', startX + colWidths.period + 5, headerY, { width: colWidths.service });
       doc.text('Stylist', startX + colWidths.period + colWidths.service + 5, headerY, { width: colWidths.stylist });
-      doc.text('Revenue', startX + colWidths.period + colWidths.service + colWidths.stylist + 5, headerY, { width: colWidths.revenue, align: 'right' });
+      // FIXED: Revenue header alignment - now center-aligned rather than right-aligned
+      doc.text('Revenue', startX + colWidths.period + colWidths.service + colWidths.stylist + 5, headerY, { width: colWidths.revenue, align: 'left' });
 
       doc.font('Helvetica').fontSize(10);
-      let rowY = doc.y + rowHeight;
+      let rowY = doc.y + 30;  // Start below the header
       let isAlternate = false;
 
       const dataArray = Array.isArray(data) ? data : [];
       dataArray.forEach((row, index) => {
+        // FIXED: Check if we need to add a new page BEFORE rendering content
+        // Check if current row plus header would exceed page bounds
+        if (rowY + rowHeight > doc.page.height - 120) {
+          doc.addPage();
+          rowY = 50;
+          isAlternate = false;
+          
+          // Repeat table header on new page
+          doc.rect(startX, rowY, tableWidth, 30).fillColor('#2c5282').fill();
+          const newHeaderY = rowY + 10;
+          doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(12);
+          doc.text('Period', startX + 5, newHeaderY, { width: colWidths.period });
+          doc.text('Service', startX + colWidths.period + 5, newHeaderY, { width: colWidths.service });
+          doc.text('Stylist', startX + colWidths.period + colWidths.service + 5, newHeaderY, { width: colWidths.stylist });
+          doc.text('Revenue', startX + colWidths.period + colWidths.service + colWidths.stylist + 5, newHeaderY, { width: colWidths.revenue, align: 'left' });
+          
+          rowY += 30;
+        }
+
         const rowRevenue = Number(row.total_revenue || row.revenue || 0);
         const revenuePercent = totalRevenue !== 0 ? (rowRevenue / totalRevenue) * 100 : 0;
         const stylistName = row.stylist_name || 'N/A';
         const periodLabel = row.period_label || row.period || 'N/A';
         const serviceName = row.service_name || 'N/A';
 
-        // Row background alternate
+        // Row background alternate with subtle colors (no borders)
         if (isAlternate) {
-          doc.rect(startX, rowY, tableWidth, rowHeight).fillColor('#f9f9f9').fill();
+          doc.rect(startX, rowY, tableWidth, rowHeight).fillColor('#f5f8fc').fill();
         }
         isAlternate = !isAlternate;
 
-        // Conditional color for revenue
-        const revenueColor = rowRevenue >= 5000 ? '#008800'
-                            : rowRevenue >= 3000 ? '#888800'
-                            : '#880000';
+        // Conditional color for revenue using professional color scheme
+        const revenueColor = rowRevenue >= 5000 ? '#2f855a'  // Green
+                            : rowRevenue >= 3000 ? '#2b6cb0'  // Blue
+                            : '#c53030';  // Red
 
-        const textY = rowY + 6;
-        doc.fillColor('#444');
-        doc.text(periodLabel, startX + 5, textY, { width: colWidths.period });
-        doc.text(serviceName, startX + colWidths.period + 5, textY, { width: colWidths.service });
-        doc.text(stylistName, startX + colWidths.period + colWidths.service + 5, textY, { width: colWidths.stylist });
+        // Proper vertical positioning - center text vertically in row
+        const textY = rowY + (rowHeight - 12) / 2;  // Center text vertically
+        
+        doc.fillColor('#333').font('Helvetica').fontSize(10);
+        doc.text(periodLabel, startX + 5, textY, { 
+          width: colWidths.period - 10,
+          height: rowHeight - 10,
+          ellipsis: true
+        });
+        
+        // Service name with proper wrapping
+        doc.text(serviceName, startX + colWidths.period + 5, textY, { 
+          width: colWidths.service - 10,
+          height: rowHeight - 10,
+          ellipsis: true
+        });
+        
+        // Stylist name with proper wrapping
+        doc.text(stylistName, startX + colWidths.period + colWidths.service + 5, textY, { 
+          width: colWidths.stylist - 10,
+          height: rowHeight - 10,
+          ellipsis: true
+        });
 
-        // Revenue with % contribution + color
-        doc.fillColor(revenueColor)
-           .text(`${formatCurrency(rowRevenue)} (${revenuePercent.toFixed(1)}%)`, startX + colWidths.period + colWidths.service + colWidths.stylist + 5, textY, { width: colWidths.revenue, align: 'right' });
+        // Revenue with % contribution + color (single line)
+        doc.fillColor(revenueColor).font('Helvetica-Bold')
+           .text(`${formatCurrency(rowRevenue)} (${revenuePercent.toFixed(1)}%)`, 
+                 startX + colWidths.period + colWidths.service + colWidths.stylist + 5, textY, { 
+                   width: colWidths.revenue - 10, 
+                   height: rowHeight - 10,
+                   align: 'left',
+                   ellipsis: true
+                 });
 
         rowY += rowHeight;
-        if (rowY > doc.page.height - 70 && index < dataArray.length - 1) {
-          doc.addPage();
-          rowY = 50;
-          isAlternate = false;
-        }
       });
 
-      // Table borders
-      doc.rect(startX, tableTop, tableWidth, rowY - tableTop).strokeColor('#ccc').lineWidth(1).stroke();
-      doc.moveTo(startX + colWidths.period, tableTop).lineTo(startX + colWidths.period, rowY).stroke();
-      doc.moveTo(startX + colWidths.period + colWidths.service, tableTop).lineTo(startX + colWidths.period + colWidths.service, rowY).stroke();
-      doc.moveTo(startX + colWidths.period + colWidths.service + colWidths.stylist, tableTop).lineTo(startX + colWidths.period + colWidths.service + colWidths.stylist, rowY).stroke();
+      // NO TABLE BORDERS - Removed all the border drawing code
 
+      // ========== FOOTER WITH MUCH BETTER POSITIONING ==========
       const totalPages = doc.bufferedPageRange().count;
       for (let i = 0; i < totalPages; i++) {
         doc.switchToPage(i);
-        doc.strokeColor('#ccc').moveTo(50, doc.page.height - 40).lineTo(doc.page.width - 50, doc.page.height - 40).stroke();
-        doc.fontSize(8).fillColor('#777')
+        
+        // FIXED: Move footer much higher to prevent any overflow
+        // Changed from doc.page.height - 50 to doc.page.height - 80
+        const footerY = doc.page.height - 80;
+        
+        // Footer with gradient bar
+        doc.rect(50, footerY, doc.page.width - 100, 2).fillColor('#8daed6').fill();
+        
+        // FIXED: Position the text higher above the bottom of the page
+        // Changed footerY + 0 to footerY + 10 to give more space from the line
+        doc.fontSize(9).fillColor('#555').font('Helvetica')
            .text(`Generated ${new Date().toLocaleString()} | Page ${i + 1} of ${totalPages}`,
-             50, doc.page.height - 30, { align: 'center', width: doc.page.width - 100 });
+             50, footerY + 10, { align: 'center', width: doc.page.width - 100 });
       }
 
       doc.end();

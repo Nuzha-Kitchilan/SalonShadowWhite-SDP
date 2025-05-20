@@ -41,185 +41,6 @@ exports.getRevenueReport = async (req, res) => {
 };
 
 
-// exports.getAdvancedRevenueReport = async (req, res) => {
-//   try {
-//     const { startDate, endDate, format = 'pdf', reportType = 'summary', groupBy = 'day', preview = false } = req.query;
-    
-//     const validReportTypes = ['summary', 'detailed', 'trend', 'comparison', 'stylist'];
-//     const reportTypeValid = validReportTypes.includes(reportType) ? reportType : 'summary';
-    
-//     const validGroupBys = ['day', 'week', 'month', 'quarter', 'year', 'service', 'stylist'];
-//     const groupByValid = validGroupBys.includes(groupBy) ? groupBy : 'day';
-
-//     let reportData;
-//     switch(reportTypeValid) {
-//       case 'detailed':
-//         reportData = await reportModel.getDetailedRevenueData(startDate, endDate, groupByValid);
-//         break;
-//       case 'trend':
-//         reportData = await reportModel.getRevenueTrends(startDate, endDate, groupByValid);
-//         break;
-//       case 'comparison':
-//         reportData = await reportModel.getPeriodComparison(startDate, endDate, groupByValid);
-//         break;
-//       case 'stylist':
-//         reportData = await reportModel.getStylistPerformance(startDate, endDate);
-//         break;
-//       default: // summary
-//         reportData = await reportModel.getSummaryRevenueData(startDate, endDate, groupByValid);
-//     }
-
-//     if (preview === 'true' || preview === true) {
-//       const chartData = generateChartData(reportData, reportTypeValid);
-//       const serviceChartData = generateServiceChartData(reportData);
-//       return res.json({
-//         rows: Array.isArray(reportData) ? reportData : (reportData?.current_period || []),
-//         chartData,
-//         serviceChartData
-//       });
-//     }
-
-//     // ✅ FIX: Use reportData instead of "data"
-//     const stylistMap = {};
-//     reportData.forEach(row => {
-//       const name = row.stylist_name || 'Unknown';
-//       stylistMap[name] = (stylistMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
-//     });
-//     const topStylistEntry = Object.entries(stylistMap).sort((a, b) => b[1] - a[1])[0];
-
-//     const serviceMap = {};
-//     reportData.forEach(row => {
-//       const name = row.service_name || 'Unknown';
-//       serviceMap[name] = (serviceMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
-//     });
-//     const topServiceEntry = Object.entries(serviceMap).sort((a, b) => b[1] - a[1])[0];
-
-//     const uniqueClients = new Set(reportData.map(row => row.customer_ID)).size;
-
-//     const summaryStats = {
-//       totalRevenue: reportData.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0),
-//       totalAppointments: reportData.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0),
-//       avgRevenuePerAppointment: reportData.length > 0
-//         ? (reportData.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0) /
-//            reportData.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0))
-//         : 0,
-//       uniqueClients: uniqueClients,
-//       top_stylist: topStylistEntry ? topStylistEntry[0] : 'N/A',
-//       top_stylist_revenue: topStylistEntry ? topStylistEntry[1] : 0,
-//       top_service: topServiceEntry ? topServiceEntry[0] : 'N/A',
-//       top_service_revenue: topServiceEntry ? topServiceEntry[1] : 0,
-//       revenue_growth_rate: 0 // optionally compute from comparison
-//     };
-
-
-//      if (preview === 'true' || preview === true) {
-//       const chartData = generateChartData(reportData, reportTypeValid);
-//       // Generate service chart data for all report types
-//       const serviceChartData = reportTypeValid === 'comparison' ? 
-//         generateServiceChartData(reportData.current_period) : 
-//         generateServiceBreakdownData(reportData);
-//       return res.json({
-//         rows: Array.isArray(reportData) ? reportData : (reportData?.current_period || []),
-//         chartData,
-//         serviceChartData
-//       });
-//     }
-
-//     if (format.toLowerCase() === 'csv') {
-//       const csv = generateCSV(reportData, visualizationData);
-//       res.setHeader('Content-Type', 'text/csv');
-//       res.setHeader('Content-Disposition', `attachment; filename=revenue_${reportType}_${startDate}_to_${endDate}.csv`);
-//       return res.send(csv);
-//     } else {
-//       const pdf = await generateEnhancedPDF(reportData, visualizationData, {
-//         startDate, 
-//         endDate,
-//         reportType: reportTypeValid,
-//         groupBy: groupByValid
-//       });
-//       res.setHeader('Content-Type', 'application/pdf');
-//       res.setHeader('Content-Disposition', `attachment; filename=revenue_${reportType}_${startDate}_to_${endDate}.pdf`);
-//       return res.send(pdf);
-//     }
-//   } catch (error) {
-//     console.error('Advanced report error:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to generate advanced report',
-//       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-//     });
-//   }
-// };
-
-
-// async function generatePDFVisualizationData(reportData, reportType, groupBy) {
-//   const data = Array.isArray(reportData) ? reportData : 
-//                (reportData?.current_period || []);
-  
-//   // Calculate summary statistics
-//   const totalRevenue = data.reduce((sum, item) => sum + Number(item.revenue || item.total_revenue || 0), 0);
-//   const totalAppointments = data.reduce((sum, item) => sum + Number(item.appointments || item.total_appointments || 0), 0);
-//   const avgRevenuePerAppointment = totalAppointments > 0 ? (totalRevenue / totalAppointments) : 0;
-  
-//   // Additional metrics based on report type
-//   let additionalMetrics = {};
-//   if (reportType === 'comparison') {
-//     additionalMetrics = {
-//       previous_total: reportData.previous_period?.reduce((sum, item) => sum + Number(item.total_revenue || 0), 0) || 0,
-//       yoy_total: reportData.year_over_year?.reduce((sum, item) => sum + Number(item.total_revenue || 0), 0) || 0
-//     };
-//   } else if (reportType === 'trend') {
-//     const growthRates = data.map(item => Number(item.growth_rate || 0));
-//     additionalMetrics = {
-//       avg_growth_rate: growthRates.reduce((sum, rate) => sum + rate, 0) / growthRates.length
-//     };
-//   } else if (reportType === 'stylist') {
-//     additionalMetrics = {
-//       top_stylist: data[0]?.stylist_name || 'N/A',
-//       top_stylist_revenue: Number(data[0]?.total_revenue || 0)
-//     };
-//   }
-
-//   return {
-//     summaryStats: {
-//       totalRevenue,
-//       totalAppointments,
-//       avgRevenuePerAppointment,
-//       ...additionalMetrics
-//     },
-//     chartConfig: {
-//       type: reportType === 'stylist' ? 'bar' : 'line',
-//       title: `${reportType} Revenue Report`,
-//       xAxisLabel: groupBy === 'stylist' ? 'Stylist' : 'Period',
-//       yAxisLabel: 'Revenue ($)'
-//     }
-//   };
-// }
-
-// Helper function for visualization data
-// async function generateVisualizationData(reportData, reportType, groupBy) {
-//   // Process reportData based on its structure and report type
-//   const data = Array.isArray(reportData) ? reportData : 
-//                (reportData?.current_period || []);
-  
-//   // Calculate summary statistics
-//   const totalRevenue = data.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
-//   const totalAppointments = data.reduce((sum, item) => sum + Number(item.appointments || 0), 0);
-  
-//   return {
-//     chartImage: null, // This would be a Buffer containing chart image
-//     summaryStats: {
-//       totalRevenue,
-//       totalAppointments
-//     }
-//   };
-// }
-
-
-
-
-
-
 
 exports.getAdvancedRevenueReport = async (req, res) => {
   try {
@@ -252,6 +73,8 @@ exports.getAdvancedRevenueReport = async (req, res) => {
     // Calculate summary statistics for all report types
     const dataForStats = Array.isArray(reportData) ? reportData : (reportData?.current_period || []);
     
+    const totalUniqueClients = await reportModel.getTotalUniqueClients(startDate, endDate);
+
     const stylistMap = {};
     dataForStats.forEach(row => {
       const name = row.stylist_name || 'Unknown';
@@ -266,7 +89,7 @@ exports.getAdvancedRevenueReport = async (req, res) => {
     });
     const topServiceEntry = Object.entries(serviceMap).sort((a, b) => b[1] - a[1])[0];
 
-    const uniqueClients = new Set(dataForStats.map(row => row.customer_ID)).size;
+    //const uniqueClients = new Set(dataForStats.map(row => row.customer_ID)).size;
 
     const summaryStats = {
       totalRevenue: dataForStats.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0),
@@ -275,12 +98,12 @@ exports.getAdvancedRevenueReport = async (req, res) => {
         ? (dataForStats.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0) )/
           dataForStats.reduce((sum, row) => sum + Number(row.total_appointments || row.appointments || 0), 0)
         : 0,
-      uniqueClients: uniqueClients,
+      uniqueClients: totalUniqueClients,
       top_stylist: topStylistEntry ? topStylistEntry[0] : 'N/A',
       top_stylist_revenue: topStylistEntry ? topStylistEntry[1] : 0,
       top_service: topServiceEntry ? topServiceEntry[0] : 'N/A',
       top_service_revenue: topServiceEntry ? topServiceEntry[1] : 0,
-      revenue_growth_rate: 0 // optionally compute from comparison
+      revenue_growth_rate: 0 
     };
 
     // Generate visualization data
