@@ -989,7 +989,7 @@ const PaymentModal = ({
           
           setSuccessMessage(
             isFirstTimeCustomer 
-              ? "Payment successful! 50% deposit paid. Remaining balance due at salon." 
+              ? "Payment successful! 10% deposit paid. Remaining balance due at salon." 
               : "Payment successful! Your appointment is confirmed."
           );
           setBookingSuccess(true);
@@ -1010,7 +1010,7 @@ const PaymentModal = ({
         
         setSuccessMessage(
           isFirstTimeCustomer
-            ? "Appointment booked! 50% deposit required at salon."
+            ? "Appointment booked! Please pay the rest at salon."
             : "Appointment booked! Please pay at the salon."
         );
         setBookingSuccess(true);
@@ -1304,7 +1304,7 @@ const PaymentModal = ({
                     }
                   }}
                 >
-                  As a first-time customer, a 50% deposit (Rs.{formatAmount(amountToPay)}) is required now.
+                  As a first-time customer, a 10% deposit (Rs.{formatAmount(amountToPay)}) is required now.
                 </Alert>
               )}
             </Paper>
@@ -1462,7 +1462,7 @@ const PaymentModal = ({
                     }}
                   >
                     {isFirstTimeCustomer
-                      ? `You'll be charged a 50% deposit of Rs.${formatAmount(amountToPay)} now. The remaining balance will be due at the salon.`
+                      ? `You'll be charged a 10% deposit of Rs.${formatAmount(amountToPay)} now. The remaining balance will be due at the salon.`
                       : `You'll be charged the full amount of Rs.${formatAmount(amountToPay)}.`}
                   </Typography>
                 </form>
@@ -1489,8 +1489,8 @@ const PaymentModal = ({
                   }}
                 >
                   {isFirstTimeCustomer
-                    ? "As a first-time customer, you'll need to pay a 50% deposit when you arrive at the salon."
-                    : "You can pay when you arrive at the salon. Please bring cash or card."}
+                    ? "As a first-time customer, you'll need to pay a 10% deposit when you arrive at the salon."
+                    : "You can pay when you arrive at the salon. Please bring cash."}
                 </Typography>
               </Paper>
             )}

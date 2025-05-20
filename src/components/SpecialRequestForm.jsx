@@ -327,6 +327,629 @@
 
 
 
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { 
+//   Box, 
+//   TextField, 
+//   Button, 
+//   Alert, 
+//   Typography, 
+//   CircularProgress, 
+//   MenuItem, 
+//   Autocomplete, 
+//   Chip,
+//   Paper,
+//   Divider,
+//   Grid,
+//   InputAdornment
+// } from "@mui/material";
+// import jwtDecode from "jwt-decode";
+// import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+// import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+// import EmailIcon from '@mui/icons-material/Email';
+// import PersonIcon from '@mui/icons-material/Person';
+// import PhoneIcon from '@mui/icons-material/Phone';
+// import SpaIcon from '@mui/icons-material/Spa';
+// import MessageIcon from '@mui/icons-material/Message';
+
+// const SpecialRequestForm = () => {
+//   const [formData, setFormData] = useState({
+//     firstName: "",
+//     lastName: "",
+//     email: "",
+//     phone: "",
+//     message: "",
+//     services: [], 
+//     dateTime: null
+//   });
+//   const [success, setSuccess] = useState(false);
+//   const [error, setError] = useState(null);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [customerId, setCustomerId] = useState(null);
+//   const [services, setServices] = useState([]);
+//   const [serviceInputValue, setServiceInputValue] = useState("");
+
+//   useEffect(() => {
+//     const fetchCustomerInfo = async () => {
+//       const token = localStorage.getItem('token');
+      
+//       if (token) {
+//         try {
+//           setIsLoading(true);
+//           const decoded = jwtDecode(token);
+//           setCustomerId(decoded.customer_ID);
+
+//           // Fetch complete customer info from backend
+//           const response = await axios.get("http://localhost:5001/api/specialRequest/customer-info", {
+//             headers: {
+//               Authorization: `Bearer ${token}`
+//             }
+//           });
+
+//           if (response.data.success && response.data.data) {
+//             const customerInfo = response.data.data;
+//             setFormData(prev => ({
+//               ...prev,
+//               firstName: customerInfo.first_name || prev.firstName,
+//               lastName: customerInfo.last_name || prev.lastName,
+//               email: customerInfo.email || prev.email,
+//               phone: customerInfo.phone_numbers?.[0] || prev.phone
+//             }));
+//           }
+//         } catch (error) {
+//           console.error("Error fetching customer info:", error);
+//         } finally {
+//           setIsLoading(false);
+//         }
+//       }
+//     };
+
+//     const fetchServices = async () => {
+//       try {
+//         const response = await axios.get("http://localhost:5001/api/services");
+//         if (response.data) {
+//           setServices(response.data);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching services:", error);
+//       }
+//     };
+
+//     fetchCustomerInfo();
+//     fetchServices();
+//   }, []);
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     if (success) setSuccess(false);
+//     if (error) setError(null);
+//   };
+
+//   const handleDateTimeChange = (newValue) => {
+//     setFormData({ ...formData, dateTime: newValue });
+//     if (success) setSuccess(false);
+//     if (error) setError(null);
+//   };
+
+//   const handleServicesChange = (event, newValue) => {
+//     // Ensure newValue is always an array
+//     const servicesArray = Array.isArray(newValue) ? newValue : [];
+//     setFormData({ ...formData, services: servicesArray });
+//     if (success) setSuccess(false);
+//     if (error) setError(null);
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     console.log("Form data before validation:", formData);
+//     // Clear any previous errors
+//     setError(null);
+    
+//     if (!formData.message.trim()) {
+//       setError("Please enter your special request details");
+//       return;
+//     }
+
+//     if (!formData.dateTime) {
+//       setError("Please select a date and time");
+//       return;
+//     }
+
+//     // Enhanced validation for services
+//     if (!formData.services || !Array.isArray(formData.services) || formData.services.length === 0) {
+//       setError("Please select at least one service");
+//       return;
+//     }
+
+//     // Additional check to ensure services have service_id
+//     const validServices = formData.services.filter(service => service && (service.service_id || typeof service === 'object'));
+//     if (validServices.length === 0) {
+//       setError("Please select valid services");
+//       return;
+//     }
+
+//     try {
+//       setIsLoading(true);
+//       const token = localStorage.getItem('token');
+      
+//       // Format date and time for backend
+//       const dateObj = new Date(formData.dateTime);
+//       const preferred_date = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+//       const preferred_time = dateObj.toTimeString().split(' ')[0]; // HH:MM:SS
+
+//       // Extract service IDs for the backend
+//       const service_ids = validServices.map(service => service.service_id);
+
+//       const response = await axios.post(
+//         "http://localhost:5001/api/specialRequest",
+//         {
+//           firstName: formData.firstName,
+//           lastName: formData.lastName,
+//           email: formData.email,
+//           phone_number: formData.phone,
+//           request_details: formData.message,
+//           service_ids: service_ids, // Send array of service IDs
+//           preferred_date,  // Send as separate date
+//           preferred_time   // Send as separate time
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       if (response.data.success) {
+//         setSuccess(true);
+//         setFormData(prev => ({ ...prev, message: "", services: [], dateTime: null }));
+//         setServiceInputValue("");
+//       } else {
+//         setError(response.data.message || "Failed to submit request");
+//       }
+//     } catch (err) {
+//       console.error("Submission error:", err.response?.data || err.message);
+//       setError(err.response?.data?.message || "Failed to submit request. Please try again.");
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <Paper
+//       elevation={0}
+//       sx={{
+//         mt: 3,
+//         maxWidth: 800,
+//         mx: "auto",
+//         p: 4,
+//         borderRadius: 2,
+//         backgroundColor: 'rgba(255, 255, 255, 0.7)',
+//         border: '1px solid rgba(190, 175, 155, 0.15)',
+//         boxShadow: '0 4px 12px rgba(190, 175, 155, 0.1)',
+//         transition: 'transform 0.2s ease, box-shadow 0.3s ease',
+//         '&:hover': {
+//           boxShadow: '0 6px 16px rgba(190, 175, 155, 0.2)',
+//         }
+//       }}
+//     >
+//       <Typography 
+//         variant="h4" 
+//         align="center" 
+//         sx={{ 
+//           fontWeight: 500, 
+//           mb: 3, 
+//           color: '#282520',
+//           fontFamily: "'Poppins', 'Roboto', sans-serif",
+//         }}
+//       >
+//         Special Booking Request
+//       </Typography>
+      
+//       <Divider sx={{ mb: 4, borderColor: 'rgba(190, 175, 155, 0.2)' }} />
+
+//       {success && (
+//         <Alert 
+//           severity="success" 
+//           sx={{ 
+//             mb: 4,
+//             backgroundColor: 'rgba(190, 175, 155, 0.1)',
+//             color: '#8C7B6B',
+//             border: '1px solid rgba(190, 175, 155, 0.3)',
+//             '& .MuiAlert-icon': {
+//               color: '#BEAF9B'
+//             }
+//           }}
+//         >
+//           <Typography variant="body1" sx={{ fontWeight: 500 }}>
+//             Thank you for your request!
+//           </Typography>
+//           <Typography variant="body2">
+//             Our team will review your request and get back to you within 48 hours.
+//           </Typography>
+//           <Typography variant="body2" sx={{ mt: 1 }}>
+//             You can track the status of this request in your profile section.
+//           </Typography>
+//         </Alert>
+//       )}
+
+//       {error && (
+//         <Alert 
+//           severity="error" 
+//           sx={{ 
+//             mb: 4,
+//             backgroundColor: 'rgba(211, 47, 47, 0.05)',
+//             color: '#d32f2f',
+//             border: '1px solid rgba(211, 47, 47, 0.2)'
+//           }}
+//         >
+//           {error}
+//         </Alert>
+//       )}
+
+//       <Box
+//         component="form"
+//         onSubmit={handleSubmit}
+//         sx={{
+//           display: 'flex',
+//           flexDirection: 'column',
+//           gap: 3
+//         }}
+//       >
+//         <Grid container spacing={3}>
+//           <Grid item xs={12} sm={6}>
+//             <TextField
+//               label="First Name"
+//               name="firstName"
+//               fullWidth
+//               required
+//               value={formData.firstName}
+//               onChange={handleChange}
+//               disabled={isLoading}
+//               InputProps={{
+//                 startAdornment: (
+//                   <InputAdornment position="start">
+//                     <PersonIcon sx={{ color: '#BEAF9B' }} />
+//                   </InputAdornment>
+//                 ),
+//               }}
+//               sx={{
+//                 '& .MuiOutlinedInput-root': {
+//                   '& fieldset': {
+//                     borderColor: 'rgba(190, 175, 155, 0.3)',
+//                   },
+//                   '&:hover fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                   '&.Mui-focused fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                 },
+//                 '& .MuiInputLabel-root.Mui-focused': {
+//                   color: '#8C7B6B',
+//                 },
+//               }}
+//             />
+//           </Grid>
+//           <Grid item xs={12} sm={6}>
+//             <TextField
+//               label="Last Name"
+//               name="lastName"
+//               fullWidth
+//               required
+//               value={formData.lastName}
+//               onChange={handleChange}
+//               disabled={isLoading}
+//               InputProps={{
+//                 startAdornment: (
+//                   <InputAdornment position="start">
+//                     <PersonIcon sx={{ color: '#BEAF9B' }} />
+//                   </InputAdornment>
+//                 ),
+//               }}
+//               sx={{
+//                 '& .MuiOutlinedInput-root': {
+//                   '& fieldset': {
+//                     borderColor: 'rgba(190, 175, 155, 0.3)',
+//                   },
+//                   '&:hover fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                   '&.Mui-focused fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                 },
+//                 '& .MuiInputLabel-root.Mui-focused': {
+//                   color: '#8C7B6B',
+//                 },
+//               }}
+//             />
+//           </Grid>
+          
+//           <Grid item xs={12} sm={6}>
+//             <TextField
+//               label="Email"
+//               name="email"
+//               type="email"
+//               fullWidth
+//               required
+//               value={formData.email}
+//               onChange={handleChange}
+//               disabled={isLoading}
+//               InputProps={{
+//                 startAdornment: (
+//                   <InputAdornment position="start">
+//                     <EmailIcon sx={{ color: '#BEAF9B' }} />
+//                   </InputAdornment>
+//                 ),
+//               }}
+//               sx={{
+//                 '& .MuiOutlinedInput-root': {
+//                   '& fieldset': {
+//                     borderColor: 'rgba(190, 175, 155, 0.3)',
+//                   },
+//                   '&:hover fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                   '&.Mui-focused fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                 },
+//                 '& .MuiInputLabel-root.Mui-focused': {
+//                   color: '#8C7B6B',
+//                 },
+//               }}
+//             />
+//           </Grid>
+//           <Grid item xs={12} sm={6}>
+//             <TextField
+//               label="Phone Number"
+//               name="phone"
+//               fullWidth
+//               required
+//               value={formData.phone}
+//               onChange={handleChange}
+//               disabled={isLoading}
+//               InputProps={{
+//                 startAdornment: (
+//                   <InputAdornment position="start">
+//                     <PhoneIcon sx={{ color: '#BEAF9B' }} />
+//                   </InputAdornment>
+//                 ),
+//               }}
+//               sx={{
+//                 '& .MuiOutlinedInput-root': {
+//                   '& fieldset': {
+//                     borderColor: 'rgba(190, 175, 155, 0.3)',
+//                   },
+//                   '&:hover fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                   '&.Mui-focused fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                 },
+//                 '& .MuiInputLabel-root.Mui-focused': {
+//                   color: '#8C7B6B',
+//                 },
+//               }}
+//             />
+//           </Grid>
+//         </Grid>
+
+//         <LocalizationProvider dateAdapter={AdapterDateFns}>
+//           <DateTimePicker
+//             label="Preferred Date & Time"
+//             value={formData.dateTime}
+//             onChange={handleDateTimeChange}
+//             textField={(params) => (
+//               <TextField
+//                 {...params}
+//                 fullWidth
+//                 required
+//                 disabled={isLoading}
+//                 InputProps={{
+//                   ...params.InputProps,
+//                   startAdornment: (
+//                     <InputAdornment position="start">
+//                       <CalendarMonthIcon sx={{ color: '#BEAF9B' }} />
+//                     </InputAdornment>
+//                   ),
+//                 }}
+//                 sx={{
+//                   '& .MuiOutlinedInput-root': {
+//                     '& fieldset': {
+//                       borderColor: 'rgba(190, 175, 155, 0.3)',
+//                     },
+//                     '&:hover fieldset': {
+//                       borderColor: '#BEAF9B',
+//                     },
+//                     '&.Mui-focused fieldset': {
+//                       borderColor: '#BEAF9B',
+//                     },
+//                   },
+//                   '& .MuiInputLabel-root.Mui-focused': {
+//                     color: '#8C7B6B',
+//                   },
+//                 }}
+//               />
+//             )}
+//             minDateTime={new Date()}
+//           />
+//         </LocalizationProvider>
+
+//         <Autocomplete
+//           multiple
+//           options={services}
+//           getOptionLabel={(option) => option?.service_name || ""}
+//           value={formData.services}
+//           onChange={handleServicesChange}
+//           inputValue={serviceInputValue}
+//           onInputChange={(event, newInputValue) => {
+//             setServiceInputValue(newInputValue);
+//           }}
+//           freeSolo={false}
+//           onClose={() => setServiceInputValue("")}
+//           renderInput={(params) => (
+//             <TextField
+//               {...params}
+//               label="Select Services"
+//               placeholder={formData.services.length === 0 ? "Choose one or more services..." : ""}
+//               required
+//               disabled={isLoading}
+//               helperText={`Services selected: ${formData.services.length}`}
+//               error={error && formData.services.length === 0}
+//               InputProps={{
+//                 ...params.InputProps,
+//                 startAdornment: (
+//                   <>
+//                     <InputAdornment position="start">
+//                       <SpaIcon sx={{ color: '#BEAF9B' }} />
+//                     </InputAdornment>
+//                     {params.InputProps.startAdornment}
+//                   </>
+//                 ),
+//               }}
+//               sx={{
+//                 '& .MuiOutlinedInput-root': {
+//                   '& fieldset': {
+//                     borderColor: 'rgba(190, 175, 155, 0.3)',
+//                   },
+//                   '&:hover fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                   '&.Mui-focused fieldset': {
+//                     borderColor: '#BEAF9B',
+//                   },
+//                 },
+//                 '& .MuiInputLabel-root.Mui-focused': {
+//                   color: '#8C7B6B',
+//                 },
+//               }}
+//             />
+//           )}
+//           renderOption={(props, option) => (
+//             <MenuItem {...props} key={option.service_id}>
+//               {option.service_name}
+//             </MenuItem>
+//           )}
+//           renderTags={(tagValue, getTagProps) =>
+//             tagValue.map((option, index) => (
+//               <Chip
+//                 variant="outlined"
+//                 label={option?.service_name || "Unknown Service"}
+//                 {...getTagProps({ index })}
+//                 key={option?.service_id || index}
+//                 sx={{
+//                   backgroundColor: 'rgba(190, 175, 155, 0.05)',
+//                   color: '#8C7B6B',
+//                   border: '1px solid rgba(190, 175, 155, 0.3)',
+//                   '& .MuiChip-deleteIcon': {
+//                     color: '#BEAF9B',
+//                     '&:hover': {
+//                       color: '#8C7B6B'
+//                     }
+//                   }
+//                 }}
+//               />
+//             ))
+//           }
+//           isOptionEqualToValue={(option, value) => option?.service_id === value?.service_id}
+//           noOptionsText="No services found"
+//           loadingText="Loading services..."
+//           sx={{
+//             '& .MuiAutocomplete-tag': {
+//               margin: '3px',
+//             }
+//           }}
+//         />
+
+//         <TextField
+//           label="Special Request Details"
+//           name="message"
+//           fullWidth
+//           multiline
+//           rows={4}
+//           required
+//           value={formData.message}
+//           onChange={handleChange}
+//           disabled={isLoading}
+//           placeholder="Please describe your special request in detail..."
+//           InputProps={{
+//             startAdornment: (
+//               <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5 }}>
+//                 <MessageIcon sx={{ color: '#BEAF9B' }} />
+//               </InputAdornment>
+//             ),
+//           }}
+//           sx={{
+//             '& .MuiOutlinedInput-root': {
+//               '& fieldset': {
+//                 borderColor: 'rgba(190, 175, 155, 0.3)',
+//               },
+//               '&:hover fieldset': {
+//                 borderColor: '#BEAF9B',
+//               },
+//               '&.Mui-focused fieldset': {
+//                 borderColor: '#BEAF9B',
+//               },
+//             },
+//             '& .MuiInputLabel-root.Mui-focused': {
+//               color: '#8C7B6B',
+//             },
+//           }}
+//         />
+
+//         <Divider sx={{ my: 2, borderColor: 'rgba(190, 175, 155, 0.2)' }} />
+
+//         <Box sx={{ display: "flex", justifyContent: "center" }}>
+//           <Button
+//             type="submit"
+//             variant="contained"
+//             disabled={isLoading}
+//             sx={{
+//               background: 'linear-gradient(135deg, #282520 0%, #3a352e 100%)',
+//               color: 'white',
+//               px: 6,
+//               py: 1.5,
+//               fontWeight: 500,
+//               fontSize: "1rem",
+//               borderRadius: "30px",
+//               fontFamily: "'Poppins', 'Roboto', sans-serif",
+//               '&:hover': {
+//                 background: 'linear-gradient(135deg, #3a352e 0%, #4a453e 100%)',
+//                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+//               },
+//               '&:disabled': {
+//                 background: 'rgba(190, 175, 155, 0.3)',
+//                 color: 'rgba(0, 0, 0, 0.26)'
+//               }
+//             }}
+//           >
+//             {isLoading ? (
+//               <CircularProgress size={24} color="inherit" />
+//             ) : (
+//               "Submit Request"
+//             )}
+//           </Button>
+//         </Box>
+//       </Box>
+//     </Paper>
+//   );
+// };
+
+// export default SpecialRequestForm;
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { 
@@ -340,19 +963,104 @@ import {
   Autocomplete, 
   Chip,
   Paper,
-  Divider,
-  Grid,
-  InputAdornment
+  Container,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import jwtDecode from "jwt-decode";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import EmailIcon from '@mui/icons-material/Email';
-import PersonIcon from '@mui/icons-material/Person';
-import PhoneIcon from '@mui/icons-material/Phone';
 import SpaIcon from '@mui/icons-material/Spa';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import MessageIcon from '@mui/icons-material/Message';
+
+// Styled components to match the design aesthetic
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.3)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.5)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#BEAF9B',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: '#666666',
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    '&.Mui-focused': {
+      color: '#453C33',
+    },
+  },
+  '& .MuiInputBase-input': {
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+  },
+}));
+
+const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.3)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(190, 175, 155, 0.5)',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#BEAF9B',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: '#666666',
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    '&.Mui-focused': {
+      color: '#453C33',
+    },
+  },
+  '& .MuiChip-root': {
+    backgroundColor: 'rgba(190, 175, 155, 0.1)',
+    borderColor: 'rgba(190, 175, 155, 0.3)',
+    color: '#453C33',
+    fontFamily: "'Poppins', 'Roboto', sans-serif",
+    '& .MuiChip-deleteIcon': {
+      color: '#666666',
+      '&:hover': {
+        color: '#453C33',
+      },
+    },
+  },
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  backgroundColor: '#BEAF9B',
+  color: '#FFFFFF',
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  fontWeight: 600,
+  borderRadius: '30px',
+  padding: '10px 30px',
+  '&:hover': {
+    backgroundColor: '#a39383',
+  },
+  '&.Mui-disabled': {
+    backgroundColor: 'rgba(190, 175, 155, 0.5)',
+    color: '#FFFFFF',
+  },
+}));
+
+const StyledAlert = styled(Alert)(({ theme }) => ({
+  borderRadius: '8px',
+  fontFamily: "'Poppins', 'Roboto', sans-serif",
+  '&.MuiAlert-standardSuccess': {
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    borderLeft: '4px solid #4caf50',
+  },
+  '&.MuiAlert-standardError': {
+    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+    borderLeft: '4px solid #f44336',
+  },
+}));
 
 const SpecialRequestForm = () => {
   const [formData, setFormData] = useState({
@@ -361,7 +1069,7 @@ const SpecialRequestForm = () => {
     email: "",
     phone: "",
     message: "",
-    services: [], 
+    services: [],
     dateTime: null
   });
   const [success, setSuccess] = useState(false);
@@ -370,6 +1078,8 @@ const SpecialRequestForm = () => {
   const [customerId, setCustomerId] = useState(null);
   const [services, setServices] = useState([]);
   const [serviceInputValue, setServiceInputValue] = useState("");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchCustomerInfo = async () => {
@@ -490,9 +1200,9 @@ const SpecialRequestForm = () => {
           email: formData.email,
           phone_number: formData.phone,
           request_details: formData.message,
-          service_ids: service_ids, // Send array of service IDs
-          preferred_date,  // Send as separate date
-          preferred_time   // Send as separate time
+          service_ids: service_ids,
+          preferred_date,
+          preferred_time
         },
         {
           headers: {
@@ -516,90 +1226,80 @@ const SpecialRequestForm = () => {
     }
   };
 
+  // Get current time to display greeting
+  const getCurrentTimeGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        mt: 3,
-        maxWidth: 800,
-        mx: "auto",
-        p: 4,
-        borderRadius: 2,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        border: '1px solid rgba(190, 175, 155, 0.15)',
-        boxShadow: '0 4px 12px rgba(190, 175, 155, 0.1)',
-        transition: 'transform 0.2s ease, box-shadow 0.3s ease',
-        '&:hover': {
-          boxShadow: '0 6px 16px rgba(190, 175, 155, 0.2)',
-        }
-      }}
-    >
-      <Typography 
-        variant="h4" 
-        align="center" 
+    <Container maxWidth="md" sx={{ mt: { xs: 2, md: 4 }, mb: 4 }}>
+      <Paper 
+        elevation={0}
         sx={{ 
-          fontWeight: 500, 
-          mb: 3, 
-          color: '#282520',
-          fontFamily: "'Poppins', 'Roboto', sans-serif",
+          borderRadius: '8px',
+          overflow: 'hidden',
+          border: '1px solid rgba(190, 175, 155, 0.2)',
+          background: 'linear-gradient(to right, rgba(190, 175, 155, 0.1), rgba(255, 255, 255, 0.8))',
         }}
       >
-        Special Booking Request
-      </Typography>
-      
-      <Divider sx={{ mb: 4, borderColor: 'rgba(190, 175, 155, 0.2)' }} />
+        <Box sx={{ p: { xs: 2, md: 3 }, borderBottom: '1px solid rgba(190, 175, 155, 0.2)' }}>
+          <Typography 
+            variant={isMobile ? "h5" : "h4"} 
+            component="h1" 
+            sx={{ 
+              fontFamily: "'Poppins', 'Roboto', sans-serif",
+              fontWeight: 600,
+              color: '#453C33',
+              mb: 1
+            }}
+          >
+            Special Request Form
+          </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontFamily: "'Poppins', 'Roboto', sans-serif",
+              color: '#666',
+              mb: 1
+            }}
+          >
+            {getCurrentTimeGreeting()}. Please fill out this form to make a special booking request.
+          </Typography>
+        </Box>
 
-      {success && (
-        <Alert 
-          severity="success" 
-          sx={{ 
-            mb: 4,
-            backgroundColor: 'rgba(190, 175, 155, 0.1)',
-            color: '#8C7B6B',
-            border: '1px solid rgba(190, 175, 155, 0.3)',
-            '& .MuiAlert-icon': {
-              color: '#BEAF9B'
-            }
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            p: { xs: 2, md: 3 },
           }}
         >
-          <Typography variant="body1" sx={{ fontWeight: 500 }}>
-            Thank you for your request!
-          </Typography>
-          <Typography variant="body2">
-            Our team will review your request and get back to you within 48 hours.
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            You can track the status of this request in your profile section.
-          </Typography>
-        </Alert>
-      )}
+          {success && (
+            <StyledAlert severity="success" sx={{ mb: 3 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                Thank you for your request!
+              </Typography>
+              <Typography variant="body2">
+                Our team will review your request and get back to you within 48 hours.
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                You can track the status of this request in your profile section.
+              </Typography>
+            </StyledAlert>
+          )}
 
-      {error && (
-        <Alert 
-          severity="error" 
-          sx={{ 
-            mb: 4,
-            backgroundColor: 'rgba(211, 47, 47, 0.05)',
-            color: '#d32f2f',
-            border: '1px solid rgba(211, 47, 47, 0.2)'
-          }}
-        >
-          {error}
-        </Alert>
-      )}
+          {error && (
+            <StyledAlert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </StyledAlert>
+          )}
 
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 3
-        }}
-      >
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 2 }}>
+            <StyledTextField
               label="First Name"
               name="firstName"
               fullWidth
@@ -607,33 +1307,8 @@ const SpecialRequestForm = () => {
               value={formData.firstName}
               onChange={handleChange}
               disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PersonIcon sx={{ color: '#BEAF9B' }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(190, 175, 155, 0.3)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#8C7B6B',
-                },
-              }}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
+            <StyledTextField
               label="Last Name"
               name="lastName"
               fullWidth
@@ -641,34 +1316,11 @@ const SpecialRequestForm = () => {
               value={formData.lastName}
               onChange={handleChange}
               disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PersonIcon sx={{ color: '#BEAF9B' }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(190, 175, 155, 0.3)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#8C7B6B',
-                },
-              }}
             />
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <TextField
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 2 }}>
+            <StyledTextField
               label="Email"
               name="email"
               type="email"
@@ -677,33 +1329,8 @@ const SpecialRequestForm = () => {
               value={formData.email}
               onChange={handleChange}
               disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailIcon sx={{ color: '#BEAF9B' }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(190, 175, 155, 0.3)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#8C7B6B',
-                },
-              }}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
+            <StyledTextField
               label="Phone Number"
               name="phone"
               fullWidth
@@ -711,231 +1338,158 @@ const SpecialRequestForm = () => {
               value={formData.phone}
               onChange={handleChange}
               disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PhoneIcon sx={{ color: '#BEAF9B' }} />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(190, 175, 155, 0.3)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#8C7B6B',
-                },
-              }}
             />
-          </Grid>
-        </Grid>
+          </Box>
 
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DateTimePicker
-            label="Preferred Date & Time"
-            value={formData.dateTime}
-            onChange={handleDateTimeChange}
-            textField={(params) => (
-              <TextField
-                {...params}
-                fullWidth
-                required
-                disabled={isLoading}
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CalendarMonthIcon sx={{ color: '#BEAF9B' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: 'rgba(190, 175, 155, 0.3)',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#BEAF9B',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#BEAF9B',
-                    },
-                  },
-                  '& .MuiInputLabel-root.Mui-focused': {
-                    color: '#8C7B6B',
-                  },
-                }}
-              />
-            )}
-            minDateTime={new Date()}
-          />
-        </LocalizationProvider>
-
-        <Autocomplete
-          multiple
-          options={services}
-          getOptionLabel={(option) => option?.service_name || ""}
-          value={formData.services}
-          onChange={handleServicesChange}
-          inputValue={serviceInputValue}
-          onInputChange={(event, newInputValue) => {
-            setServiceInputValue(newInputValue);
-          }}
-          freeSolo={false}
-          onClose={() => setServiceInputValue("")}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Select Services"
-              placeholder={formData.services.length === 0 ? "Choose one or more services..." : ""}
-              required
-              disabled={isLoading}
-              helperText={`Services selected: ${formData.services.length}`}
-              error={error && formData.services.length === 0}
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <>
-                    <InputAdornment position="start">
-                      <SpaIcon sx={{ color: '#BEAF9B' }} />
-                    </InputAdornment>
-                    {params.InputProps.startAdornment}
-                  </>
-                ),
+          <Box sx={{ mb: 2 }}>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1, 
+                fontFamily: "'Poppins', 'Roboto', sans-serif",
+                color: '#453C33',
+                fontWeight: 600,
+                mb: 1
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(190, 175, 155, 0.3)',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#BEAF9B',
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#8C7B6B',
-                },
+            >
+              <SpaIcon fontSize="small" />
+              <span>Service Selection</span>
+            </Typography>
+            <StyledAutocomplete
+              multiple
+              options={services}
+              getOptionLabel={(option) => option?.service_name || ""}
+              value={formData.services}
+              onChange={handleServicesChange}
+              inputValue={serviceInputValue}
+              onInputChange={(event, newInputValue) => {
+                setServiceInputValue(newInputValue);
               }}
-            />
-          )}
-          renderOption={(props, option) => (
-            <MenuItem {...props} key={option.service_id}>
-              {option.service_name}
-            </MenuItem>
-          )}
-          renderTags={(tagValue, getTagProps) =>
-            tagValue.map((option, index) => (
-              <Chip
-                variant="outlined"
-                label={option?.service_name || "Unknown Service"}
-                {...getTagProps({ index })}
-                key={option?.service_id || index}
-                sx={{
-                  backgroundColor: 'rgba(190, 175, 155, 0.05)',
-                  color: '#8C7B6B',
-                  border: '1px solid rgba(190, 175, 155, 0.3)',
-                  '& .MuiChip-deleteIcon': {
-                    color: '#BEAF9B',
-                    '&:hover': {
-                      color: '#8C7B6B'
-                    }
-                  }
-                }}
-              />
-            ))
-          }
-          isOptionEqualToValue={(option, value) => option?.service_id === value?.service_id}
-          noOptionsText="No services found"
-          loadingText="Loading services..."
-          sx={{
-            '& .MuiAutocomplete-tag': {
-              margin: '3px',
-            }
-          }}
-        />
-
-        <TextField
-          label="Special Request Details"
-          name="message"
-          fullWidth
-          multiline
-          rows={4}
-          required
-          value={formData.message}
-          onChange={handleChange}
-          disabled={isLoading}
-          placeholder="Please describe your special request in detail..."
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5 }}>
-                <MessageIcon sx={{ color: '#BEAF9B' }} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: 'rgba(190, 175, 155, 0.3)',
-              },
-              '&:hover fieldset': {
-                borderColor: '#BEAF9B',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#BEAF9B',
-              },
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: '#8C7B6B',
-            },
-          }}
-        />
-
-        <Divider sx={{ my: 2, borderColor: 'rgba(190, 175, 155, 0.2)' }} />
-
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isLoading}
-            sx={{
-              background: 'linear-gradient(135deg, #282520 0%, #3a352e 100%)',
-              color: 'white',
-              px: 6,
-              py: 1.5,
-              fontWeight: 500,
-              fontSize: "1rem",
-              borderRadius: "30px",
-              fontFamily: "'Poppins', 'Roboto', sans-serif",
-              '&:hover': {
-                background: 'linear-gradient(135deg, #3a352e 0%, #4a453e 100%)',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-              },
-              '&:disabled': {
-                background: 'rgba(190, 175, 155, 0.3)',
-                color: 'rgba(0, 0, 0, 0.26)'
+              freeSolo={false}
+              onClose={() => setServiceInputValue("")}
+              renderInput={(params) => (
+                <StyledTextField
+                  {...params}
+                  label="Select Services"
+                  placeholder={formData.services.length === 0 ? "Choose one or more services..." : ""}
+                  helperText={`You can select multiple services. Selected: ${formData.services.length}`}
+                  error={formData.services.length === 0}
+                  InputProps={{
+                    ...params.InputProps,
+                    required: false,
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <MenuItem {...props} key={option.service_id} sx={{ fontFamily: "'Poppins', 'Roboto', sans-serif" }}>
+                  {option.service_name}
+                </MenuItem>
+              )}
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option?.service_name || "Unknown Service"}
+                    {...getTagProps({ index })}
+                    key={option?.service_id || index}
+                    sx={{
+                      backgroundColor: 'rgba(190, 175, 155, 0.1)',
+                      border: '1px solid rgba(190, 175, 155, 0.3)',
+                      color: '#453C33',
+                      fontFamily: "'Poppins', 'Roboto', sans-serif",
+                      '& .MuiChip-deleteIcon': {
+                        color: '#666666',
+                        '&:hover': {
+                          color: '#453C33',
+                        },
+                      },
+                    }}
+                  />
+                ))
               }
-            }}
-          >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Submit Request"
-            )}
-          </Button>
+              isOptionEqualToValue={(option, value) => option?.service_id === value?.service_id}
+              noOptionsText="No services found"
+              loadingText="Loading services..."
+            />
+          </Box>
+
+          <Box sx={{ mb: 2 }}>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1, 
+                fontFamily: "'Poppins', 'Roboto', sans-serif",
+                color: '#453C33',
+                fontWeight: 600,
+                mb: 1
+              }}
+            >
+              <AccessTimeIcon fontSize="small" />
+              <span>Preferred Date & Time</span>
+            </Typography>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                label="Select Date & Time"
+                value={formData.dateTime}
+                onChange={handleDateTimeChange}
+                renderInput={(params) => (
+                  <StyledTextField
+                    {...params}
+                    fullWidth
+                    required
+                    disabled={isLoading}
+                  />
+                )}
+                minDateTime={new Date()}
+              />
+            </LocalizationProvider>
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1, 
+                fontFamily: "'Poppins', 'Roboto', sans-serif",
+                color: '#453C33',
+                fontWeight: 600,
+                mb: 1
+              }}
+            >
+              <MessageIcon fontSize="small" />
+              <span>Special Request Details</span>
+            </Typography>
+            <StyledTextField
+              name="message"
+              fullWidth
+              multiline
+              rows={4}
+              required
+              value={formData.message}
+              onChange={handleChange}
+              disabled={isLoading}
+              placeholder="Please describe your special request in detail..."
+            />
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <StyledButton
+              type="submit"
+              disabled={isLoading}
+              startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {isLoading ? "Submitting..." : "Submit Request"}
+            </StyledButton>
+          </Box>
         </Box>
-      </Box>
-    </Paper>
+      </Paper>
+    </Container>
   );
 };
 
