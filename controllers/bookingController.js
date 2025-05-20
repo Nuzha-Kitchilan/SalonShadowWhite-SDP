@@ -420,6 +420,89 @@ exports.getAvailableDates = async (req, res) => {
 
 
 
+//-----------------------------------------------------------------------------------------------------------
+
+
+// exports.getAvailableTimeSlots = async (req, res) => {
+//   try {
+//     const { date, stylistId, serviceDuration } = req.body;
+
+//     // Validate date format (YYYY-MM-DD)
+//     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+//       return res.status(400).json({ message: 'Invalid date format. Use YYYY-MM-DD' });
+//     }
+
+//     const bufferTime = 10; // minutes between appointments
+//     const totalDuration = serviceDuration + bufferTime;
+//     const interval = 15; // minutes
+
+//     // Get working hours
+//     const workingHours = await bookingModel.getWorkingHours(date);
+
+//     let openTime = '08:00:00';
+//     let closeTime = '18:00:00';
+
+//     if (workingHours) {
+//       if (workingHours.is_closed) {
+//         return res.json({ availableSlots: [] });
+//       }
+//       openTime = workingHours.open_time;
+//       closeTime = workingHours.close_time;
+//     }
+
+//     const segments = generateTimeSegments(openTime, closeTime, interval);
+
+//     // Get appointments for this date
+//     const appointments = await bookingModel.getAppointmentsByDate(date, stylistId);
+//     const blockedSlots = new Set();
+
+//     appointments.forEach(app => {
+//       const duration = app.time_duration + bufferTime;
+//       const start = app.appointment_time;
+//       const blocksNeeded = Math.ceil(duration / interval);
+//       const blocked = getBlockedSlots(start, blocksNeeded, segments);
+//       blocked.forEach(slot => blockedSlots.add(slot));
+//     });
+
+//     // Calculate 12 hours from now cutoff time
+//     const now = new Date();
+//     const cutoffTime = new Date(now);
+//     cutoffTime.setHours(now.getHours() + 12);
+
+//     const requiredBlocks = Math.ceil(totalDuration / interval);
+//     const availableSlots = [];
+
+//     for (let i = 0; i <= segments.length - requiredBlocks; i++) {
+//       const slice = segments.slice(i, i + requiredBlocks);
+//       const isBlocked = slice.some(time => blockedSlots.has(time));
+      
+//       // Create a date object for this time slot
+//       const timeSlotDate = new Date(`${date}T${slice[0]}:00`);
+      
+//       // Check if this time slot is at least 12 hours in the future
+//       const isAfterCutoff = timeSlotDate >= cutoffTime;
+      
+//       if (!isBlocked && isAfterCutoff) {
+//         availableSlots.push(slice[0]);
+//       }
+//     }
+
+//     res.json({ availableSlots });
+//   } catch (err) {
+//     console.error('Error:', err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -427,7 +510,6 @@ exports.getAvailableTimeSlots = async (req, res) => {
   try {
     const { date, stylistId, serviceDuration } = req.body;
 
-    // Validate date format (YYYY-MM-DD)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return res.status(400).json({ message: 'Invalid date format. Use YYYY-MM-DD' });
     }
@@ -450,40 +532,51 @@ exports.getAvailableTimeSlots = async (req, res) => {
       closeTime = workingHours.close_time;
     }
 
-    const segments = generateTimeSegments(openTime, closeTime, interval);
-
-    // Get appointments for this date
-    const appointments = await bookingModel.getAppointmentsByDate(date, stylistId);
-    const blockedSlots = new Set();
-
-    appointments.forEach(app => {
-      const duration = app.time_duration + bufferTime;
-      const start = app.appointment_time;
-      const blocksNeeded = Math.ceil(duration / interval);
-      const blocked = getBlockedSlots(start, blocksNeeded, segments);
-      blocked.forEach(slot => blockedSlots.add(slot));
-    });
-
-    // Calculate 12 hours from now cutoff time
+    // Calculate cutoff time (12 hours from now)
     const now = new Date();
     const cutoffTime = new Date(now);
     cutoffTime.setHours(now.getHours() + 12);
 
+    // Generate all possible time slots at the interval
+    const allSlots = generateTimeSegments(openTime, closeTime, interval);
+    
+    // Get appointments for this date
+    const appointments = await bookingModel.getAppointmentsByDate(date, stylistId);
+    const blockedSlots = new Set();
+
+    // Mark blocked times
+    appointments.forEach(app => {
+      const duration = app.time_duration + bufferTime;
+      const start = app.appointment_time;
+      const blocksNeeded = Math.ceil(duration / interval);
+      const blocked = getBlockedSlots(start, blocksNeeded, allSlots);
+      blocked.forEach(slot => blockedSlots.add(slot));
+    });
+
     const requiredBlocks = Math.ceil(totalDuration / interval);
     const availableSlots = [];
 
-    for (let i = 0; i <= segments.length - requiredBlocks; i++) {
-      const slice = segments.slice(i, i + requiredBlocks);
-      const isBlocked = slice.some(time => blockedSlots.has(time));
+    // Check each potential slot
+    for (let i = 0; i <= allSlots.length - requiredBlocks; i++) {
+      const slotTime = allSlots[i];
+      const slotEndTime = new Date(`2025-01-01T${slotTime}:00`);
+      slotEndTime.setMinutes(slotEndTime.getMinutes() + totalDuration);
       
-      // Create a date object for this time slot
-      const timeSlotDate = new Date(`${date}T${slice[0]}:00`);
+      // Check if slot would end after closing time
+      const closingTime = new Date(`2025-01-01T${closeTime}`);
+      if (slotEndTime > closingTime) {
+        continue; // Skip slots that would end after closing
+      }
+
+      // Check if any of the required blocks are blocked
+      const isBlocked = allSlots.slice(i, i + requiredBlocks).some(time => blockedSlots.has(time));
       
-      // Check if this time slot is at least 12 hours in the future
-      const isAfterCutoff = timeSlotDate >= cutoffTime;
+      // Check if slot is at least 12 hours in the future
+      const slotDateTime = new Date(`${date}T${slotTime}:00`);
+      const isAfterCutoff = slotDateTime >= cutoffTime;
       
       if (!isBlocked && isAfterCutoff) {
-        availableSlots.push(slice[0]);
+        availableSlots.push(slotTime);
       }
     }
 
