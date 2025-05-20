@@ -360,7 +360,7 @@ const createPaymentIntent = async (req, res) => {
 
     // Calculate amount based on whether it's first time customer
     const calculatedAmount = isFirstTime 
-      ? Math.floor(amount * 50) // 50% for first-time customers
+      ? Math.floor(amount * 10) // 10% for first-time customers
       : Math.floor(amount * 100); // Full amount for returning customers
 
     const paymentIntent = await stripe.paymentIntents.create({
@@ -434,8 +434,7 @@ const handlePayAtSalon = async (req, res) => {
     console.log('Appointment created:', appointmentResponse.data);
     const appointment_ID = appointmentResponse.data.appointment_ID;
 
-    // For first-time customers paying at salon, we still require 50% deposit
-    const amount_paid = is_first_time ? payment_amount * 0.5 : 0;
+    const amount_paid = is_first_time ? payment_amount * 0.1 : 0;
 
     // Record payment
     const paymentData = {
@@ -494,9 +493,9 @@ const recordPayment = async (req, res) => {
       });
     }
 
-    // For first-time online payments, amount_paid should be 50% of payment_amount
+    // For first-time online payments, amount_paid should be 10% of payment_amount
     const finalAmountPaid = payment_type === 'Online' && is_first_time
-      ? payment_amount * 0.5
+      ? payment_amount * 0.1
       : amount_paid || (payment_status === 'Paid' ? payment_amount : null);
 
     // Save payment details

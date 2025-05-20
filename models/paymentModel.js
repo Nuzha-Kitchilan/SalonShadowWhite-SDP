@@ -122,9 +122,9 @@ const savePaymentDetails = async (paymentData) => {
       stripe_payment_intent_id = null
     } = paymentData;
 
-    // For first-time customers paying online, ensure amount_paid is 50%
+    // For first-time customers paying online, ensure amount_paid is 10%
     const finalAmountPaid = is_first_time && payment_type === 'Online' && payment_status === 'Partially Paid'
-      ? payment_amount * 0.5
+      ? payment_amount * 0.1
       : amount_paid;
 
     // Add debugging information
@@ -162,7 +162,7 @@ const savePaymentDetails = async (paymentData) => {
         finalAmountPaid,
         payment_status,
         payment_type,
-        isFirstTimeInt, // Convert boolean to int
+        isFirstTimeInt, 
         stripe_payment_intent_id
       ]
     );
@@ -216,6 +216,6 @@ const getPaymentDetailsByIntentId = async (paymentIntentId) => {
 
 module.exports = {
   savePaymentDetails,
-  getPaymentDetailsByAppointment, // Add this new function to exports
+  getPaymentDetailsByAppointment,
   getPaymentDetailsByIntentId
 };
