@@ -150,7 +150,7 @@ import {
   ListItemIcon
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
