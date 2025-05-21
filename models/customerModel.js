@@ -360,7 +360,7 @@ async function getCustomerDetailById(customerId) {
   try {
     // Fetch main customer info
     const [customerRows] = await connection.execute(
-      `SELECT customer_ID, firstname, lastname, email, username, is_walk_in 
+      `SELECT customer_ID, firstname, lastname, email, username
        FROM Customer 
        WHERE customer_ID = ?`,
       [customerId]
