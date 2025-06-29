@@ -1,4 +1,3 @@
-// models/dashboard/appointmentModel.js
 const db = require('../../config/db');
 
 const getAppointmentsCount = async (period) => {
@@ -29,93 +28,7 @@ const getAppointmentsCount = async (period) => {
   }
 };
 
-// In your model file (appointmentsModel.js)
-// const getCalendarView = async (year, month, offset = 0) => {
-//   const daysToShow = 10;
-//   const startDay = 1 + (offset * daysToShow);
-//   const endDay = startDay + daysToShow - 1;
 
-//   const query = `
-//     SELECT 
-//       DAY(a.appointment_date) AS day,
-//       COUNT(*) AS count,
-//       GROUP_CONCAT(
-//         CONCAT(
-//           c.firstname, ' ', c.lastname, '|',
-//           TIME_FORMAT(a.appointment_time, '%H:%i'), '|',
-//           TIME_FORMAT(a.end_time, '%H:%i'), '|',
-//           a.appointment_ID
-//         ) SEPARATOR '||'
-//       ) AS appointments
-//     FROM Appointment a
-//     LEFT JOIN Customer c ON a.customer_ID = c.customer_ID
-//     WHERE 
-//       YEAR(a.appointment_date) = ? AND
-//       MONTH(a.appointment_date) = ? AND
-//       DAY(a.appointment_date) BETWEEN ? AND ? AND
-//       a.appointment_status = 'Scheduled'
-//     GROUP BY day
-//     ORDER BY day
-//   `;
-
-//   try {
-//     const [days] = await db.execute(query, [year, month, startDay, endDay]);
-
-//     // Get services and stylists for each appointment
-//     for (const day of days) {
-//       if (day.appointments) {
-//         const appointmentDetails = await Promise.all(
-//           day.appointments.split('||').map(async appt => {
-//             const parts = appt.split('|');
-//             // Handle cases where customer name might contain '|' character
-//             const appointmentId = parts.pop();
-//             const endTime = parts.pop();
-//             const startTime = parts.pop();
-//             const customerName = parts.join('|');
-
-//             const [rows] = await db.execute(`
-//               SELECT 
-//                 GROUP_CONCAT(DISTINCT s.service_name SEPARATOR ', ') AS services,
-//                 GROUP_CONCAT(DISTINCT CONCAT(st.firstname, ' ', st.lastname) SEPARATOR ', ') AS stylists
-//               FROM Appointment_Service_Stylist ass
-//               JOIN Service s ON ass.service_ID = s.service_ID
-//               JOIN Stylists st ON ass.stylist_ID = st.stylist_ID
-//               WHERE ass.appointment_ID = ?
-//             `, [appointmentId]);
-
-//             return {
-//               name: customerName,
-//               startTime,
-//               endTime,
-//               services: rows[0]?.services || 'None',
-//               stylists: rows[0]?.stylists || 'None'
-//             };
-//           })
-//         );
-//         day.appointments = appointmentDetails;
-//       } else {
-//         day.appointments = []; // Ensure empty array if no appointments
-//       }
-//     }
-
-//     return {
-//       days,
-//       startDay,
-//       endDay,
-//       totalDays: new Date(year, month, 0).getDate(),
-//       hasNext: endDay < new Date(year, month, 0).getDate(),
-//       hasPrev: offset > 0
-//     };
-//   } catch (error) {
-//     console.error('Error in getCalendarView:', error);
-//     throw error;
-//   }
-// };
-
-
-// This should be placed in your appointmentModel.js file
-
-// Make sure this path points to your database configuration
 
 const getCalendarView = async (year, month, offset = 0, limit = 10) => {
   const daysPerPage = limit;
@@ -128,7 +41,7 @@ const getCalendarView = async (year, month, offset = 0, limit = 10) => {
   const endDay = Math.min(startDay + daysPerPage - 1, lastDayOfMonth);
 
   try {
-    // First, get the basic calendar days with appointment IDs
+    // basic calendar days with appointment IDs
     const [rows] = await db.execute(`
       SELECT 
         DAY(a.appointment_date) AS day,
@@ -186,7 +99,7 @@ const getCalendarView = async (year, month, offset = 0, limit = 10) => {
             id: details.appointment_ID,
             name: details.name,
             startTime: details.startTime,
-            endTime: endTime.toTimeString().substring(0, 5), // Format as HH:MM
+            endTime: endTime.toTimeString().substring(0, 5), 
             services: details.services,
             stylists: details.stylists
           };

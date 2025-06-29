@@ -1,22 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const appointmentController = require('../controllers/appointmentController'); // Import the controller
-
-// // Route to create appointment
-// // ✅ Automatically clears the cart after successful appointment creation
-// router.post('/create', appointmentController.createAppointment);
-
-// // Route to check if customer is a first-timer
-// router.get('/check-first-time/:customer_id', appointmentController.checkIfFirstTimeCustomer);
-
-// module.exports = router;
-
-
-
-
-
-
-
 const express = require('express');
 const router = express.Router();
 const appointmentController = require('../controllers/appointmentController');
@@ -32,24 +13,24 @@ router.post('/cancel-request/:id', appointmentController.requestCancelAppointmen
 
 router.get('/customer/:customer_id', appointmentController.getAppointmentsByCustomer);
 
-// Get all pending cancellation requests (admin only)
+// Get all pending cancellation requests 
 router.get('/cancellation-requests', 
      
     appointmentController.getPendingCancellationRequests
   );
   
-  // Process cancellation request (admin only)
+  // Process cancellation request 
   router.post('/process-cancellation/:id', 
     appointmentController.processCancellationRequest
   );
 
 
-  // Get all approved cancellation requests (admin only)
+  // Get all approved cancellation requests 
 router.get('/approved-cancellations', 
   appointmentController.getApprovedCancellationRequests
 );
 
-// Get all rejected cancellation requests (admin only)
+// Get all rejected cancellation requests 
 router.get('/rejected-cancellations', 
   appointmentController.getRejectedCancellationRequests
 );

@@ -1,22 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const specialRequestController = require('../controllers/specialRequestController');
-
-// router.post('/', specialRequestController.submitRequest);
-// router.get('/customer-info', specialRequestController.getCustomerInfo);
-// router.get('/customer-requests', specialRequestController.getCustomerRequests);
-
-// module.exports = router;
-
-
-
-
-
-
-
-
-
-
 const express = require('express');
 const router = express.Router();
 const specialRequestController = require('../controllers/specialRequestController');

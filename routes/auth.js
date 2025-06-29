@@ -27,14 +27,11 @@ router.post('/register', validateRegisterAdmin, registerAdmin);
 // Login Admin with Validation Middleware
 router.post('/login', validateLogin, loginUser);
 
-// Update Admin details (excluding password)
-//router.put('/update/:id', verifyToken, updateAdmin);
-
 router.put(
   '/update/:id',
-  verifyToken,        // First verify authentication
-  upload.single('profile_picture'), // Then handle file upload
-  updateAdmin         // Finally process the request
+  verifyToken,        
+  upload.single('profile_picture'), 
+  updateAdmin         
 );
 
 // Update Admin password

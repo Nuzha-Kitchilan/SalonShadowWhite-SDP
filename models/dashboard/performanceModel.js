@@ -29,7 +29,7 @@ class PerformanceModel {
       
     } else {
       // Get start (Monday) and end (Sunday) of this week
-      const dayOfWeek = today.getDay(); // 0 = Sunday
+      const dayOfWeek = today.getDay(); 
       const diffToMonday = today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1);
       const startOfWeek = new Date(today.setDate(diffToMonday));
       startOfWeek.setHours(0,0,0,0);

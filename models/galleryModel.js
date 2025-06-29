@@ -6,7 +6,7 @@ const Gallery = {
    * @param {string} image_url 
    * @param {string} title 
    * @param {string} description 
-   * @returns {Promise} Database operation result
+   * @returns {Promise} 
    */
   create: async (image_url, title, description) => {
     const sql = 'INSERT INTO Gallery (image_url, title, description) VALUES (?, ?, ?)';
@@ -15,7 +15,7 @@ const Gallery = {
   
   /**
    * Get all gallery images
-   * @returns {Promise} Database operation result
+   * @returns {Promise} 
    */
   getAll: async () => {
     const sql = 'SELECT * FROM Gallery ORDER BY image_id DESC';
@@ -25,7 +25,7 @@ const Gallery = {
   /**
    * Get image by ID
    * @param {number} image_id 
-   * @returns {Promise} Database operation result
+   * @returns {Promise} 
    */
   getById: async (image_id) => {
     if (!image_id) throw new Error('Image ID is required');
@@ -38,7 +38,7 @@ const Gallery = {
    * @param {number} image_id 
    * @param {string} title 
    * @param {string} description 
-   * @returns {Promise} Database operation result
+   * @returns {Promise} 
    */
   update: async (image_id, title, description) => {
     if (!image_id) throw new Error('Image ID is required');
@@ -49,7 +49,7 @@ const Gallery = {
   /**
    * Delete an image
    * @param {number} image_id 
-   * @returns {Promise} Database operation result
+   * @returns {Promise} 
    */
   delete: async (image_id) => {
     if (!image_id) throw new Error('Image ID is required');

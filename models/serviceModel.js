@@ -19,7 +19,7 @@ const getAllServices = async (search, category) => {
             queryParams.push(category);
         }
 
-        // Add search filter if provided (case-insensitive partial match)
+        // Add search filter if provided 
         if (search) {
             query += " AND s.service_name LIKE ?";
             queryParams.push(`%${search}%`);
@@ -49,7 +49,7 @@ const getAllCategories = async () => {
 const getCategoryById = async (categoryId) => {
     try {
         const [results] = await db.execute("SELECT * FROM ServiceCategory WHERE category_id = ?", [categoryId]);
-        return results[0]; // Returns the category or undefined if not found
+        return results[0]; 
     } catch (error) {
         console.error("Error fetching category:", error);
         throw error;
@@ -72,8 +72,7 @@ const addService = async (service_name, category_id, time_duration, price, descr
 
 // Update a service
 const updateService = async (id, service_name, category_id, time_duration, price, description) => {
-    console.log("Received Data:", { id, service_name, category_id, time_duration, price, description }); // Fixed debugging log
-
+    console.log("Received Data:", { id, service_name, category_id, time_duration, price, description }); 
     try {
         const result = await db.execute(
             "UPDATE Service SET service_name = ?, category_id = ?, time_duration = ?, price = ?, description = ? WHERE service_id = ?",
@@ -118,7 +117,6 @@ const getServicesByCategoryId = async (category_id) => {
     }
 };
 
-// Add this with your other model functions
 // Add a new category
 const addCategory = async (category_name, admin_id) => {
     try {
@@ -165,7 +163,7 @@ const deleteCategory = async (id) => {
 
 const getServiceIdByName = async (serviceName) => {
   try {
-    const trimmedName = serviceName.trim();  // 👈 fixes trailing space issues
+    const trimmedName = serviceName.trim(); 
     const [results] = await db.execute(
       'SELECT service_id FROM Service WHERE service_name = ?',
       [trimmedName]

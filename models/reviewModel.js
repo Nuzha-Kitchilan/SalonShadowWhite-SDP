@@ -1,4 +1,4 @@
-const db = require('../config/db'); // Your mysql2 pool or connection
+const db = require('../config/db');
 
 const ReviewModel = {
   createReview: async (reviewData) => {
@@ -87,7 +87,6 @@ const ReviewModel = {
     return rows.length > 0;
   },
 
-  // Added the getAverageRatings method inside the ReviewModel object
   getAverageRatings: async () => {
     const [rows] = await db.execute(
       `SELECT 

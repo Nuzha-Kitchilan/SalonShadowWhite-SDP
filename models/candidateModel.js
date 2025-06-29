@@ -1,10 +1,9 @@
-// models/candidateModel.js
 const pool = require('../config/db');
 
-// Create a new candidate along with phone numbers, reason, and status
+// Create a new candidate 
 const createCandidateWithPhones = async (first_name, last_name, email, resume_url, reason, status, phone_numbers) => {
   try {
-    // Create candidate record with the reason and status
+    // Create candidate record 
     const [candidateResult] = await pool.execute(
       `INSERT INTO Candidate (first_name, last_name, email, resume_url, reason, status) VALUES (?, ?, ?, ?, ?, ?)`,
       [first_name, last_name, email, resume_url, reason, status]
@@ -27,7 +26,7 @@ const createCandidateWithPhones = async (first_name, last_name, email, resume_ur
   }
 };
 
-// Get all candidates along with their phone numbers, reason, and status
+// Get all candidates 
 const getAllCandidates = async () => {
   try {
     const [candidates] = await pool.execute(`SELECT * FROM Candidate`);
@@ -46,7 +45,7 @@ const getAllCandidates = async () => {
   }
 };
 
-// Get a single candidate along with their phone numbers, reason, and status
+// Get a single candidate 
 const getCandidateById = async (candidate_id) => {
   try {
     const [candidate] = await pool.execute(
@@ -67,10 +66,10 @@ const getCandidateById = async (candidate_id) => {
   }
 };
 
-// Update candidate's details (including their phone numbers, reason, and status)
+// Update candidate's details 
 const updateCandidateDetails = async (candidate_id, first_name, last_name, email, resume_url, reason, status, phone_numbers) => {
   try {
-    // Update candidate record with the reason and status
+    // Update candidate record
     const [result] = await pool.execute(
       `UPDATE Candidate SET first_name = ?, last_name = ?, email = ?, resume_url = ?, reason = ?, status = ? WHERE candidate_id = ?`,
       [first_name, last_name, email, resume_url, reason, status, candidate_id]
@@ -94,10 +93,9 @@ const updateCandidateDetails = async (candidate_id, first_name, last_name, email
   }
 };
 
-// Delete candidate along with their phone numbers
+// Delete candidate
 const deleteCandidate = async (candidate_id) => {
   try {
-    // Delete candidate phone numbers first
     await pool.execute(`DELETE FROM Candidate_Phone_Num WHERE candidate_id = ?`, [candidate_id]);
 
     // Delete candidate record

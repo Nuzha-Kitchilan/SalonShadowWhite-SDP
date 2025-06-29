@@ -1,4 +1,3 @@
-// Validation for Admin Registration
 const validateRegisterAdmin = (req, res, next) => {
     // Ensure req exists
     if (!req) {
@@ -20,14 +19,11 @@ const validateRegisterAdmin = (req, res, next) => {
     if (!first_name || !last_name || !email || !username || !password || !role) {
         return res.status(400).json({ message: 'All fields are required' });
     }
-
-    // Additional validations can be added here (e.g., email format, password length)
     next();
 };
 
 // Validation for Admin Login
 const validateLogin = (req, res, next) => {
-    // Ensure req exists
     if (!req) {
         return res.status(500).json({ 
             message: 'Request object is undefined'
@@ -49,8 +45,6 @@ const validateLogin = (req, res, next) => {
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required' });
     }
-
-    // Additional validations for username or password format can be added here
     next();
 };
 

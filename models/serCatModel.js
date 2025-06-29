@@ -1,4 +1,4 @@
-const db = require("../config/db"); // Import the db connection
+const db = require("../config/db"); 
 
 // Get all categories
 const getAllCategories = async () => {
@@ -14,7 +14,7 @@ const getAllCategories = async () => {
 const getCategoryById = async (category_id) => {
     try {
         const [result] = await db.query("SELECT * FROM ServiceCategory WHERE category_id = ?", [category_id]);
-        return result[0]; // Return the first result or null if not found
+        return result[0]; 
     } catch (error) {
         throw new Error('Error fetching category by ID: ' + error.message);
     }
@@ -58,7 +58,7 @@ const deleteCategory = async (category_id) => {
 
 module.exports = {
     getAllCategories,
-    getCategoryById,  // Added the missing method
+    getCategoryById,  
     addCategory,
     updateCategory,
     deleteCategory

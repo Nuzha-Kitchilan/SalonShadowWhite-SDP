@@ -44,12 +44,11 @@ const createCompleteAppointment = async (
           insertId: result.insertId
         });
       } catch (itemError) {
-        // Handle specific item errors without failing entire transaction
         console.error(`Failed to insert item:`, {
           item,
           error: itemError.message
         });
-        continue; // Skip to next item
+        continue; 
       }
     }
 
@@ -190,8 +189,8 @@ const getAppointmentsByCustomer = async (customerId) => {
 
       return {
         ...appointment,
-        stylists,  // Now contains both names and IDs
-        primaryStylistId: stylistIds[0] || null  // Add primary stylist ID if needed
+        stylists,
+        primaryStylistId: stylistIds[0] || null
       };
     });
 
@@ -469,8 +468,7 @@ const getFilteredRequests = async (statusFilters = []) => {
         FROM special_requests sr
         LEFT JOIN special_request_service srs ON sr.id = srs.special_request_id
         LEFT JOIN service s ON srs.service_id = s.service_id`;
-        
-        // Add WHERE clause for status filtering if requested
+       
         if (statusFilters.length > 0) {
             query += ` WHERE sr.status IN (${statusFilters.map(() => '?').join(',')})`;
         }

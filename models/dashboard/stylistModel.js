@@ -1,4 +1,3 @@
-// models/dashboard/stylistModel.js
 const db = require('../../config/db');
 
 const getStylistPopularity = async (period = 'monthly') => {

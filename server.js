@@ -1,19 +1,10 @@
- // server.js
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 require('events').EventEmitter.defaultMaxListeners = 20;
 
-// console.log('Cloudinary Config:', {
-//   cloud_name: process.env.CLOUD_NAME,
-//   api_key: process.env.API_KEY,
-//   api_secret: process.env.API_SECRET
-// });
-
-
-const authRoutes = require('./routes/auth');  // Ensure this import is correct
-//const { loginAdmin } = require('../controllers/authController');
+const authRoutes = require('./routes/auth');  
 const serviceRoutes = require("./routes/services");
 const inventoryRoutes = require('./routes/inventory');
 const stylistRoutes = require('./routes/stylist');
@@ -43,7 +34,7 @@ app.use(cors({
   origin: ['http://localhost:5173',
             'http://localhost:5174'
    ], 
-  credentials: true, // Important for cookies/auth
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -58,8 +49,7 @@ app._router.stack
   });
 
 
-app.use('/api/auth', authRoutes);  // Ensure you're passing the router here
-
+app.use('/api/auth', authRoutes); 
 app.use('/api', serviceRoutes);
 app.use('/api', inventoryRoutes);
 app.use('/api', stylistRoutes);

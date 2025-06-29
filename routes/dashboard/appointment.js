@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const appointmentsController = require('../../controllers/dashboard/appointmentController');
 
-// Route to get appointments count by period (daily, weekly, monthly, yearly)
+// Route to get appointments count by period 
 router.get('/count/:period', appointmentsController.getAppointmentsCount);
 
 router.get('/calendar/:year/:month', appointmentsController.getCalendarView);

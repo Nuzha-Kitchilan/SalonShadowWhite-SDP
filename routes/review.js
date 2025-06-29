@@ -3,11 +3,11 @@ const router = express.Router();
 const ReviewController = require('../controllers/reviewController');
 const { authenticateCustomer, authenticateAdmin } = require('../middleware/auth');
 
-// Customer-side routes (protected with customer authentication)
+// Customer-side routes 
 router.post('/appointment/:appointmentId', authenticateCustomer, ReviewController.submitReviewForAppointment);
 
 
-// Admin-side routes (protected with admin authentication)
+// Admin-side routes
 router.get('/pending', authenticateAdmin, ReviewController.listPendingReviews);
 router.put('/approve/:id', authenticateAdmin, ReviewController.approveReview);
 router.delete('/:id', authenticateAdmin, ReviewController.deleteReview);

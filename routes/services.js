@@ -13,7 +13,7 @@ router.get('/categories', serviceController.getAllCategories); // Get all servic
 
 router.get('/services/category/:category_id', serviceController.getServicesByCategoryId);
 
-// Add this line with your other category routes
+
 router.post('/categories', serviceController.addCategory); // Add a new category
 
 router.put('/categories/:id', serviceController.updateCategory);

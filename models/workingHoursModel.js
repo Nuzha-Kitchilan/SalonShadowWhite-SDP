@@ -1,7 +1,4 @@
-// models/workingHoursModel.js
-
-const db = require('../config/db'); // Assuming you have a 'db.js' file for database connection
-
+const db = require('../config/db'); 
 // WorkingHours model
 const WorkingHours = {
   // Create new working hours entry

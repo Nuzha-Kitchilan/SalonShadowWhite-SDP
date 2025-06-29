@@ -7,10 +7,10 @@ const Admin = {
     const sql = 'SELECT * FROM admins WHERE username = ?';
     try {
       const [results] = await db.execute(sql, [username]);
-      return results[0] || null; // Return the first result if it exists
+      return results[0] || null;
     } catch (err) {
       console.error('Error in findByUsername:', err);
-      throw err;  // Re-throw the error so it can be handled at the controller level
+      throw err; 
     }
   },
 
@@ -18,14 +18,14 @@ const Admin = {
   findByEmail: async (email) => {
     const sql = 'SELECT * FROM admins WHERE email = ?';
     const [results] = await db.execute(sql, [email]);
-    return results[0];  // Return the first result
+    return results[0];  
   },
 
   //  Find admin by ID
   findById: async (adminId) => {
     const sql = 'SELECT * FROM admins WHERE id = ?';
     const [results] = await db.execute(sql, [adminId]);
-    return results[0];  // Return the first result
+    return results[0]; 
   },
 
 
@@ -33,8 +33,7 @@ const Admin = {
 createAdmin: async (first_name, last_name, email, username, password, role, profile_pic_file) => {
   try {
     let profileUrl = null;
-    
-    // If profile picture file was provided
+   
     if (profile_pic_file) {
       const uploadResult = await cloudinary.uploader.upload(profile_pic_file.path, {
         folder: 'admin_profiles',
@@ -125,7 +124,6 @@ updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, pr
 
   // password (expects password to be pre-hashed)
   updatePassword: async (adminId, newPassword) => {
-    // IMPORTANT: newPassword should already be hashed by the controller before reaching this point
     const sql = 'UPDATE admins SET password = ? WHERE id = ?';
     const [result] = await db.execute(sql, [newPassword, adminId]);
     return result;
@@ -138,23 +136,20 @@ updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, pr
     return result;
   },
 
-  // Get all admins (excludes password field for security)
+  // Get all admins 
   getAllAdmins: async () => {
     const sql = 'SELECT id, first_name, last_name, email, username, role, profile_url, created_at FROM admins';
     const [results] = await db.execute(sql);
     return results;
   },
 
-  // Get admin profile by ID (with default profile picture fallback)
+  // Get admin profile by ID
   getAdminProfile: async (adminId) => {
     const sql = 'SELECT first_name, last_name, profile_url FROM admins WHERE id = ?';
     const [results] = await db.execute(sql, [adminId]);
 
     if (results.length > 0) {
       const { first_name, last_name, profile_url } = results[0];
-
-      // If profile_url is null or empty, use a default profile picture
-      const profilePicture = profile_url || "path_to_default_profile_picture.jpg";
 
       return {
         first_name,

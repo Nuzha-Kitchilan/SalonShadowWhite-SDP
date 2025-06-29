@@ -1,4 +1,4 @@
-const db = require("../config/db"); // Import the database connection
+const db = require("../config/db");
 
 async function createCustomer(firstname, lastname, email, username, password, phoneNumbers) {
     const connection = await db.getConnection();
@@ -40,20 +40,6 @@ async function createCustomer(firstname, lastname, email, username, password, ph
     }
 }
 
-// Get Customer by ID
-// async function getCustomerById(customer_ID) {
-//   try {
-//     const [rows] = await db.execute(
-//       "SELECT * FROM Customer WHERE customer_ID = ?",
-//       [customer_ID]
-//     );
-//     return rows[0]; // Return the first matching customer
-//   } catch (err) {
-//     throw new Error("Error fetching customer by ID: " + err.message);
-//   }
-// }
-
-
 
 async function getCustomerById(customer_ID) {
   try {
@@ -71,7 +57,7 @@ async function getCustomerById(customer_ID) {
       [customer_ID]
     );
     
-    // Combine results
+ 
     return {
       ...customerRows[0],
       phoneNumbers: phoneRows.map(row => row.phone_num)
@@ -85,27 +71,27 @@ async function getCustomerById(customer_ID) {
 
 
 
-// Get Customer by Username (to check if user exists)
+// Get Customer by Username 
 async function getCustomerByUsername(username) {
   try {
     const [rows] = await db.execute(
       "SELECT * FROM Customer WHERE username = ?",
       [username]
     );
-    return rows[0]; // Return the first matching customer
+    return rows[0];
   } catch (err) {
     throw new Error("Error fetching customer by username: " + err.message);
   }
 }
 
-// Get Customer by Email (to check if email exists)
+// Get Customer by Email
 async function getCustomerByEmail(email) {
   try {
     const [rows] = await db.execute(
       "SELECT * FROM Customer WHERE email = ?",
       [email]
     );
-    return rows[0]; // Return the first matching customer
+    return rows[0];
   } catch (err) {
     throw new Error("Error fetching customer by email: " + err.message);
   }
@@ -178,7 +164,7 @@ async function deletePhoneNumber(customer_ID, phone_num) {
 
 
 
-// Backend update function (suggested implementation)
+// Backend update function 
 async function updateCustomerProfile(customer_ID, profileData) {
   // Get a connection from the pool
   const connection = await db.getConnection();
@@ -349,11 +335,6 @@ async function getAllCustomers(page = 1, limit = 10, search = '') {
 }
 
 
-// Get customer details by ID with phone numbers
-// Updated getCustomerDetailById function with direct SQL query
-
-
-
 async function getCustomerDetailById(customerId) {
   const connection = await db.getConnection();
 
@@ -380,22 +361,17 @@ async function getCustomerDetailById(customerId) {
 
     customer.phoneNumbers = phoneRows.map(row => row.phone_num);
 
-    // Fetch appointment count - ensure proper aliasing and error handling
+    // Fetch appointment count
     const [appointmentRows] = await connection.execute(
       `SELECT COUNT(*) AS appointmentCount FROM Appointment WHERE customer_ID = ?`,
       [customerId]
     );
-
-    // Log the raw result for debugging
-    console.log("Appointment count SQL result:", JSON.stringify(appointmentRows));
     
-    // Check if we have valid results before assigning
+    // Check if have valid results before assigning
     if (appointmentRows && appointmentRows.length > 0) {
-      // Different SQL engines might return COUNT as different field names or types
-      // MySQL typically uses the requested alias, but might be lowercase in some cases
       const row = appointmentRows[0];
       
-      // Try different possible field names (case-insensitive check)
+      // Try different possible field names 
       const countField = Object.keys(row).find(key => 
         key.toLowerCase() === 'appointmentcount' || 
         key.toLowerCase() === 'appointment_count' || 
@@ -404,7 +380,6 @@ async function getCustomerDetailById(customerId) {
       if (countField) {
         // Explicitly convert to number to ensure proper type
         customer.appointmentCount = Number(row[countField]);
-        // Handle NaN case
         if (isNaN(customer.appointmentCount)) {
           customer.appointmentCount = 0;
         }
@@ -621,7 +596,7 @@ module.exports = {
   createCustomer,
   getCustomerById,
   getCustomerByUsername,
-  getCustomerByEmail,  // Added this export
+  getCustomerByEmail,  
   updateCustomer,
   deleteCustomer,
   addPhoneNumber,

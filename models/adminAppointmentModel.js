@@ -363,15 +363,6 @@ const updateAppointment = async (appointmentId, updateData) => {
 
 
 
-
-
-
-
-
-
-
-
-
 const deleteAppointment = async (appointmentId) => {
   const connection = await db.getConnection();
   try {
@@ -452,16 +443,6 @@ const createBridalAppointment = async (bridalData) => {
     throw new Error('Missing required fields: customer_ID, appointment_date, appointment_time');
   }
 
-  // // Prepare service-stylist pairs
-  // const serviceStylists = [];
-  // services.forEach(serviceId => {
-  //   stylists.forEach(stylistId => {
-  //     serviceStylists.push({ service_ID: serviceId, stylist_ID: stylistId });
-  //   });
-  // });
-
-
-
   // Use the exact assignments from frontend
 const serviceStylists = bridalData.service_stylist_assignments.map(assignment => ({
   service_ID: assignment.service_id,
@@ -499,58 +480,6 @@ if (serviceStylists.length === 0) {
 };
 
 
-// const updateBridalAppointment = async (appointmentId, bridalData) => {
-//   console.log('Updating bridal appointment:', appointmentId, bridalData);
-  
-//   const {
-//     customer_ID,
-//     appointment_date,
-//     appointment_time,
-//     services = [],
-//     stylists = [],
-//     custom_price,
-//     notes = '',
-//     payment_status
-//   } = bridalData;
-
-//   // Prepare service-stylist pairs
-//   const serviceStylists = [];
-//   services.forEach(serviceId => {
-//     stylists.forEach(stylistId => {
-//       serviceStylists.push({ service_ID: serviceId, stylist_ID: stylistId });
-//     });
-//   });
-
-//   // Calculate total price if custom price not provided
-//   let totalPrice = custom_price;
-//   if (!custom_price && services.length > 0) {
-//     const [servicePrices] = await db.query(
-//       'SELECT SUM(price) as total FROM Service WHERE service_ID IN (?)',
-//       [services]
-//     );
-//     totalPrice = servicePrices[0].total;
-//   }
-
-//   const updateData = {
-//     customer_ID,
-//     appointment_date,
-//     appointment_time,
-//     serviceStylists,
-//     payment_amount: totalPrice || 0,
-//     payment_status: payment_status || 'Pending',
-//     payment_type: 'Bridal Package',
-//     notes
-//   };
-
-//   return await updateAppointment(appointmentId, updateData);
-// };
-
-
-
-
-
-
-// MODEL FUNCTION
 const updateBridalAppointment = async (appointmentId, bridalData) => {
   console.log('Updating bridal appointment with ID:', appointmentId, 'Data:', bridalData);
 
@@ -743,13 +672,6 @@ const getAllBridalAppointments = async () => {
 
 
 
-
-
-
-// adminModel.js
-
-
-
 const getBridalAppointmentById = async (appointmentId) => {
   const query = `
     SELECT 
@@ -807,6 +729,4 @@ module.exports = {
   getAllBridalAppointments,
   updateBridalAppointment,
   getBridalAppointmentById
-
-  
 };

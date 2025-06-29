@@ -20,17 +20,17 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
 
       const formatCurrency = (value) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 
-      // ========== HEADER WITH IMPROVED STYLING ==========
+    
       doc.font('Helvetica-Bold').fontSize(24).fillColor('#1a365d').text('Salon Shadow White', { align: 'center' });
       doc.moveDown(0.3);
       doc.font('Helvetica-Bold').fontSize(20).fillColor('#2c5282').text('Advanced Revenue Report', { align: 'center' });
       doc.moveDown(0.5);
       
-      // Add a colored header bar
+      // colored header bar
       const headerBarY = doc.y;
       doc.rect(50, headerBarY, doc.page.width - 100, 30).fillColor('#e6f0ff').fill();
       
-      // Header info with better vertical spacing and alignment
+      // Header info 
       doc.fontSize(12).fillColor('#333').font('Helvetica');
       doc.text(`Period: ${options.startDate} to ${options.endDate}`, { align: 'center' });
       doc.text(`Report Type: ${options.reportType}`, { align: 'center' });
@@ -40,7 +40,7 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
       doc.strokeColor('#8daed6').lineWidth(2).moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
       doc.moveDown();
 
-      // ========== INSIGHTS WITH IMPROVED STYLING ==========
+    
       const stats = visualizationData.summaryStats || {};
       
       // Section heading with background
@@ -65,7 +65,7 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
       });
       doc.moveDown();
 
-      // ========== CHART WITH BETTER POSITIONING ==========
+      
       if (visualizationData.chartData) {
         const chartCanvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
         const chartBuffer = await chartCanvas.renderToBuffer({
@@ -90,7 +90,7 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
         doc.moveDown();
       }
 
-      // ========== KEY METRICS WITH IMPROVED STYLING AND FIXED SPACING ==========
+    
       const metricsHeaderY = doc.y;
       doc.rect(50, metricsHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
       doc.fontSize(16).fillColor('#1a365d').font('Helvetica-Bold')
@@ -108,13 +108,12 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
          .fillColor('#f9fafc').fill()
          .strokeColor('#ccd9ea').lineWidth(1).stroke();
       
-      // FIXED: Improved spacing by creating a proper table-like layout with fixed positions
-      // Set fixed positions for labels and values
-      const labelX = 90;  // X position for labels
-      const valueX = 300; // X position for values (increased from 250 to 300)
-      const spacing = 25; // Spacing between rows
       
-      // Add metrics in a more organized layout with fixed positions
+      const labelX = 90;  
+      const valueX = 300; 
+      const spacing = 25; 
+      
+      // Add metrics 
       doc.fontSize(12).fillColor('#333').font('Helvetica-Bold')
          .text('Total Revenue:', labelX, metricsY + 15);
       doc.fontSize(14).fillColor('#2c5282').font('Helvetica-Bold')
@@ -132,7 +131,6 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
          
       doc.moveDown(4.5);
 
-      // ========== COMPARISON / % CHANGE WITH BETTER STYLING ==========
       if (stats.previous_total !== undefined) {
         const comparisonHeaderY = doc.y;
         doc.rect(50, comparisonHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
@@ -156,7 +154,7 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
         doc.moveDown(1.5);
       }
 
-      // ========== TABLE WITHOUT BORDERS ==========
+
       const tableHeaderY = doc.y;
       doc.rect(50, tableHeaderY, doc.page.width - 100, 24).fillColor('#f0f5ff').fill();
       doc.fontSize(16).fillColor('#1a365d').font('Helvetica-Bold')
@@ -164,7 +162,6 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
       doc.moveDown(1.5);
 
       const tableTop = doc.y;
-      // Adjust column widths to better accommodate content
       const colWidths = { 
         period: 80, 
         service: 180,  
@@ -172,8 +169,8 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
         revenue: 115   
       };
       const tableWidth = doc.page.width - 100;
-      // Set appropriate row height for single-line content
-      const rowHeight = 35;  // Reduced to 35 for better fitting
+     
+      const rowHeight = 35;  
       const startX = 50;
 
       // Table header with better styling
@@ -183,17 +180,14 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
       doc.text('Period', startX + 5, headerY, { width: colWidths.period });
       doc.text('Service', startX + colWidths.period + 5, headerY, { width: colWidths.service });
       doc.text('Stylist', startX + colWidths.period + colWidths.service + 5, headerY, { width: colWidths.stylist });
-      // FIXED: Revenue header alignment - now center-aligned rather than right-aligned
       doc.text('Revenue', startX + colWidths.period + colWidths.service + colWidths.stylist + 5, headerY, { width: colWidths.revenue, align: 'left' });
 
       doc.font('Helvetica').fontSize(10);
-      let rowY = doc.y + 30;  // Start below the header
+      let rowY = doc.y + 30; 
       let isAlternate = false;
 
       const dataArray = Array.isArray(data) ? data : [];
       dataArray.forEach((row, index) => {
-        // FIXED: Check if we need to add a new page BEFORE rendering content
-        // Check if current row plus header would exceed page bounds
         if (rowY + rowHeight > doc.page.height - 120) {
           doc.addPage();
           rowY = 50;
@@ -217,19 +211,18 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
         const periodLabel = row.period_label || row.period || 'N/A';
         const serviceName = row.service_name || 'N/A';
 
-        // Row background alternate with subtle colors (no borders)
+        // Row background alternate with subtle colors
         if (isAlternate) {
           doc.rect(startX, rowY, tableWidth, rowHeight).fillColor('#f5f8fc').fill();
         }
         isAlternate = !isAlternate;
 
-        // Conditional color for revenue using professional color scheme
-        const revenueColor = rowRevenue >= 5000 ? '#2f855a'  // Green
-                            : rowRevenue >= 3000 ? '#2b6cb0'  // Blue
-                            : '#c53030';  // Red
+        const revenueColor = rowRevenue >= 5000 ? '#2f855a'  
+                            : rowRevenue >= 3000 ? '#2b6cb0'  
+                            : '#c53030';  
 
-        // Proper vertical positioning - center text vertically in row
-        const textY = rowY + (rowHeight - 12) / 2;  // Center text vertically
+       
+        const textY = rowY + (rowHeight - 12) / 2;  
         
         doc.fillColor('#333').font('Helvetica').fontSize(10);
         doc.text(periodLabel, startX + 5, textY, { 
@@ -252,7 +245,7 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
           ellipsis: true
         });
 
-        // Revenue with % contribution + color (single line)
+        // Revenue with % contribution
         doc.fillColor(revenueColor).font('Helvetica-Bold')
            .text(`${formatCurrency(rowRevenue)} (${revenuePercent.toFixed(1)}%)`, 
                  startX + colWidths.period + colWidths.service + colWidths.stylist + 5, textY, { 
@@ -265,22 +258,15 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
         rowY += rowHeight;
       });
 
-      // NO TABLE BORDERS - Removed all the border drawing code
-
-      // ========== FOOTER WITH MUCH BETTER POSITIONING ==========
       const totalPages = doc.bufferedPageRange().count;
       for (let i = 0; i < totalPages; i++) {
         doc.switchToPage(i);
         
-        // FIXED: Move footer much higher to prevent any overflow
-        // Changed from doc.page.height - 50 to doc.page.height - 80
         const footerY = doc.page.height - 80;
         
         // Footer with gradient bar
         doc.rect(50, footerY, doc.page.width - 100, 2).fillColor('#8daed6').fill();
-        
-        // FIXED: Position the text higher above the bottom of the page
-        // Changed footerY + 0 to footerY + 10 to give more space from the line
+       
         doc.fontSize(9).fillColor('#555').font('Helvetica')
            .text(`Generated ${new Date().toLocaleString()} | Page ${i + 1} of ${totalPages}`,
              50, footerY + 10, { align: 'center', width: doc.page.width - 100 });

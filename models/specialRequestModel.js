@@ -9,7 +9,7 @@ class SpecialRequest {
         email, 
         phone_number, 
         request_details,
-        service_ids, // Changed from service_id to service_ids (array)
+        service_ids, 
         preferred_date,
         preferred_time
     }) {
@@ -50,7 +50,7 @@ class SpecialRequest {
         try {
             await connection.beginTransaction();
 
-            // Insert into special_requests table (without service_id)
+            // Insert into special_requests table 
             const [result] = await connection.execute(
                 `INSERT INTO special_requests 
                 (customer_id, first_name, last_name, email, phone_number, 
@@ -70,7 +70,6 @@ class SpecialRequest {
 
             const specialRequestId = result.insertId;
 
-            // Insert services into special_request_service table
             for (const serviceId of service_ids) {
                 await connection.execute(
                     'INSERT INTO special_request_service (special_request_id, service_id) VALUES (?, ?)',
@@ -108,7 +107,7 @@ class SpecialRequest {
             first_name: customerRows[0].firstname,
             last_name: customerRows[0].lastname,
             email: customerRows[0].email,
-            phone_numbers: phoneRows.map(row => row.phone_num) // Array of phone numbers
+            phone_numbers: phoneRows.map(row => row.phone_num)
         };
     }
 
@@ -176,7 +175,7 @@ class SpecialRequest {
         try {
             await connection.beginTransaction();
 
-            // Delete from special_request_service table first (foreign key constraint)
+            // Delete from special_request_service table first 
             await connection.execute(
                 'DELETE FROM special_request_service WHERE special_request_id = ?',
                 [requestId]
@@ -288,8 +287,5 @@ class SpecialRequest {
 }
 
 }
-
-
-
 
 module.exports = SpecialRequest;

@@ -2,7 +2,6 @@
 
 const db = require('../config/db');
 
-// -------- HELPER FUNCTIONS -------- //
 const getStylistFullName = "CONCAT(st.firstname, ' ', st.lastname)";
 
 
@@ -245,7 +244,7 @@ exports.getRevenueTrends = async (startDate, endDate, groupBy) => {
   return processedData;
 };
 
-// -------- COMPARISON REPORT -------- //
+
 exports.getPeriodComparison = async (startDate, endDate, groupBy = 'month') => {
   const start = new Date(startDate);
   const end = new Date(endDate);

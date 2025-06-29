@@ -73,82 +73,15 @@ const findStylistByUsername = async (username) => {
         
         return {
             ...rows[0],
-            id: rows[0].stylist_ID,        // Map stylist_ID to id
-            first_name: rows[0].firstname, // Map firstname to first_name
-            last_name: rows[0].lastname     // Map lastname to last_name
+            id: rows[0].stylist_ID,        
+            first_name: rows[0].firstname, 
+            last_name: rows[0].lastname    
         };
     } catch (error) {
         console.error("Error finding stylist by username:", error);
         throw error;
     }
 };
-
-// Create a new stylist
-// const createStylist = async (stylistData) => {
-//     const { 
-//         firstname, lastname, email, username, role, profile_url, 
-//         house_no, street, city, phone_numbers, password, bio 
-//     } = stylistData;
-
-//     const connection = await db.getConnection();
-//     await connection.beginTransaction();
-
-//     try {
-//         // Hash the password
-//         const saltRounds = 10;
-//         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        
-//         const query = `
-//             INSERT INTO Stylists (firstname, lastname, email, username, role, profile_url, house_no, street, city, password, bio)
-//             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-//         `;
-        
-//         // Use null for empty profile_url and bio
-//         const profileUrlValue = profile_url && profile_url.trim() !== "" ? profile_url : null;
-//         const bioValue = bio && bio.trim() !== "" ? bio : null;
-        
-//         const [result] = await connection.query(query, [
-//             firstname, 
-//             lastname, 
-//             email, 
-//             username, 
-//             role, 
-//             profileUrlValue, 
-//             house_no, 
-//             street, 
-//             city,
-//             hashedPassword,
-//             bioValue
-//         ]);
-        
-//         const stylist_ID = result.insertId;
-
-//         // Insert phone numbers
-//         if (phone_numbers && Array.isArray(phone_numbers) && phone_numbers.length > 0) {
-//             for (const phone of phone_numbers) {
-//                 if (phone && phone.trim()) { // Skip empty phone numbers
-//                     await connection.query(
-//                         `INSERT INTO Employee_Phone_Num (stylist_ID, phone_num) VALUES (?, ?);`,
-//                         [stylist_ID, phone.trim()]
-//                     );
-//                 }
-//             }
-//         }
-
-//         // Commit the transaction
-//         await connection.commit();
-//         connection.release();
-
-//         return stylist_ID;
-//     } catch (error) {
-//         // Rollback in case of error
-//         await connection.rollback();
-//         connection.release();
-//         throw error;
-//     }
-// };
-
-
 
 
 // Password validation function
@@ -163,7 +96,7 @@ const validatePassword = (password) => {
         return { isValid: false, message: "Password must be at least 6 characters long." };
     }
 
-    // Check maximum length (optional - prevents extremely long passwords)
+    // Check maximum length 
     if (password.length > 128) {
         return { isValid: false, message: "Password must be no more than 128 characters long." };
     }
@@ -176,17 +109,6 @@ const validatePassword = (password) => {
     // Check for at least one number
     if (!/\d/.test(password)) {
         return { isValid: false, message: "Password must contain at least one number." };
-    }
-
-    // Optional: Check for at least one special character
-    // if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-    //     return { isValid: false, message: "Password must contain at least one special character." };
-    // }
-
-    // Optional: Check for no common passwords (you can expand this list)
-    const commonPasswords = ['123456', 'password', '123456789', '12345678', '12345', 'qwerty', 'abc123'];
-    if (commonPasswords.includes(password.toLowerCase())) {
-        return { isValid: false, message: "Password is too common. Please choose a stronger password." };
     }
 
     return { isValid: true, message: "Password is valid." };
@@ -265,8 +187,6 @@ const createStylist = async (stylistData) => {
         throw error;
     }
 };
-
-
 
 
 
@@ -358,8 +278,6 @@ const deleteStylist = async (stylist_ID) => {
     }
 };
 
-// Updated authenticateStylist function in stylistModel.js
-// This addresses potential role casing issues during token generation
 
 const authenticateStylist = async (username, password) => {
   try {
@@ -392,7 +310,7 @@ const authenticateStylist = async (username, password) => {
           {
               id: stylist.stylist_ID,
               username: stylist.username,
-              role: normalizedRole, // Use normalized role
+              role: normalizedRole, 
               name: `${stylist.firstname} ${stylist.lastname}`,
               profile_url: stylist.profile_url
           },
@@ -400,7 +318,6 @@ const authenticateStylist = async (username, password) => {
           { expiresIn: '24h' }
       );
       
-      // Return success with token and user data (without password)
       delete stylist.password;
       
       return {
