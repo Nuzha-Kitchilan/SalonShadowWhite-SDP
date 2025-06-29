@@ -11,7 +11,7 @@ const createCompleteAppointment = async (
   try {
     await connection.beginTransaction();
 
-    // 1. Create the appointment
+    // Create the appointment
     const [appointmentResult] = await connection.query(
       `INSERT INTO appointment (customer_id, appointment_date, appointment_time, appointment_status)
        VALUES (?, ?, ?, 'Scheduled')`,
@@ -20,7 +20,7 @@ const createCompleteAppointment = async (
 
     const appointment_ID = appointmentResult.insertId;
 
-    // 2. Process each cart item individually
+    // Process each cart item individually
     const insertedRecords = [];
     for (const item of cartItems) {
       try {
@@ -93,7 +93,7 @@ const createCompleteAppointment = async (
   }
 };
 
-// 2. Check if customer is booking for the first time
+//  Check if customer is booking for the first time
 const checkIfFirstTimeCustomer = async (customer_id) => {
   const connection = await db.getConnection();
   try {

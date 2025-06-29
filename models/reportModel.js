@@ -140,7 +140,7 @@ exports.getSummaryRevenueData = async (startDate, endDate, groupBy) => {
     case 'month':
       groupFields = `DATE_FORMAT(a.appointment_date, '%Y-%m') AS period_key`;
       groupBySql = `DATE_FORMAT(a.appointment_date, '%Y-%m')`;
-      orderBy = `summary.period_key`; // Added missing orderBy for month
+      orderBy = `summary.period_key`;
       break;
     case 'quarter':
       groupFields = `CONCAT(YEAR(a.appointment_date), '-Q', QUARTER(a.appointment_date)) AS period_key`;

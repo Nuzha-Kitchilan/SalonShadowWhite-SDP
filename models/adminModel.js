@@ -2,7 +2,7 @@ const db = require('../config/db');
 const cloudinary = require('cloudinary').v2; 
 
 const Admin = {
-  // 🔍 Find admin by username
+  // Find admin by username
   findByUsername: async (username) => {
     const sql = 'SELECT * FROM admins WHERE username = ?';
     try {
@@ -14,14 +14,14 @@ const Admin = {
     }
   },
 
-  // 🔍 Find admin by email
+  // Find admin by email
   findByEmail: async (email) => {
     const sql = 'SELECT * FROM admins WHERE email = ?';
     const [results] = await db.execute(sql, [email]);
     return results[0];  // Return the first result
   },
 
-  // 🔍 Find admin by ID
+  //  Find admin by ID
   findById: async (adminId) => {
     const sql = 'SELECT * FROM admins WHERE id = ?';
     const [results] = await db.execute(sql, [adminId]);
@@ -123,7 +123,7 @@ updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, pr
 },
 
 
-  // 🔑 Update password (expects password to be pre-hashed)
+  // password (expects password to be pre-hashed)
   updatePassword: async (adminId, newPassword) => {
     // IMPORTANT: newPassword should already be hashed by the controller before reaching this point
     const sql = 'UPDATE admins SET password = ? WHERE id = ?';
@@ -131,21 +131,21 @@ updateAdmin: async (adminId, first_name, last_name, email, role, profile_url, pr
     return result;
   },
 
-  // ❌ Delete admin
+  // Delete admin
   deleteAdmin: async (adminId) => {
     const sql = 'DELETE FROM admins WHERE id = ?';
     const [result] = await db.execute(sql, [adminId]);
     return result;
   },
 
-  // 📜 Get all admins (excludes password field for security)
+  // Get all admins (excludes password field for security)
   getAllAdmins: async () => {
     const sql = 'SELECT id, first_name, last_name, email, username, role, profile_url, created_at FROM admins';
     const [results] = await db.execute(sql);
     return results;
   },
 
-  // 🔍 Get admin profile by ID (with default profile picture fallback)
+  // Get admin profile by ID (with default profile picture fallback)
   getAdminProfile: async (adminId) => {
     const sql = 'SELECT first_name, last_name, profile_url FROM admins WHERE id = ?';
     const [results] = await db.execute(sql, [adminId]);

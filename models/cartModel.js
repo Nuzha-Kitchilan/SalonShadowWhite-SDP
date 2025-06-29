@@ -16,7 +16,7 @@ const addToCart = async (customer_id, service_id, stylist_id = null, selected_da
   return result;
 };
 
-// ✅ Fixed: Get cart items with service_id included
+// Get cart items with service_id included
 const getCartByCustomerId = async (customer_id) => {
   const [rows] = await db.query(
     `SELECT c.cart_id,

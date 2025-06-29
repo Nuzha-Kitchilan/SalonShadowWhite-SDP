@@ -167,9 +167,9 @@ exports.generateEnhancedPDF = async (data, visualizationData, options) => {
       // Adjust column widths to better accommodate content
       const colWidths = { 
         period: 80, 
-        service: 180,  // Increased for services with long names
-        stylist: 150,  // Increased for multiple stylist names
-        revenue: 115   // Increased from 95 to 115 to better fit revenue values and percentages
+        service: 180,  
+        stylist: 150,  
+        revenue: 115   
       };
       const tableWidth = doc.page.width - 100;
       // Set appropriate row height for single-line content
