@@ -2,7 +2,7 @@
 const adminModel = require('../models/adminAppointmentModel');
 const { create } = require('../models/SpecialRequestModel');
 const  serviceModel  = require('../models/serviceModel');
-const db = require('../config/db'); // Assuming you have a db config file
+const db = require('../config/db');
 
 const getAppointments = async (req, res) => {
   try {
@@ -356,14 +356,7 @@ const updateBridalAppointment = async (req, res) => {
       });
     }
     
-    // // Validate service-stylist assignments - Only need original stylist, not multiple
-    // if (!req.body.stylist_id) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: 'A stylist must be assigned to the appointment'
-    //   });
-    // }
-
+  
     await adminModel.updateBridalAppointment(appointmentId, req.body);
     
     res.status(200).json({

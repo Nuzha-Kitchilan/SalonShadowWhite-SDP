@@ -1,5 +1,4 @@
 
-
 const appointmentModel = require('../models/appointmentModel');
 const CartModel = require('../models/cartModel');
 const bookingModel = require('../models/bookingModel');
@@ -10,7 +9,7 @@ const createAppointment = async (req, res) => {
   const { customer_id, selected_date, selected_time, services = [], stylist_ids = [] } = req.body;
 
   try {
-    // 1. Validate required fields
+    // Validate required fields
     if (!customer_id || !selected_date || !selected_time) {
       return res.status(400).json({
         success: false,
@@ -18,7 +17,7 @@ const createAppointment = async (req, res) => {
       });
     }
 
-    // 2. Validate date format (YYYY-MM-DD)
+    //Validate date format (YYYY-MM-DD)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(selected_date)) {
       return res.status(400).json({
         success: false,
@@ -26,12 +25,12 @@ const createAppointment = async (req, res) => {
       });
     }
 
-    // 3. Validate and normalize time format (accept HH:MM or HH:MM:SS)
+    //Validate and normalize time format
     let normalizedTime = selected_time;
     if (selected_time.includes(':')) {
       const timeParts = selected_time.split(':');
       if (timeParts.length > 2) {
-        normalizedTime = `${timeParts[0]}:${timeParts[1]}`; // Keep only HH:MM
+        normalizedTime = `${timeParts[0]}:${timeParts[1]}`;
       }
     }
 
@@ -42,17 +41,13 @@ const createAppointment = async (req, res) => {
       });
     }
 
-    // 4. Format cart items for processing
-    // Combine services with stylist_ids if provided separately
+    //Format cart items for processing
+   
     let cartItems = [];
     
     if (Array.isArray(services) && services.length > 0) {
-      // Create cart items from services and optional stylist IDs
       cartItems = services.map((service, index) => {
-        // Handle different service formats (object or ID)
         const service_id = typeof service === 'object' ? service.service_id || service.id : service;
-        
-        // Get stylist ID if available (can be null/undefined)
         const stylist_id = stylist_ids[index] || null;
         
         return {
@@ -62,7 +57,7 @@ const createAppointment = async (req, res) => {
       });
     }
 
-    // 5. Validate at least one service is required
+    //Validate at least one service is required
     if (cartItems.length === 0) {
       return res.status(400).json({
         success: false,
@@ -70,7 +65,7 @@ const createAppointment = async (req, res) => {
       });
     }
 
-    // 6. Create complete appointment with normalized time and exact date string
+    //Create complete appointment with normalized time and exact date string
     const result = await appointmentModel.createCompleteAppointment(
       customer_id,
       selected_date,
@@ -78,7 +73,7 @@ const createAppointment = async (req, res) => {
       cartItems
     );
 
-    // 7. Clear the cart
+    //Clear the cart
     await CartModel.clearCartByCustomerId(customer_id);
 
     res.status(201).json({

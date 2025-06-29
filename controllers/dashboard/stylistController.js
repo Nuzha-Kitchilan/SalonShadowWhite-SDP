@@ -1,4 +1,3 @@
-// controllers/dashboard/stylistController.js
 const stylistModel = require('../../models/dashboard/stylistModel');
 
 const getStylistPopularity = async (req, res) => {

@@ -88,7 +88,7 @@ const loginUser = async (req, res) => {
                 `${user.first_name} ${user.last_name}` : 
                 `${user.firstname} ${user.lastname}`,
             role: userType,
-            profile_url: user.profile_url // Keep it simple for debugging
+            profile_url: user.profile_url 
         };
 
         console.log('Final userData being encoded in JWT:', JSON.stringify(userData, null, 2));

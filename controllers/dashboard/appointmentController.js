@@ -1,6 +1,5 @@
 // controllers/dashboard/appointmentController.js
-const appointmentsModel = require('../../models/dashboard/appointmentModel'); // Add this line
-
+const appointmentsModel = require('../../models/dashboard/appointmentModel'); 
 const getAppointmentsCount = async (req, res) => {
     const { period } = req.params;
     
@@ -14,10 +13,10 @@ const getAppointmentsCount = async (req, res) => {
       const count = await appointmentsModel.getAppointmentsCount(period);
       res.status(200).json({ count });
     } catch (error) {
-      console.error('Database error:', error); // More detailed logging
+      console.error('Database error:', error); 
       res.status(500).json({ 
         message: 'Internal server error',
-        error: error.message // Include error details
+        error: error.message 
       });
     }
 };
