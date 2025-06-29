@@ -145,7 +145,7 @@ const Home = () => {
         </motion.div>
       </Container>
       
-      {/* Beauty Services Navigation (Image Carousel) */}
+      {/* Beauty Services Navigation */}
       <Box sx={{ mt: { xs: -2, md: -4 }, position: 'relative', zIndex: 1 }}>
         <BeautyServicesNav />
       </Box>

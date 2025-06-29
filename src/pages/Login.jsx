@@ -35,7 +35,6 @@ const LoginPage = () => {
       // Save token to localStorage
       localStorage.setItem("token", response.data.token);
       
-      // Force a reload to update the navbar state
       window.location.href = "/";
     } catch (err) {
       setError("Invalid username or password");
@@ -57,10 +56,10 @@ const LoginPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        scrollbarWidth: "none", /* Firefox */
+        scrollbarWidth: "none",
         msOverflowStyle: "none",
         "&::-webkit-scrollbar": {
-          display: "none", /* Chrome, Safari, Opera */
+          display: "none",
         },
       }}
     >
@@ -79,7 +78,7 @@ const LoginPage = () => {
         }}
       />
       
-      {/* Additional semi-transparent overlay for better readability */}
+      {/* Additional semi-transparent overlay */}
       <Box
         sx={{
           position: "absolute",

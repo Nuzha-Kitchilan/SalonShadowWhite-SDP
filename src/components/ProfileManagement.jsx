@@ -155,22 +155,19 @@ const CustomerProfileManagement = () => {
       
       const response = await axios.put('http://localhost:5001/api/customers/profile-update', updateData);
       
-      // Success case
       setProfileMessage({ 
         text: response.data.message || 'Profile updated successfully', 
         type: 'success' 
       });
       
-      // Exit edit mode
       setIsEditing(false);
       
       // Reload customer profile to verify changes were saved
       setTimeout(() => {
         loadCustomerProfile();
-      }, 500); // Small delay to ensure backend has processed the update
+      }, 500); 
       
     } catch (error) {
-      // Enhanced error handling
       const serverMessage = error.response?.data?.message;
       const validationError = error.response?.data?.error;
       
@@ -551,7 +548,7 @@ const CustomerProfileManagement = () => {
                   variant="outlined"
                   onClick={() => {
                     setIsEditing(false);
-                    loadCustomerProfile(); // Reset to original data
+                    loadCustomerProfile(); 
                   }}
                   sx={{ 
                     color: "#72614e", 

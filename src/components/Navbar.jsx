@@ -18,7 +18,6 @@ import {
   Popper,
   Paper,
   Fade,
-  ClickAwayListener
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -26,7 +25,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import logo from "../assets/logo.png"; // Adjust path as needed
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -43,7 +42,6 @@ const Navbar = () => {
 
   // Navigation links
   const navLinks = [
-    // Services handled separately
     { path: "/gallery", label: "Gallery" },
     { path: "/stylists", label: "Stylists" },
     { path: "/contact", label: "Contact" },

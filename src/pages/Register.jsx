@@ -103,7 +103,6 @@ const RegisterPage = () => {
     // Filter out empty phone numbers
     const filteredPhoneNumbers = phoneNumbers.filter(phone => phone.trim() !== "");
 
-    // Match case with backend expectations (firstname vs firstName)
     const data = {
       firstname: firstName,
       lastname: lastName,
@@ -166,10 +165,10 @@ const RegisterPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        position: "fixed", // Fix the container to prevent scrolling
+        position: "fixed", 
         top: 0,
         left: 0,
-        overflow: "hidden", // Prevent scrolling
+        overflow: "hidden", 
       }}
     >
       {/* Full-screen background image with semi-transparency */}
@@ -189,7 +188,7 @@ const RegisterPage = () => {
         }}
       />
       
-      {/* Additional semi-transparent overlay for better readability */}
+      {/* Additional semi-transparent overlay */}
       <Box
         sx={{
           position: "absolute",
@@ -209,8 +208,8 @@ const RegisterPage = () => {
           position: "relative",
           maxWidth: 600,
           width: "90%",
-          maxHeight: "90vh", // Limit the height to prevent overflow
-          overflowY: "auto", // Add scrolling only within the form if needed
+          maxHeight: "90vh", 
+          overflowY: "auto",
           p: { xs: 3, sm: 4 },
           borderRadius: "12px",
           background: "linear-gradient(to right, rgba(255,255,255,0.95), rgba(249, 245, 240, 0.95))",

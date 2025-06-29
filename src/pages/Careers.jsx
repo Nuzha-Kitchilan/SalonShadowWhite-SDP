@@ -66,8 +66,7 @@ const JoinOurTeam = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-    // Clear error for this field when user starts typing
+    setFormData((prevData) => ({ ...prevData, [name]: value }))
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
@@ -137,7 +136,6 @@ const JoinOurTeam = () => {
     setLoading(true);
   
     try {
-      // Create payload using firstName and lastName directly
       const payload = {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -155,7 +153,6 @@ const JoinOurTeam = () => {
         throw new Error('First name and email are required');
       }
   
-      // Send as JSON
       const response = await axios.post(
         "http://localhost:5001/api/candidates/create", 
         payload, 
@@ -208,7 +205,7 @@ const JoinOurTeam = () => {
       minHeight: '100vh',
       overflowX: 'hidden',
       position: 'relative',
-      bgcolor: '#faf5f0', // Matching the Contact page background
+      bgcolor: '#faf5f0',
       display: 'flex',
       flexDirection: 'column',
       scrollbarWidth: 'none',
@@ -434,95 +431,6 @@ const JoinOurTeam = () => {
             </Grid>
           </Box>
 
-          {/* Thrive Together Section */}
-          {/* <Box sx={{ mb: 6 }}>
-            <Box
-              sx={{
-                background: '#fff',
-                borderRadius: '8px',
-                boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
-                overflow: 'hidden',
-                height: '600px',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
-                }
-              }}
-            >
-              <Grid container spacing={0}>
-                <Grid item xs={12} md={5} sx={{
-                  p: { xs: 0, md: 0 },
-                  display: { xs: 'none', md: 'block' }
-                }}>
-                  <Box sx={{ height: '100%' }}>
-                    <img
-                      src={thriveImage}
-                      alt="Shadow White Team"
-                      style={{
-                        width: "100%",
-                        maxWidth: "400px",
-                        height: "auto",
-                        borderRadius: "10px",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                    />
-                  </Box>
-                </Grid>
-
-                <Grid item xs={12} md={7} sx={{
-                  p: { xs: 3, md: 4 },
-                  bgcolor: 'rgba(250,245,240,0.5)',
-                  display: 'flex',
-                  position: "relative",
-                  left: { xs: 0, md: "-10%" }, // Responsive positioning
-                  width: { xs: "100%", md: "100%" },
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                }}>
-                  <Box
-                    sx={{
-                      padding: "2rem",
-                      borderRadius: "10px",
-                      position: "relative",
-                      marginLeft: { xs: 0, md: "10%" }, // Responsive margin
-                    }}
-                  >
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        mb: 3,
-                        fontWeight: '500',
-                        position: 'relative',
-                        paddingBottom: '10px',
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          bottom: '0',
-                          left: '0',
-                          width: '40px',
-                          height: '2px',
-                          backgroundColor: '#000'
-                        }
-                      }}
-                    >
-                      We Thrive Together
-                    </Typography>
-
-                    <Typography variant="body1" paragraph sx={{ color: '#555' }}>
-                      Salon Shadow White works hard to build our demand, and that's why we provide you with a full schedule starting your first day – so you can grow together with our business.
-                    </Typography>
-
-                    <Typography variant="body1" paragraph sx={{ color: '#555' }}>
-                      Maybe you have been a solo studio stylist, recently took time off for family or to care for a loved one, or you are just starting your career, and now you're looking to get back in the industry. If that sounds like you, we might be a good fit.
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box> */}
-
-
             {/* Thrive Together Section */}
             <Box
                       sx={{
@@ -552,13 +460,13 @@ const JoinOurTeam = () => {
                             </Box>
                           </Grid>
                           <Grid item xs={12} md={6} sx={{ position: "relative" }}>
-                            {/* Modified background box to prevent overflow */}
+                            
                             <Box
                               sx={{
                                 position: "absolute",
                                 top: 0,
-                                left: { xs: 0, md: "-20%" }, // Responsive positioning
-                                width: { xs: "100%", md: "140%" }, // Responsive width
+                                left: { xs: 0, md: "-20%" }, 
+                                width: { xs: "100%", md: "140%" }, 
                                 height: "120%",
                                 backgroundColor: "#B8A99A",
                                 zIndex: -1,
@@ -571,7 +479,7 @@ const JoinOurTeam = () => {
                                 padding: "2rem",
                                 borderRadius: "10px",
                                 position: "relative",
-                                marginLeft: { xs: 0, md: "-20%" }, // Responsive margin
+                                marginLeft: { xs: 0, md: "-20%" }, 
                               }}
                             >
                               <Typography

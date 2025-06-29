@@ -20,9 +20,9 @@ const AppointmentBooking = () => {
         overflowX: "hidden",
         position: "relative",
         bgcolor: "#faf5f0",
-        scrollbarWidth: "none",  /* Firefox */
+        scrollbarWidth: "none", 
         "&::-webkit-scrollbar": {
-          display: "none",  /* Chrome, Safari, Opera */
+          display: "none",
         },
         msOverflowStyle: "none"
       }}
@@ -44,10 +44,10 @@ const AppointmentBooking = () => {
             backgroundPosition: "center",
             height: "100%",
             display: "flex",
-            alignItems: { xs: 'flex-start', sm: 'center' }, // Align to top on mobile
+            alignItems: { xs: 'flex-start', sm: 'center' }, 
             justifyContent: "center",
             position: "relative",
-            pt: { xs: 2, sm: 0 }, // Add padding top on mobile
+            pt: { xs: 2, sm: 0 }, 
             '&::before': {
               content: '""',
               position: "absolute",
@@ -58,7 +58,6 @@ const AppointmentBooking = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
               zIndex: 0
             },
-            // Hide scrollbar for this element too
             "&::-webkit-scrollbar": {
               display: "none",
             },

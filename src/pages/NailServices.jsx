@@ -44,11 +44,7 @@ const NailServicesPage = () => {
           const name = cat.category_name.toLowerCase();
           return (
             name.includes('nail') ||
-            name.includes('manicure') ||
-            name.includes('pedicure') ||
-            name.includes('polish') ||
-            name.includes('gel') ||
-            name.includes('acrylic')
+            name.includes('manicure')
           );
         });
 

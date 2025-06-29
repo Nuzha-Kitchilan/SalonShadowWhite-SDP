@@ -98,7 +98,7 @@ const BookingButton = () => {
 
   const handleAddMore = () => {
     setCurrentView("categories");
-    fetchCartItemsCount(); // Refresh cart count when adding more items
+    fetchCartItemsCount(); 
   };
 
   const renderHeader = () => (
@@ -252,16 +252,16 @@ const BookingButton = () => {
     }
   };
 
-  // Direct cart access button click handler
-  const handleCartButtonClick = () => {
-    if (!customerId) {
-      // Handle case where user is not logged in
-      alert("Please log in to view your cart");
-      return;
-    }
-    setCurrentView("cart");
-    setOpenDrawer(true);
-  };
+  // // Direct cart access button click handler
+  // const handleCartButtonClick = () => {
+  //   if (!customerId) {
+  //     // Handle case where user is not logged in
+  //     alert("Please log in to view your cart");
+  //     return;
+  //   }
+  //   setCurrentView("cart");
+  //   setOpenDrawer(true);
+  // };
 
   return (
     <Box sx={{ 

@@ -44,10 +44,7 @@ const FacialServicesPage = () => {
           const name = cat.category_name.toLowerCase();
           return (
             name.includes('face') ||
-            name.includes('facial') ||
-            name.includes('threading') ||
-            name.includes('mask') ||
-            name.includes('peel')
+            name.includes('facial') 
           );
         });
 

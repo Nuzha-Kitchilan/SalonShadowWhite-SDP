@@ -44,11 +44,7 @@ const HairServicesPage = () => {
           const name = cat.category_name.toLowerCase();
           return (
             name.includes('hair') ||
-            name.includes('cut') ||
-            name.includes('color') ||
-            name.includes('style') ||
-            name.includes('treatment') ||
-            name.includes('textur')
+            name.includes('cut') 
           );
         });
 

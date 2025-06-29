@@ -45,13 +45,7 @@ const BridalServicesPage = () => {
           if (!cat.category_name) return false;
           const name = cat.category_name.toLowerCase();
           return (
-            name.includes('bridal') ||
-            name.includes('wedding') ||
-            name.includes('bride') ||
-            name.includes('engagement') ||
-            name.includes('matrimony') ||
-            name.includes('ceremony')
-          );
+            name.includes('bridal'))
         });
 
         const filteredCategories = bridalCategories.length ? bridalCategories : categoriesData;

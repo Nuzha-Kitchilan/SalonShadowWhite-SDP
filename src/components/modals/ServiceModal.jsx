@@ -327,7 +327,7 @@ const SelectedServiceModal = ({ onClose, selectedServices, removeService, onAddM
         selectedStylist: stylist
       };
       
-      // Update the parent component's state
+     
       if (typeof onUpdateServices === 'function') {
         onUpdateServices(updatedServices);
       } else {
@@ -340,22 +340,20 @@ const SelectedServiceModal = ({ onClose, selectedServices, removeService, onAddM
   const handleProceed = () => {
     setShowTimeSelectionModal(true);
     
-    // If you want to keep the original onProceed functionality as well
+    
     if (typeof onProceed === 'function') {
       onProceed();
     }
   };
 
-  // Create a ref for the TimeSelectionModal
+  
   const timeSelectionModalRef = React.useRef(null);
 
   if (showTimeSelectionModal) {
-    // Remove console.log
-    // console.log("Passing to TimeSelectionModal - customerId:", customerId); 
     return (
       <TimeSelectionModal
         ref={timeSelectionModalRef}
-        services={selectedServices} // Pass all selected services instead of just one
+        services={selectedServices} 
         customerId={customerId}
         selectedStylist={selectedServices.length === 1 ? selectedServices[0].selectedStylist : null}
         onBack={() => setShowTimeSelectionModal(false)}

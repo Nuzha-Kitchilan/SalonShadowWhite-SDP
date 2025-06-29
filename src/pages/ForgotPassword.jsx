@@ -15,7 +15,6 @@ import {
   Divider,
   InputAdornment
 } from '@mui/material';
-import LockResetIcon from '@mui/icons-material/LockReset';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
@@ -23,14 +22,14 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import Login from "../assets/login.jpeg"; // Adjust path if needed
+import Login from "../assets/login.jpeg";
 
 const ForgotPassword = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [step, setStep] = useState(1); // 1: email, 2: OTP, 3: new password
+  const [step, setStep] = useState(1); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -178,10 +177,10 @@ const ForgotPassword = ({ onBackToLogin }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        scrollbarWidth: "none", /* Firefox */
+        scrollbarWidth: "none", 
         msOverflowStyle: "none",
         "&::-webkit-scrollbar": {
-          display: "none", /* Chrome, Safari, Opera */
+          display: "none", 
         },
       }}
     >
@@ -200,7 +199,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
         }}
       />
       
-      {/* Additional semi-transparent overlay for better readability */}
+      {/* Additional semi-transparent overlay */}
       <Box
         sx={{
           position: "absolute",

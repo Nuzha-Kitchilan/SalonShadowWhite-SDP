@@ -41,10 +41,10 @@ const Gallery = () => {
                 bgcolor: "#faf5f0",
                 display: "flex",
                 flexDirection: "column",
-                scrollbarWidth: "none", /* Firefox */
+                scrollbarWidth: "none", 
                 msOverflowStyle: "none",
                 "&::-webkit-scrollbar": {
-                  display: "none", /* Chrome, Safari, Opera */
+                  display: "none",
                 },
             }}
         >

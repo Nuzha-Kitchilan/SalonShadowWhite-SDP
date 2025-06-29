@@ -7,18 +7,16 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ProfessionalSelectModal from "./StylistSelection";
-import CartModal from "./CartModal"; // Import CartModal
-
+import CartModal from "./CartModal"; 
 const ServiceDetailModal = ({
   service,
   onBack,
   onClose,
   onAddToCart,
-  onBackToCategory,
-  cartItems = [] // ✅ Fix: define cartItems as a prop with default empty array
+  cartItems = [] 
 }) => {
   const [showStylistSelect, setShowStylistSelect] = useState(false);
-  const [showCartModal, setShowCartModal] = useState(false); // Add state for CartModal
+  const [showCartModal, setShowCartModal] = useState(false); 
 
   const handleSelectProfessional = () => {
     setShowStylistSelect(true);
@@ -37,14 +35,12 @@ const ServiceDetailModal = ({
       });
     }
     setShowStylistSelect(false);
-    // Show the cart modal after adding to cart
     setShowCartModal(true);
   };
 
-  // Handle closing the CartModal
+  
   const handleCloseCartModal = () => {
     setShowCartModal(false);
-    // Close all modals after closing CartModal if needed
     if (typeof onClose === 'function') {
       onClose();
     }
@@ -54,7 +50,7 @@ const ServiceDetailModal = ({
   if (showCartModal) {
     return (
       <CartModal 
-        cartItems={cartItems} // ✅ Now properly passed
+        cartItems={cartItems} 
         onBack={() => setShowCartModal(false)}
         onClose={handleCloseCartModal}
       />
@@ -123,7 +119,6 @@ const ServiceDetailModal = ({
             {service.service_name}
           </Typography>
         </Box>
-        {/* Removed X (Close) button */}
       </Box>
 
       {/* Content */}

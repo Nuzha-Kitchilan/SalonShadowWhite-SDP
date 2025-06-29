@@ -4,7 +4,6 @@ import contactPic from '../assets/contact2.png';
 import "leaflet/dist/leaflet.css";
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const ContactPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -122,7 +121,7 @@ const ContactPage = () => {
       minHeight: '100vh',
       overflowX: 'hidden',
       position: 'relative',
-      bgcolor: '#faf5f0', // Changed to match gallery's background
+      bgcolor: '#faf5f0',
       display: 'flex',
       flexDirection: 'column',
       scrollbarWidth: 'none',
@@ -160,7 +159,7 @@ const ContactPage = () => {
         px: { xs: 2, md: 4 },
         width: '100%',
         overflowX: 'hidden',
-        background: '#faf5f0', // Changed to match gallery's background
+        background: '#faf5f0',
       }}>
         <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
           <Typography variant="h4" component="h2" sx={{ 
@@ -354,30 +353,6 @@ const ContactPage = () => {
                     transition: 'transform 0.3s ease'
                   }
                 }}>
-                  {/* <Box sx={{ 
-                    mr: 2, 
-                    bgcolor: 'rgba(0,0,0,0.03)', 
-                    color: '#000', 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
-                  }}>
-                    <AccessTimeIcon fontSize="small" />
-                  </Box> */}
-                  {/* <Box>
-                    <Typography variant="h6" sx={{ fontWeight: "500", mb: 0.5 }}>
-                      Hours
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: '#555' }}>
-                      Monday - Friday: 8:00 AM - 6:00 PM<br />
-                      Saturday: 9:00 AM - 6:00 PM<br />
-                      Sunday: 10:00 AM - 4:00 PM
-                    </Typography>
-                  </Box> */}
                 </Box>
               </Grid>
             </Grid>
@@ -385,7 +360,7 @@ const ContactPage = () => {
         </Container>
       </Box>
 
-      {/* Map Section - Made smaller */}
+      {/* Map Section*/}
       <Box sx={{ 
         width: '100%', 
         padding: { xs: '20px', md: '30px' },
@@ -394,7 +369,7 @@ const ContactPage = () => {
         <Container maxWidth="lg">
           <Box sx={{ 
             width: '100%', 
-            height: '300px', // Reduced from 450px to 300px
+            height: '300px', 
             borderRadius: '12px',
             overflow: 'hidden',
             boxShadow: '0 8px 25px rgba(0,0,0,0.08)',

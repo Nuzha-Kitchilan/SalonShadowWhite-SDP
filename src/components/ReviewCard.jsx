@@ -12,7 +12,6 @@ import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 
 const ReviewCard = ({ review }) => {
-  // Format date if it exists (assuming review might have a date property)
   const formattedDate = review.review_date 
     ? new Date(review.review_date).toLocaleDateString('en-US', {
         year: 'numeric',
