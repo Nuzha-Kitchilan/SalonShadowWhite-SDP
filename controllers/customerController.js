@@ -1,67 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const customerModel = require("../models/customerModel"); // Import customer model
-//const SECRET_KEY = "your-secret-key"; // Replace with a more secure secret key for JWT
-const SECRET_KEY = process.env.JWT_SECRET; // ✅ from .env
-
-
-
-// Register Customer (Create Account)
-// async function registerCustomer(req, res) {
-//     try {
-//       const { firstname, lastname, email, username, password, phoneNumbers = [] } = req.body;
-      
-//       // Validate required fields
-//       if (!firstname || !lastname || !email || !username || !password) {
-//         return res.status(400).json({ message: "All fields are required" });
-//       }
-      
-//       // Validate email format
-//       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//       if (!emailRegex.test(email)) {
-//         return res.status(400).json({ message: "Invalid email format" });
-//       }
-      
-//       // Check if username already exists
-//       const existingUser = await customerModel.getCustomerByUsername(username);
-//       if (existingUser) {
-//         return res.status(400).json({ message: "Username already taken" });
-//       }
-      
-//       // Check if email already exists
-//       const existingEmail = await customerModel.getCustomerByEmail(email);
-//       if (existingEmail) {
-//         return res.status(400).json({ message: "Email already registered" });
-//       }
-      
-//       // Validate phone numbers if provided
-//       if (phoneNumbers && !Array.isArray(phoneNumbers)) {
-//         return res.status(400).json({ message: "Phone numbers must be an array" });
-//       }
-      
-//       // Hash password
-//       const hashedPassword = await bcrypt.hash(password, 10);
-      
-//       // Create new customer and insert phone numbers
-//       const result = await customerModel.createCustomer(
-//         firstname,
-//         lastname,
-//         email,
-//         username,
-//         hashedPassword,
-//         phoneNumbers
-//       );
-      
-//       res.status(201).json({ message: "Customer registered successfully", customerId: result.customerId });
-//     } catch (err) {
-//       console.error("Registration error:", {
-//         message: err.message,
-//         stack: err.stack
-//       });
-//       res.status(500).json({ error: "Registration failed. Please try again later." });
-//     }
-//   }
-  
+const customerModel = require("../models/customerModel"); 
+const SECRET_KEY = process.env.JWT_SECRET; 
 
 
 async function registerCustomer(req, res) {
@@ -89,8 +29,6 @@ async function registerCustomer(req, res) {
       if (!usernameRegex.test(username)) {
         return res.status(400).json({ message: "Username can only contain letters, numbers, and underscores" });
       }
-      
-      
       
       // Check if username already exists
       const existingUser = await customerModel.getCustomerByUsername(username);
@@ -133,7 +71,7 @@ async function registerCustomer(req, res) {
   }
 
 
-// Login Customer (Generate JWT)
+// Login Customer
 async function loginCustomer(req, res) {
   const { username, password } = req.body;
 
@@ -152,7 +90,7 @@ async function loginCustomer(req, res) {
 
     // Create JWT token
     const token = jwt.sign({ customer_ID: customer.customer_ID, role: 'customer', username: customer.username }, SECRET_KEY, {
-      expiresIn: "1h", // Token expires in 1 hour
+      expiresIn: "1h",
     });
 
     res.json({ message: "Login successful", token });
@@ -161,15 +99,13 @@ async function loginCustomer(req, res) {
   }
 }
 
-// Logout Customer (Invalidate token)
+// Logout Customer
 async function logoutCustomer(req, res) {
-  // In a stateless JWT implementation, logout is handled on the client side (by deleting the token)
-  // However, here we can implement token invalidation on server side by maintaining a blacklist (optional)
-
+  
   res.json({ message: "Logout successful" });
 }
 
-// Get Customer Profile (Requires authentication)
+// Get Customer Profile 
 async function getCustomerProfile(req, res) {
   try {
     const customer = await customerModel.getCustomerById(req.customer_ID);
@@ -231,86 +167,6 @@ const createWalkInCustomer = async (req, res) => {
   }
 };
 
-// Update Customer Profile (Requires authentication)
-// async function updateProfile(req, res) {
-//   try {
-//     const customer_ID = req.customer_ID; // From authenticateToken middleware
-//     const { firstname, lastname, email, username, phoneNumbers = [] } = req.body;
-    
-//     // Debug log
-//     console.log("Updating profile for customer:", customer_ID);
-//     console.log("Request data:", { firstname, lastname, email, username, phoneNumbersLength: phoneNumbers?.length });
-    
-//     // Validate required fields
-//     if (!firstname || !lastname || !email || !username) {
-//       return res.status(400).json({ message: "Name, email, and username are required" });
-//     }
-    
-//     // Validate email format
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     if (!emailRegex.test(email)) {
-//       return res.status(400).json({ message: "Invalid email format" });
-//     }
-    
-//     // Check if username is taken by another user
-//     const existingUser = await customerModel.getCustomerByUsername(username);
-    
-//     console.log("Username uniqueness check:", {
-//       existingUser: existingUser ? {
-//         id: existingUser.customer_ID,
-//         username: existingUser.username,
-//         type: typeof existingUser.customer_ID
-//       } : null,
-//       currentUser: {
-//         id: customer_ID,
-//         type: typeof customer_ID
-//       }
-//     });
-    
-//     // Fixed comparison - ensure both are numbers
-//     if (existingUser && Number(existingUser.customer_ID) !== Number(customer_ID)) {
-//       return res.status(400).json({ 
-//         message: "Username already taken by another user",
-//         debug: {
-//           existingId: existingUser.customer_ID,
-//           currentId: customer_ID
-//         }
-//       });
-//     }
-    
-//     // Check if email is taken by another user
-//     const existingEmail = await customerModel.getCustomerByEmail(email);
-    
-//     if (existingEmail && Number(existingEmail.customer_ID) !== Number(customer_ID)) {
-//       return res.status(400).json({ message: "Email already registered to another account" });
-//     }
-    
-//     // Update customer profile
-//     await customerModel.updateCustomerProfile(customer_ID, {
-//       firstname,
-//       lastname,
-//       email,
-//       username,
-//       phoneNumbers
-//     });
-    
-//     res.json({ 
-//       message: "Profile updated successfully",
-//       updatedFields: { firstname, lastname, email, username }
-//     });
-    
-//   } catch (err) {
-//     console.error("Profile update error:", {
-//       message: err.message,
-//       stack: err.stack
-//     });
-//     res.status(500).json({ 
-//       error: "Profile update failed. Please try again later.",
-//       details: err.message
-//     });
-//   }
-// }
-
 
 async function updateProfile (req, res) {
   try {
@@ -356,11 +212,7 @@ async function updateProfile (req, res) {
 };
 
 
-
-
-
-
-// Change Customer Password (Requires authentication)
+// Change Customer Password 
 async function changePassword(req, res) {
   try {
     console.log("Attempting password change for customer:", {
@@ -413,7 +265,6 @@ async function changePassword(req, res) {
 }
 
 
-
 async function getCustomers(req, res) {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -454,7 +305,7 @@ async function getCustomerDetails(req, res) {
       });
     }
 
-    // Ensure appointmentCount exists, default to 0 if missing
+ 
     customer.appointmentCount = customer.appointmentCount !== undefined 
       ? Number(customer.appointmentCount) 
       : 0;

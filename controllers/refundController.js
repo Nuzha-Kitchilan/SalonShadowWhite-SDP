@@ -26,7 +26,7 @@ const processStripeRefund = async (req, res) => {
       const validReasons = ['duplicate', 'fraudulent', 'requested_by_customer'];
       const stripeReason = validReasons.includes(reason) ? reason : 'requested_by_customer';
       
-      // 1. Get payment details
+      // Get payment details
       const paymentDetails = await paymentModel.getPaymentDetailsByIntentId(payment_intent_id);
       
       if (!paymentDetails) {
@@ -37,7 +37,7 @@ const processStripeRefund = async (req, res) => {
         });
       }
 
-      // 2. Check if this payment has already been refunded in our database
+      // Check if this payment has already been refunded in our database
       const connection = await db.getConnection();
       try {
         const [existingRefunds] = await connection.query(
@@ -46,21 +46,20 @@ const processStripeRefund = async (req, res) => {
         );
         
         if (existingRefunds.length > 0) {
-          return res.status(409).json({  // Using 409 Conflict for a duplicate operation
+          return res.status(409).json({ 
             success: false,
             error: 'This payment has already been refunded in our system',
             existingRefund: existingRefunds[0]
           });
         }
         
-        // 3. Get refunds from Stripe to double check
+        // Get refunds from Stripe to double check
         const stripeRefunds = await stripe.refunds.list({
           payment_intent: payment_intent_id,
           limit: 5
         });
         
         if (stripeRefunds.data.length > 0) {
-          // Found existing refunds in Stripe but not in our DB
           const refundData = {
             payment_ID: paymentDetails.payment_ID,
             appointment_ID: paymentDetails.appointment_ID,
@@ -81,14 +80,14 @@ const processStripeRefund = async (req, res) => {
           });
         }
         
-        // 4. Create refund in Stripe (no existing refunds found)
+        // Create refund in Stripe 
         const refund = await stripe.refunds.create({
           payment_intent: payment_intent_id,
-          amount: Math.round(amount * 100), // Convert to cents
+          amount: Math.round(amount * 100), 
           reason: stripeReason
         });
     
-        // 5. Record the refund in our database
+        // Record the refund in our database
         const refundData = {
           payment_ID: paymentDetails.payment_ID,
           appointment_ID: paymentDetails.appointment_ID,
@@ -108,7 +107,7 @@ const processStripeRefund = async (req, res) => {
           status: refund.status
         });
       } finally {
-        connection.release(); // Always release the connection
+        connection.release(); 
       }
     } catch (error) {
       console.error('Stripe or DB Error:', error);
@@ -117,7 +116,6 @@ const processStripeRefund = async (req, res) => {
       if (error.type === 'StripeInvalidRequestError') {
         if (error.raw.code === 'charge_already_refunded') {
           try {
-            // Create a record in our DB for this already-refunded payment
             const refundData = {
               payment_ID: paymentDetails?.payment_ID,
               appointment_ID: paymentDetails?.appointment_ID,

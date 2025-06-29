@@ -1,5 +1,3 @@
-// controllers/workingHoursController.js
-
 const WorkingHours = require('../models/workingHoursModel');
 
 // Create new working hours entry

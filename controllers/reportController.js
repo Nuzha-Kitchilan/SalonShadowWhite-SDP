@@ -66,7 +66,7 @@ exports.getAdvancedRevenueReport = async (req, res) => {
       case 'stylist':
         reportData = await reportModel.getStylistPerformance(startDate, endDate);
         break;
-      default: // summary
+      default:
         reportData = await reportModel.getSummaryRevenueData(startDate, endDate, groupByValid);
     }
 
@@ -88,8 +88,6 @@ exports.getAdvancedRevenueReport = async (req, res) => {
       serviceMap[name] = (serviceMap[name] || 0) + Number(row.total_revenue || row.revenue || 0);
     });
     const topServiceEntry = Object.entries(serviceMap).sort((a, b) => b[1] - a[1])[0];
-
-    //const uniqueClients = new Set(dataForStats.map(row => row.customer_ID)).size;
 
     const summaryStats = {
       totalRevenue: dataForStats.reduce((sum, row) => sum + Number(row.total_revenue || row.revenue || 0), 0),

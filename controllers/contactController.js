@@ -1,12 +1,10 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Controller method to handle contact form submissions
 exports.sendContactEmail = async (req, res) => {
   try {
     const { name, email, message } = req.body;
     
-    // Basic validation
     if (!name || !email || !message) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
@@ -19,14 +17,13 @@ exports.sendContactEmail = async (req, res) => {
         pass: process.env.EMAIL_PASS,
       },
       tls: {
-        rejectUnauthorized: false // For development only, remove in production
+        rejectUnauthorized: false
       }
     });
 
-    // Email to salon owner
     const salonMailOptions = {
       from: `"Salon Contact Form" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER, // Sending to salon's email
+      to: process.env.EMAIL_USER,
       subject: `New Contact Message from ${name}`,
       html: `
         <h3>New Contact Form Submission</h3>

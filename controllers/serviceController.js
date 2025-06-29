@@ -1,12 +1,10 @@
 const serviceModel = require('../models/serviceModel');
 const categoryModel = require('../models/serCatModel');
 
-// Get all services with category names and optional search
+
 const getAllServices = async (req, res) => {
     try {
         const { category, search } = req.query;
-
-        // Fetch services using the service model
         const services = await serviceModel.getAllServices(search, category);
 
         res.json(services);
@@ -16,7 +14,7 @@ const getAllServices = async (req, res) => {
     }
 };
 
-// Get all categories (for dropdown in the edit form)
+// Get all categories 
 const getAllCategories = async (req, res) => {
     try {
         const categories = await categoryModel.getAllCategories();
@@ -113,7 +111,6 @@ const getServicesByCategoryId = async (req, res) => {
 };
 
 
-// Add this with your other controller functions
 // Add a new category
 const addCategory = async (req, res) => {
     try {
@@ -162,7 +159,7 @@ const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Optional: Check if the category has associated services
+        // Check if the category has associated services
         const services = await serviceModel.getServicesByCategoryId(id);
         if (services.length > 0) {
             return res.status(400).json({ 
