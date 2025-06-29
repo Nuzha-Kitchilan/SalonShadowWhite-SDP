@@ -3,14 +3,14 @@ import React from "react";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { Outlet } from "react-router-dom"; // To render child components
+import { Outlet } from "react-router-dom"; 
 
 const Layout = () => {
-  const headerHeight = 64; // Header height
+  const headerHeight = 64; 
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", padding: 0 }}>
-      {/* Sidebar fixed on the left */}
+      {/* Sidebar fixed  */}
       <Box
         sx={{
           position: "fixed",
@@ -26,7 +26,7 @@ const Layout = () => {
         <Sidebar />
       </Box>
 
-      {/* Header fixed on the top */}
+      {/* Header fixed */}
       <Box
         sx={{
           position: "fixed",
@@ -49,8 +49,8 @@ const Layout = () => {
           flexGrow: 1,
           height: "calc(100vh - 64px)",
           overflowY: "auto",
-          scrollbarWidth: "none", // Firefox
-          "&::-webkit-scrollbar": { display: "none" }, // Chrome, Safari, Edge
+          scrollbarWidth: "none", 
+          "&::-webkit-scrollbar": { display: "none" }, 
         }}
       >
         <Outlet /> {/* Renders the page content */}

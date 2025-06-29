@@ -35,7 +35,7 @@ const CategoriesTable = ({ categories, setCategories, adminId }) => {
     if (!selectedCategory) return;
     try {
       await axios.delete(`http://localhost:5001/api/categories/${selectedCategory.category_id}`);
-      await fetchCategories(); // Refresh the list
+      await fetchCategories(); 
     } catch (error) {
       console.error("Error deleting category:", error);
     } finally {

@@ -1,4 +1,3 @@
-// Dashboard.jsx
 import React, { useState } from 'react';
 import { Box, Typography, Grid, Tabs, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -11,7 +10,7 @@ import RevenueDashboard from '../components/dashboard/finance/RevenueDashboard';
 import CancellationRateChart from '../components/dashboard/main dasboard/CancellationRateChart';
 import DashboardLayout from '../components/dashboard/main dasboard/TopLayout';
 
-// Custom styled tabs to match password.txt style
+// Custom styled tabs
 const StyledTabs = styled(Tabs)({
   borderBottom: '1px solid rgba(190, 175, 155, 0.3)',
   '& .MuiTabs-indicator': {

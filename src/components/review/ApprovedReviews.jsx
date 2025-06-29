@@ -30,9 +30,9 @@ const ApprovedReviews = ({ reviews = [], onDelete, loading = false }) => {
   ) || [];
 
   const getRatingColor = (rating) => {
-    if (rating >= 4.5) return "#66bb6a"; // Green for high ratings
-    if (rating >= 3.5) return "#BEAF9B"; // Neutral color for medium ratings
-    return "#ff6b6b"; // Red for low ratings
+    if (rating >= 4.5) return "#66bb6a"; 
+    if (rating >= 3.5) return "#BEAF9B"; 
+    return "#ff6b6b"; 
   };
 
   if (loading) {

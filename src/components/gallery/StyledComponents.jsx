@@ -1,4 +1,3 @@
-// StyledComponents.js
 import { styled } from "@mui/material/styles";
 import { Button, Card } from "@mui/material";
 

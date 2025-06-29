@@ -27,7 +27,7 @@ const ServicesTable = ({ categories, setCategories, adminId, tableSx, buttonSx }
   const [error, setError] = useState(null);
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Match inventory table
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   // Effect to sync categories from props
   useEffect(() => {

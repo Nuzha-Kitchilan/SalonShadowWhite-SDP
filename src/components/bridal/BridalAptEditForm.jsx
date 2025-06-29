@@ -33,7 +33,7 @@ import {
 import axios from 'axios';
 import moment from 'moment';
 
-const BridalAptEditForm = ({ appointmentId, customers, services, stylists, onSubmit, onCancel }) => {
+const BridalAptEditForm = ({ appointmentId, onSubmit, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [appointment, setAppointment] = useState({
     customer_name: '',
@@ -70,11 +70,10 @@ const BridalAptEditForm = ({ appointmentId, customers, services, stylists, onSub
         ...appointmentData,
         appointment_date: moment(appointmentData.appointment_date),
         appointment_time: appointmentData.appointment_time ? 
-          appointmentData.appointment_time.substring(0, 5) : // Format "03:00:00" to "03:00"
-          '10:00',
+          appointmentData.appointment_time.substring(0, 5) :'10:00',
         stylists: appointmentData.stylists || '',
         payment_amount: parseFloat(appointmentData.payment_amount) || 0,
-        payment_type: 'Bridal Package' // Always set to Bridal Package
+        payment_type: 'Bridal Package' 
       });
       
       setLoading(false);
@@ -151,7 +150,7 @@ const BridalAptEditForm = ({ appointmentId, customers, services, stylists, onSub
       const formattedData = {
         ...appointment,
         appointment_date: appointment.appointment_date.format('YYYY-MM-DD'),
-        payment_type: 'Bridal Package' // Ensure it's always sent as Bridal Package
+        payment_type: 'Bridal Package'
       };
       
       // Call the parent component's submit handler

@@ -3,7 +3,6 @@ import axios from 'axios';
 import { format, parseISO, isToday, isTomorrow } from 'date-fns';
 import {
   Card,
-  CardHeader,
   CardContent,
   Avatar,
   List,
@@ -45,14 +44,14 @@ const UpcomingAppointmentsCard = () => {
     const date = parseISO(dateString);
     if (isToday(date)) return 'Today';
     if (isTomorrow(date)) return 'Tomorrow';
-    return format(date, 'EEEE'); // Full day name
+    return format(date, 'EEEE'); 
   };
 
   const getDayBadgeColor = (dateString) => {
     const date = parseISO(dateString);
-    if (isToday(date)) return '#BEAF9B'; // Beige/brown color scheme
-    if (isTomorrow(date)) return '#A59787'; // Darker beige
-    return '#8A7B6C'; // Darkest beige
+    if (isToday(date)) return '#BEAF9B'; 
+    if (isTomorrow(date)) return '#A59787';
+    return '#8A7B6C'; 
   };
 
   if (loading) {

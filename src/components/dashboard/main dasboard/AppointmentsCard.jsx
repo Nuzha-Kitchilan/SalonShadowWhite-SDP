@@ -1,4 +1,3 @@
-// AppointmentsCard.jsx
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Select, MenuItem, Box } from '@mui/material';
 

@@ -24,7 +24,7 @@ const ForgotPassword = ({ onSuccess, onCancel, inDialog = false }) => {
     newPassword: '',
     confirmPassword: ''
   });
-  const [step, setStep] = useState(1); // 1: email, 2: OTP, 3: new password
+  const [step, setStep] = useState(1); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');

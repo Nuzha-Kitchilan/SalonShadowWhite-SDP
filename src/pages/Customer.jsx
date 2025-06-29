@@ -3,9 +3,6 @@ import axios from 'axios';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  CardHeader,
   Button,
   Alert,
   Snackbar,
@@ -20,11 +17,8 @@ import {
   Link
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import PeopleIcon from '@mui/icons-material/People';
-import PersonIcon from '@mui/icons-material/Person';
 import EditIcon from '@mui/icons-material/Edit';
 import EventNoteIcon from '@mui/icons-material/EventNote';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { styled } from '@mui/material/styles';
 import { jwtDecode } from 'jwt-decode';
 
@@ -102,7 +96,7 @@ const CustomerManagement = () => {
   const [success, setSuccess] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [view, setView] = useState('list'); // 'list', 'detail', 'edit', 'appointments'
+  const [view, setView] = useState('list'); 
   const [adminName, setAdminName] = useState('');
   
   const theme = useTheme();

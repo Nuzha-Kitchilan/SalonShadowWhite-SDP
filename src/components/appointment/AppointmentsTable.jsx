@@ -314,63 +314,63 @@ export default function AppointmentsTable({
 function getStatusChipColor(status) {
   switch (status?.toLowerCase()) {
     case 'confirmed':
-      return 'rgba(102, 187, 106, 0.2)'; // Light green
+      return 'rgba(102, 187, 106, 0.2)'; 
     case 'completed':
-      return 'rgba(33, 150, 243, 0.2)'; // Light blue
+      return 'rgba(33, 150, 243, 0.2)'; 
     case 'cancelled':
-      return 'rgba(244, 67, 54, 0.15)'; // Light red
+      return 'rgba(244, 67, 54, 0.15)'; 
     case 'pending':
-      return 'rgba(255, 170, 90, 0.2)'; // Light orange
+      return 'rgba(255, 170, 90, 0.2)'; 
     case 'no-show':
-      return 'rgba(158, 158, 158, 0.2)'; // Light grey
+      return 'rgba(158, 158, 158, 0.2)'; 
     default:
-      return 'rgba(190, 175, 155, 0.2)'; // Default beige
+      return 'rgba(190, 175, 155, 0.2)'; 
   }
 }
 
 function getStatusTextColor(status) {
   switch (status?.toLowerCase()) {
     case 'confirmed':
-      return '#2e7d32'; // Dark green
+      return '#2e7d32'; 
     case 'completed':
-      return '#0d47a1'; // Dark blue
+      return '#0d47a1'; 
     case 'cancelled':
-      return '#b71c1c'; // Dark red
+      return '#b71c1c'; 
     case 'pending':
-      return '#e65100'; // Dark orange
+      return '#e65100'; 
     case 'no-show':
-      return '#424242'; // Dark grey
+      return '#424242'; 
     default:
-      return '#453C33'; // Default brown
+      return '#453C33'; 
   }
 }
 
 function getPaymentChipColor(status) {
   switch (status?.toLowerCase()) {
     case 'paid':
-      return 'rgba(102, 187, 106, 0.2)'; // Light green
+      return 'rgba(102, 187, 106, 0.2)'; 
     case 'pending':
-      return 'rgba(255, 170, 90, 0.2)'; // Light orange
+      return 'rgba(255, 170, 90, 0.2)'; 
     case 'refunded':
-      return 'rgba(33, 150, 243, 0.2)'; // Light blue
+      return 'rgba(33, 150, 243, 0.2)'; 
     case 'failed':
-      return 'rgba(244, 67, 54, 0.15)'; // Light red
+      return 'rgba(244, 67, 54, 0.15)'; 
     default:
-      return 'rgba(190, 175, 155, 0.2)'; // Default beige
+      return 'rgba(190, 175, 155, 0.2)'; 
   }
 }
 
 function getPaymentTextColor(status) {
   switch (status?.toLowerCase()) {
     case 'paid':
-      return '#2e7d32'; // Dark green
+      return '#2e7d32'; 
     case 'pending':
-      return '#e65100'; // Dark orange
+      return '#e65100'; 
     case 'refunded':
-      return '#0d47a1'; // Dark blue
+      return '#0d47a1'; 
     case 'failed':
-      return '#b71c1c'; // Dark red
+      return '#b71c1c'; 
     default:
-      return '#453C33'; // Default brown
+      return '#453C33'; 
   }
 }

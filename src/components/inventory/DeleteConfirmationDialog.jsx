@@ -1,42 +1,7 @@
-// import React from "react";
-// import { Dialog, DialogContent, DialogActions, DialogContentText, Button } from "@mui/material";
-
-// const DeleteConfirmationDialog = ({ open, onClose, onConfirm }) => {
-//   return (
-//     <Dialog open={open} onClose={onClose}>
-//       <DialogContent>
-//         <DialogContentText>
-//           Are you sure you want to delete this item?
-//         </DialogContentText>
-//       </DialogContent>
-//       <DialogActions>
-//         <Button onClick={onClose} color="primary">
-//           Cancel
-//         </Button>
-//         <Button onClick={onConfirm} color="secondary">
-//           Delete
-//         </Button>
-//       </DialogActions>
-//     </Dialog>
-//   );
-// };
-
-// export default DeleteConfirmationDialog;
-
-
-
-
-
-
-
-
-
-
 import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogActions,
   DialogContentText,
   Button,
   Box,

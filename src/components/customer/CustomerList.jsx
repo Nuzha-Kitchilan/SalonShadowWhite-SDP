@@ -28,11 +28,11 @@ import {
 } from '@mui/icons-material';
 
 const CustomerList = ({ 
-  customers = [],          // Default to empty array
-  loading = false,         // Default to false
-  currentPage = 1,         // Default to page 1
-  totalPages = 1,          // Default to 1 page
-  onPageChange = () => {}, // Default no-op functions
+  customers = [],         
+  loading = false,         
+  currentPage = 1,         
+  totalPages = 1,          
+  onPageChange = () => {}, 
   onSelectCustomer = () => {},
   onDeleteCustomer = () => {}
 }) => {

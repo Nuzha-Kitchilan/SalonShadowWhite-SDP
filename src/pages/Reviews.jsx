@@ -18,7 +18,7 @@ import ApprovedReviews from '../components/review/ApprovedReviews';
 import { jwtDecode } from 'jwt-decode';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TabPanel from '../components/services/TabPanel'; // Assuming this component exists
+import TabPanel from '../components/services/TabPanel'; 
 
 // Custom styled tabs
 const StyledTabs = styled(Tabs)({

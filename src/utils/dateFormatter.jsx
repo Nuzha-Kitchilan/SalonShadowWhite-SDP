@@ -43,7 +43,7 @@ export function formatDate(date, format = 'medium') {
     if (!time) return 'N/A';
     
     try {
-      // For 24-hour format time strings like "14:30:00"
+      // For 24-hour format time strings 
       if (time.includes(':')) {
         const [hours, minutes] = time.split(':');
         const date = new Date();

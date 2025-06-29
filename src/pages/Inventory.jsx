@@ -906,53 +906,7 @@ const Inventory = () => {
               {inventory.length}
             </Typography>
           </Box>
-        </Paper>
-        
-        {/* <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 1.5, 
-            display: "flex", 
-            alignItems: "center", 
-            gap: 1,
-            borderRadius: "8px",
-            border: "1px solid rgba(190, 175, 155, 0.2)",
-            backgroundColor: "#fff",
-            minWidth: "150px",
-            flex: 1
-          }}
-        >
-          {/* <Box sx={{ 
-            bgcolor: "rgba(255, 107, 107, 0.1)", 
-            borderRadius: "50%", 
-            p: 1, 
-            display: "flex"
-          }}>
-            <PriorityHighIcon sx={{ color: "#ff6b6b" }} />
-          </Box> */}
-          {/* <Box>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: "#666", 
-                fontFamily: "'Poppins', 'Roboto', sans-serif" 
-              }}
-            >
-              Low Stock
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 600, 
-                color: "#ff6b6b",
-                fontFamily: "'Poppins', 'Roboto', sans-serif" 
-              }}
-            >
-              {inventory.filter(item => item.quantity <= 5).length}
-            </Typography>
-          </Box> 
-        </Paper> */}
-        
+        </Paper>       
         <Paper 
           elevation={0} 
           sx={{ 
@@ -1022,7 +976,7 @@ const Inventory = () => {
           brandFilter={brandFilter}
           setBrandFilter={setBrandFilter}
           availableBrands={Array.from(new Set(inventory.map(item => item.brand)))}
-          // Add styling props to match the TimeSelection aesthetic
+          
           sx={{
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
@@ -1038,7 +992,7 @@ const Inventory = () => {
           }}
         />
         
-        {/* Filter chips - if any filters are applied */}
+        {/* Filter chips */}
         {(brandFilter || productSearch || minQuantity || maxQuantity) && (
           <Box sx={{ 
             display: "flex", 
@@ -1155,7 +1109,7 @@ const Inventory = () => {
             inventory={filteredInventory}
             onEdit={handleEdit}
             onDelete={handleDeleteClick}
-            // Add styling props for the table to match the TimeSelection aesthetic
+           
             tableSx={{
               "& .MuiTableCell-root": {
                 fontFamily: "'Poppins', 'Roboto', sans-serif",
@@ -1192,7 +1146,7 @@ const Inventory = () => {
         onClose={() => setOpenEditModal(false)}
         item={editItem}
         onSubmit={handleEditSubmit}
-        // Add styling props to match the TimeSelection modal
+        
         sx={{
           "& .MuiDialogTitle-root": {
             background: "linear-gradient(to right, #f9f5f0, #ffffff)",
@@ -1223,7 +1177,7 @@ const Inventory = () => {
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
         onSubmit={handleAddItemSubmit}
-        // Add styling props to match the TimeSelection modal
+        
         sx={{
           "& .MuiDialogTitle-root": {
             background: "linear-gradient(to right, #f9f5f0, #ffffff)",
@@ -1254,7 +1208,7 @@ const Inventory = () => {
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={handleDeleteConfirm}
-        // Add styling props to match the TimeSelection modal
+        
         sx={{
           "& .MuiPaper-root": {
             borderRadius: "8px",

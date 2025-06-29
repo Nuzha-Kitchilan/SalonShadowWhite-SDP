@@ -11,7 +11,7 @@ import { ReportForm } from '../components/reports/ReportForm';
 import { ReportVisualization } from '../components/reports/ReportVisualization';
 import { jwtDecode } from 'jwt-decode';
 
-// Custom styled chip to match service page
+// Custom styled chip
 const StyledChip = styled(Chip)(({ theme }) => ({
   backgroundColor: 'rgba(190, 175, 155, 0.15)',
   color: '#453C33',
@@ -58,7 +58,7 @@ const RevenueReport = () => {
     format: 'pdf'
   });
 
-  // Get admin info from JWT token (similar to service page)
+  // Get admin info from JWT token
   React.useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -137,7 +137,7 @@ const RevenueReport = () => {
   const generateChartData = useMemo(() => {
     if (!previewData) return null;
     
-    // Make sure we have data to work with
+   
     const data = previewData.rows || [];
     if (data.length === 0) {
       return {

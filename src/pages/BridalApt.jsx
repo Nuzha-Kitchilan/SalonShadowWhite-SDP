@@ -1,182 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import {
-//   Box,
-//   Container,
-//   Paper,
-//   Typography,
-//   Backdrop,
-//   CircularProgress,
-//   Alert,
-//   Snackbar
-// } from '@mui/material';
-// import axios from 'axios';
-// import BridalAppointmentForm from '../components/bridal/BridalAptForm';
-
-// const AdminBridalAppointments = () => {
-//   const [customers, setCustomers] = useState([]);
-//   const [services, setServices] = useState([]);
-//   const [stylists, setStylists] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         setLoading(true);
-        
-//         // Fetch all necessary data in parallel
-//         const [customersRes, servicesRes, stylistsRes] = await Promise.all([
-//           axios.get('/admin/customers'),
-//           axios.get('/admin/services'),
-//           axios.get('/admin/stylists')
-//         ]);
-        
-//         // Handle different API response structures
-//         const customersData = customersRes.data.data || customersRes.data || [];
-//         const servicesData = servicesRes.data.data || servicesRes.data || [];
-//         const stylistsData = stylistsRes.data.data || stylistsRes.data || [];
-        
-//         console.log('Customers data:', customersData);
-//         console.log('Services data:', servicesData);
-//         console.log('Stylists data:', stylistsData);
-        
-//         // Add validation for required fields
-//         const processedCustomers = customersData.map(customer => {
-//           // Ensure we have required fields
-//           if (!customer.customer_ID && customer.id) customer.customer_ID = customer.id;
-//           return customer;
-//         });
-
-//         const processedStylists = stylistsData.map(stylist => {
-//           // Ensure we have required fields
-//           if (!stylist.stylist_ID && stylist.id) stylist.stylist_ID = stylist.id;
-//           return stylist;
-//         });
-
-//         const processedServices = servicesData.map(service => {
-//           // Ensure we have required fields
-//           if (!service.service_ID && service.id) service.service_ID = service.id;
-//           if (typeof service.price === 'string') service.price = parseFloat(service.price);
-//           return service;
-//         });
-        
-//         setCustomers(processedCustomers);
-//         setServices(processedServices);
-//         setStylists(processedStylists);
-        
-//         setLoading(false);
-//       } catch (err) {
-//         console.error('Error loading data:', err);
-//         setError('Failed to load necessary data. Please try again later.');
-//         setLoading(false);
-//       }
-//     };
-    
-//     fetchData();
-//   }, []);
-
-//   const handleSubmit = async (formData) => {
-//     try {
-//       setLoading(true);
-      
-//       await axios.post('http://localhost:5001/api/admin/appointments/bridal', formData);
-      
-//       setNotification({
-//         open: true,
-//         message: 'Bridal appointment created successfully!',
-//         severity: 'success'
-//       });
-      
-//       // You could redirect to appointments list here
-//       // history.push('/admin/appointments');
-      
-//       setLoading(false);
-//     } catch (err) {
-//       console.error('Error creating appointment:', err);
-      
-//       setNotification({
-//         open: true,
-//         message: err.response?.data?.message || 'Failed to create appointment',
-//         severity: 'error'
-//       });
-      
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleCancel = () => {
-//     // Navigate back to appointments list
-//     // history.push('/admin/appointments');
-//     console.log('Form canceled');
-//   };
-
-//   const handleCloseNotification = () => {
-//     setNotification({ ...notification, open: false });
-//   };
-
-//   if (loading) {
-//     return (
-//       <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-//         <CircularProgress color="inherit" />
-//       </Backdrop>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <Container maxWidth="md" sx={{ mt: 4 }}>
-//         <Alert severity="error">{error}</Alert>
-//       </Container>
-//     );
-//   }
-
-//   return (
-//     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-//       <Paper sx={{ p: 2 }}>
-//         <Typography variant="h4" component="h1" gutterBottom>
-//           Bridal Appointment
-//         </Typography>
-        
-//         <Box sx={{ mt: 3 }}>
-//           <BridalAppointmentForm
-//             onSubmit={handleSubmit}
-//             onCancel={handleCancel}
-//             customers={customers}
-//             services={services}
-//             stylists={stylists}
-//           />
-//         </Box>
-//       </Paper>
-      
-//       <Snackbar
-//         open={notification.open}
-//         autoHideDuration={6000}
-//         onClose={handleCloseNotification}
-//         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-//       >
-//         <Alert 
-//           onClose={handleCloseNotification} 
-//           severity={notification.severity}
-//           sx={{ width: '100%' }}
-//         >
-//           {notification.message}
-//         </Alert>
-//       </Snackbar>
-//     </Container>
-//   );
-// };
-
-// export default AdminBridalAppointments;
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -361,7 +182,6 @@ const AdminBridalAppointments = () => {
     if (!isEditMode) {
       setTabValue(newValue);
     } else {
-      // Show a notification that they need to complete or cancel editing first
       setNotification({
         open: true,
         message: 'Please complete or cancel the current edit operation first',
@@ -431,23 +251,22 @@ const AdminBridalAppointments = () => {
   };
 
   const handleEditAppointment = (appointmentId, callback) => {
-    // Set edit mode and store the appointment ID
     setCurrentAppointmentId(appointmentId);
     setIsEditMode(true);
     
-    // Add a third tab (index 2) specifically for editing
+    
     if (tabValue !== 2) {
       setTabValue(2);
     }
   };
 
-  // New function to view appointment details
+  // function to view appointment details
   const handleViewDetails = (appointment) => {
     setSelectedAppointment(appointment);
     setShowDetailsModal(true);
   };
 
-  // New function for handling "Add New" button click
+  // function for handling "Add New" button click
   const handleAddNewAppointment = () => {
     // Clear any appointment ID
     setCurrentAppointmentId(null);
@@ -469,8 +288,6 @@ const AdminBridalAppointments = () => {
         severity: 'success'
       });
       
-      // Refresh appointments list
-      // You might want to implement a refresh method here
       
       setLoading(false);
     } catch (err) {
@@ -487,13 +304,12 @@ const AdminBridalAppointments = () => {
   };
 
   const handleCancel = () => {
-    // Reset edit mode if applicable
     if (isEditMode) {
       setIsEditMode(false);
       setCurrentAppointmentId(null);
     }
     
-    // Switch back to the appointments list tab
+
     setTabValue(0);
   };
 

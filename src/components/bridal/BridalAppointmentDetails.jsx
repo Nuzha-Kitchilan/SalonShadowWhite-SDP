@@ -14,18 +14,14 @@ export default function BridalAppointmentDetailsModal({
 }) {
   if (!selectedAppointment) return null;
 
-  // Enhanced phone number handling - debug the selected appointment object
+
   console.log("Selected Appointment Data:", selectedAppointment);
 
-  // Helper function to get phone number from multiple possible sources
   const getPhoneNumber = (appointment) => {
-    // Check all possible phone number fields, including nested properties
     const possiblePhoneFields = [
       appointment.customer_phones,
-      // Add any other potential phone field names
     ];
     
-    // Find the first non-empty phone value
     const phone = possiblePhoneFields.find(p => p && String(p).trim() !== '');
     
     return phone ? String(phone).trim() : 'N/A';
@@ -34,7 +30,6 @@ export default function BridalAppointmentDetailsModal({
   // Helper function to determine status chip color
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'confirmed': return { bg: '#4caf50', color: '#fff' };
       case 'completed': return { bg: '#2196f3', color: '#fff' };
       case 'cancelled': return { bg: '#f44336', color: '#fff' };
       case 'pending': return { bg: '#ff9800', color: '#fff' };
@@ -48,14 +43,13 @@ export default function BridalAppointmentDetailsModal({
     ? { bg: '#4caf50', color: '#fff' }
     : { bg: '#ff9800', color: '#fff' };
 
-  // Determine if this is a first-time customer
+
   const isFirstTimeCustomer = selectedAppointment.is_first_time || false;
 
-  // Wedding date info
   const weddingDate = selectedAppointment.wedding_date ? formatDate(selectedAppointment.wedding_date) : 'Not specified';
   const daysUntilWedding = selectedAppointment.wedding_date ? calculateDaysUntilWedding(selectedAppointment.wedding_date) : null;
 
-  // Calculate days until wedding
+
   function calculateDaysUntilWedding(weddingDateStr) {
     if (!weddingDateStr) return null;
     

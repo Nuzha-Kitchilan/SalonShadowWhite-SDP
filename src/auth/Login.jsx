@@ -21,8 +21,6 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import PasswordOutlinedIcon from '@mui/icons-material/PasswordOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
-// Import the reusable ForgotPassword component
 import ForgotPassword from '../auth/ForgotPassword';
 
 const Login = () => {
@@ -50,7 +48,7 @@ const Login = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
-        credentials: 'include' // Important for cookies if using them
+        credentials: 'include' 
       });
 
       const data = await response.json();
@@ -65,8 +63,6 @@ const Login = () => {
 
       // Update auth context
       login(data.token, data.user);
-
-      // Force a hard redirect to ensure proper state update
       window.location.href = data.user.role === 'admin' ? '/admin' : '/stylist';
 
     } catch (error) {
@@ -82,7 +78,6 @@ const Login = () => {
   };
 
   const handleForgotPasswordSuccess = () => {
-    // Close the dialog after successful password reset
     setTimeout(() => {
       setForgotPasswordOpen(false);
     }, 2000);
@@ -311,31 +306,7 @@ const Login = () => {
               Forgot Password?
             </Link>
           </Typography>
-          
-          {/* <Typography 
-            variant="body2" 
-            sx={{ 
-              textAlign: 'center',
-              fontFamily: "'Poppins', 'Roboto', sans-serif",
-              color: "#777"
-            }}
-          >
-            Don't have an account?{' '}
-            <Link 
-              href="/register" 
-              sx={{ 
-                color: "#BEAF9B",
-                textDecoration: "none",
-                fontWeight: 500,
-                '&:hover': {
-                  textDecoration: "underline",
-                  color: "#a39582"
-                }
-              }}
-            >
-              Sign Up
-            </Link>
-          </Typography> */}
+
         </Box>
       </Box>
 

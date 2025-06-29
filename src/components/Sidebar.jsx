@@ -108,7 +108,6 @@ const Sidebar = () => {
     setOpenAppointments(!openAppointments);
   };
 
-  // Primary color used throughout the site
   const primaryColor = "#BEAF9B";
 
   // Menu items for non-admin users (Dashboard, Today's Appointments, Report)
@@ -219,10 +218,10 @@ const Sidebar = () => {
     <Drawer
       variant="permanent"
       sx={{
-        width: 220,  // Increased width here
+        width: 220, 
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: 240,  // Increased width here
+          width: 240, 
           boxSizing: "border-box",
           backgroundColor: "#000",
           color: "#fff",
@@ -231,13 +230,13 @@ const Sidebar = () => {
           position: "relative",
           borderRight: `1px solid rgba(190, 175, 155, 0.2)`,
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-          overflowY: 'auto',  // Enable vertical scrolling
+          overflowY: 'auto', 
           '::-webkit-scrollbar': {
-            width: 0, // Hides the scrollbar
+            width: 0, 
             height: 0,
           },
           '::-webkit-scrollbar-thumb': {
-            background: 'transparent', // Keeps the scrollbar thumb hidden
+            background: 'transparent', 
           },
         },
       }}

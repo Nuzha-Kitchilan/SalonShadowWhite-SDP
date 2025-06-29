@@ -1,10 +1,9 @@
-// src/utils/axiosWithAuth.js
 import axios from 'axios';
 
 // Create an Axios instance with default configuration
 const axiosWithAuth = axios.create({
-  baseURL: 'http://localhost:5001/api', // Your backend API base URL
-  timeout: 10000, // Request timeout in milliseconds
+  baseURL: 'http://localhost:5001/api', 
+  timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
   }
@@ -13,8 +12,7 @@ const axiosWithAuth = axios.create({
 // Add a request interceptor to include the auth token
 axiosWithAuth.interceptors.request.use(
   (config) => {
-    // Get the token from wherever you store it (localStorage, sessionStorage, etc.)
-    const token = localStorage.getItem('token'); // or sessionStorage
+    const token = localStorage.getItem('token'); 
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

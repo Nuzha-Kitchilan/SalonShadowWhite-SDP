@@ -121,7 +121,7 @@ const WorkingHours = () => {
       });
       setFilteredHours(filtered);
     }
-    setPage(0); // Reset to first page when searching
+    setPage(0); 
   };
 
   const handleEditClick = (item) => {
@@ -166,7 +166,7 @@ const WorkingHours = () => {
 
   const handleAddClick = () => {
     setEditForm({
-      date: dayjs().format('YYYY-MM-DD'), // Default to today's date
+      date: dayjs().format('YYYY-MM-DD'), 
       open_time: "",
       close_time: "",
       is_closed: false,
@@ -203,7 +203,7 @@ const WorkingHours = () => {
     setPage(0);
   };
 
-  // Calculate min date (today)
+  // Calculate min date 
   const getMinDate = () => {
     return dayjs().format('YYYY-MM-DD');
   };

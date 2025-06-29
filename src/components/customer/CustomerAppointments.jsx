@@ -67,7 +67,6 @@ const CustomerAppointments = ({ customerId }) => {
   
   // Format time slot
   const formatTimeSlot = (timeSlot) => {
-    // Check if timeSlot is in a format like "HH:MM:SS" or just a number
     if (typeof timeSlot === 'string' && timeSlot.includes(':')) {
       // Handle time in "HH:MM:SS" format
       const [hours, minutes] = timeSlot.split(':').map(Number);
@@ -80,7 +79,6 @@ const CustomerAppointments = ({ customerId }) => {
       return `${hour12}:${minutes.toString().padStart(2, '0')} ${amPm}`;
     } 
     else if (typeof timeSlot === 'number') {
-      // Handle time as minutes from midnight
       const hours = Math.floor(timeSlot / 60);
       const minutes = timeSlot % 60;
       
@@ -161,7 +159,6 @@ const CustomerAppointments = ({ customerId }) => {
   
   // Format price to ensure it's displayed correctly
   const formatPrice = (price) => {
-    // Convert to number if it's a string or ensure it's a valid number
     const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
     
     // Check if conversion resulted in a valid number
